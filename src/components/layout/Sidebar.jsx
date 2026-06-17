@@ -14,7 +14,7 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     sessionStorage.clear();
-    navigate('/login');
+    navigate('/');
   };
 
   return (

@@ -36,8 +36,8 @@ export default function PublicRoute() {
       <ErrorBoundary>
         <Suspense fallback={<Loader />}>
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Login />} />
+            {/* <Route path="/" element={<Navigate to="/" replace />} /> */}
 
             {/* Authenticated Routes wrapped in Layout */}
             <Route element={<ProtectedRoute />}>
