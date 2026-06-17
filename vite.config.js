@@ -3,9 +3,20 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
+import path from 'path';
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-   server: {
+  resolve: {
+    alias: {
+      react: path.resolve(__dirname, './node_modules/react'),
+      'react-dom': path.resolve(__dirname, './node_modules/react-dom')
+    }
+  },
+  server: {
     port: 3000
   },
+  optimizeDeps: {
+    exclude: ['recoil']
+  }
 })
