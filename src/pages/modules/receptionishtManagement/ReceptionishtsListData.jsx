@@ -4,6 +4,8 @@ import BreadCrumb from '../../../components/common/BreadCrumb';
 import PagePath from '../../../components/common/PagePath';
 import DataTable from '../../../components/common/DataTable';
 import Pagination from '../../../components/common/Pagination';
+import useDebounce from '../../../hooks/debounce/useDebounce';
+import useReceptionistMgmt from '../../../hooks/receptionishtManagement/useReceptionistMgmt';
 
 const ActionButtons = ({ rowData, onEdit }) => {
   return (
@@ -20,53 +22,49 @@ const ActionButtons = ({ rowData, onEdit }) => {
 };
 
 export default function ReceptionishtsListData() {
-  const [receptionists, setReceptionists] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(10);
-  const [totalRecords, setTotalRecords] = useState(25);
+  const { fetchReceptionists, loading, receptionistRes } = useReceptionistMgmt();
   const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [name, setName] = useState("");
+  const debouncedSearch = useDebounce(name, 500);
 
   const breadcrumbPaths = [
     { label: 'Receptionist Management' },
     { label: 'Receptionist List' }
   ];
 
-  const nameBodyTemplate = (rowData) => {
-    return (
-      <div className="flex items-center gap-2">
-        <p className="text-sm font-semibold text-slate-800">{rowData.name}</p>
-      </div>
-    );
-  };
+  useEffect(() => {
+    fetchReceptionists(page, limit, debouncedSearch);
+  }, [page, limit, debouncedSearch]);
 
-  const emailBodyTemplate = (rowData) => {
-    return (
-      <div className="flex items-center gap-1.5">
-        <div className="w-6 h-4 rounded-full bg-slate-100 flex items-center justify-center">
-          <i className="pi pi-envelope text-slate-500 text-xs" />
-        </div>
+  console.log("receptionistRes", receptionistRes);
 
-        <span className="text-sm text-slate-700">
-          {rowData.email}
-        </span>
-      </div>
-    );
+  const handlePageChange = (newPage) => setPage(newPage);
+
+  const handleItemsPerPageChange = (newLimit) => {
+    setLimit(newLimit);
+    setPage(1);
   };
 
   const actionBodyTemplate = (rowData) => {
     return (
       <ActionButtons
         rowData={rowData}
-        onEdit={(data) => navigate(`/receptionist-management/edit/${data.id}`)}
+        onEdit={(data) => navigate(`/receptionist-management/edit/${data._id}`)}
       />
     );
   };
 
+  const tableData =
+    receptionistRes?.data?.map((item, index) => ({
+      ...item,
+      srNo: (page - 1) * limit + index + 1,
+    })) || [];
+
   const columns = [
     {
-      field: 'id',
+      field: 'srNo',
       header: 'Sr. No.',
       sortable: false,
       minWidth: '80px'
@@ -75,15 +73,19 @@ export default function ReceptionishtsListData() {
       field: 'name',
       header: 'Receptionist Name',
       sortable: true,
-      body: nameBodyTemplate,
       minWidth: '250px'
     },
     {
       field: 'email',
       header: 'Email ID',
       sortable: true,
-      body: emailBodyTemplate,
       minWidth: '300px'
+    },
+    {
+      field: 'password',
+      header: 'Password',
+      sortable: true,
+      minWidth: '200px'
     },
     {
       field: 'action',
@@ -94,38 +96,6 @@ export default function ReceptionishtsListData() {
     }
   ];
 
-  const generateMockData = (count) => {
-    const names = ['Alice Smith', 'Bob Jones', 'Charlie Brown', 'Diana Prince', 'Eve Adams'];
-    return Array.from({ length: count }, (_, i) => ({
-      id: i + 1,
-      name: names[i % names.length] + (i > 4 ? ` ${i}` : ''),
-      email: `${names[i % names.length].split(' ')[0].toLowerCase()}${i}@unisol.com`
-    }));
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      const allData = generateMockData(totalRecords);
-      let filteredData = allData;
-
-      if (globalFilter) {
-        filteredData = allData.filter(item =>
-          item.email.toLowerCase().includes(globalFilter.toLowerCase())
-        );
-      }
-
-      const paginatedData = filteredData.slice(first, first + rows);
-      setReceptionists(paginatedData);
-      setTotalRecords(filteredData.length > 0 && !globalFilter ? 25 : filteredData.length);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [first, rows, globalFilter]);
-
   return (
     <div className="max-w-7xl mx-auto pb-12">
       <BreadCrumb paths={breadcrumbPaths} />
@@ -133,32 +103,29 @@ export default function ReceptionishtsListData() {
       <PagePath
         title="Receptionist List"
         showSearchBar={true}
-        searchValue={globalFilter}
+        searchValue={name}
         searchPlaceholder="Search by email"
-        onSearch={setGlobalFilter}
+        onSearch={setName}
         showAddButton={true}
         addButtonLabel="Add Receptionist"
         onAdd={() => navigate('/receptionist-management/add')}
       />
 
       <DataTable
-        data={receptionists}
+        data={tableData}
         columns={columns}
         loading={loading}
         emptyMessage="No receptionists found."
       />
 
       <Pagination
-        currentPage={Math.floor(first / rows) + 1}
-        totalPages={Math.ceil(totalRecords / rows) || 1}
-        totalItems={totalRecords}
-        itemsPerPage={rows}
+        currentPage={receptionistRes?.pagination?.page}
+        totalPages={receptionistRes?.pagination?.totalPages}
+        totalItems={receptionistRes?.pagination?.total}
+        itemsPerPage={receptionistRes?.pagination?.limit}
         showRowPerPage={true}
-        onPageChange={(page) => setFirst((page - 1) * rows)}
-        onItemsPerPageChange={(value) => {
-          setRows(value);
-          setFirst(0);
-        }}
+        onPageChange={handlePageChange}
+        onItemsPerPageChange={handleItemsPerPageChange}
       />
     </div>
   );
