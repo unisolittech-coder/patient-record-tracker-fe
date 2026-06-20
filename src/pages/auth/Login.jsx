@@ -9,7 +9,7 @@ import { useLogin } from '../../hooks/auth/useLogin';
 import validator from "validator";
 
 export default function Login() {
-  const { loading, adminLogin, receptionistLogin } = useLogin();
+  const { loading, adminLogin } = useLogin();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -35,13 +35,11 @@ export default function Login() {
         email: validator.trim(values.email),
         password: validator.trim(values.password),
       };
-      let success;
-      if (values.role === "Admin") {
-        success = await adminLogin(payload);
-      } else {
-        success = await receptionistLogin(payload);
+      
+      const success = await adminLogin(payload);
+      if (success) {
+        navigate("/dashboard");
       }
-      success && navigate('/dashboard');
     }
   });
 

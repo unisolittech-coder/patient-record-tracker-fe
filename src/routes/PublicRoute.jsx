@@ -3,13 +3,14 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ErrorBoundary from '../components/common/ErrorBoundary';
 import Layout from '../components/layout/Layout';
 import ProtectedRoute from './ProtectedRoute';
+import RoleProtectedRoute from './RoleProtectedRoute';
+import { ROLES } from '../constants/roles';
 
 // Lazy loading components
 const Login = lazy(() => import('../pages/auth/Login'));
 
 // Dashboard
 const AdminDashboard = lazy(() => import('../pages/modules/dashboard/AdminDashboard'));
-const ReceptionishtDashboard = lazy(() => import('../pages/modules/dashboard/ReceptionishtDashboard'));
 
 // Patient Data
 const PatientsListData = lazy(() => import('../pages/modules/patientData/PatientsListData'));
@@ -43,9 +44,11 @@ export default function PublicRoute() {
             <Route element={<ProtectedRoute />}>
               <Route element={<Layout />}>
                 <Route path="/dashboard" element={<AdminDashboard />} /> {/* Or logic for ReceptionishtDashboard based on role */}
-                <Route path="/receptionist-management" element={<ReceptionishtsListData />} />
-                <Route path="/receptionist-management/add" element={<AddEditReceptionisht />} />
-                <Route path="/receptionist-management/edit/:id" element={<AddEditReceptionisht />} />
+                <Route element={<RoleProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]} />}>
+                  <Route path="/receptionist-management" element={<ReceptionishtsListData />} />
+                  <Route path="/receptionist-management/add" element={<AddEditReceptionisht />} />
+                  <Route path="/receptionist-management/edit/:id" element={<AddEditReceptionisht />} />
+                </Route>
                 <Route path="/patient-data" element={<PatientsListData />} />
                 <Route path="/patient-data/view/:id" element={<PatientDataView />} />
                 <Route path="/patient-data/edit/:id" element={<PatientDataUpdate />} />

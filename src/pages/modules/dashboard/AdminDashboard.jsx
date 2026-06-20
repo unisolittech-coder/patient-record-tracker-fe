@@ -1,18 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import BreadCrumb from '../../../components/common/BreadCrumb';
 import PagePath from '../../../components/common/PagePath';
+import useDashboard from '../../../hooks/dashboard/useDashboard';
+import Loader from '../../../components/common/Loader';
 
 export default function AdminDashboard() {
+    const {
+        loading,
+        dashboardStatsData,
+        fetchDashboardStats
+    } = useDashboard();
     const breadcrumbPaths = [
         { label: 'Dashboard Overview', url: '/dashboard' }
     ];
 
+    useEffect(() => {
+        fetchDashboardStats();
+    }, []);
+
+    console.log("Dashboard Stats Data:", dashboardStatsData);
     const dashboardData = [
         {
             title: 'Total Patients',
-            value: '12,345',
-            trend: '+12%',
-            trendLabel: 'from last month',
+            value: dashboardStatsData?.totalPatients || '0',
             icon: 'pi pi-users',
             color: 'bg-blue-500',
             bgColor: 'bg-blue-50',
@@ -20,9 +30,7 @@ export default function AdminDashboard() {
         },
         {
             title: "Today's Registrations",
-            value: '142',
-            trend: '+5%',
-            trendLabel: 'from yesterday',
+            value: dashboardStatsData?.todaysRegistration || '0',
             icon: 'pi pi-user-plus',
             color: 'bg-green-500',
             bgColor: 'bg-green-50',
@@ -30,9 +38,7 @@ export default function AdminDashboard() {
         },
         {
             title: 'Total Reports Uploaded',
-            value: '45,678',
-            trend: '+8%',
-            trendLabel: 'from last month',
+            value: dashboardStatsData?.totalReportsUploaded || '0',
             icon: 'pi pi-file-pdf',
             color: 'bg-purple-500',
             bgColor: 'bg-purple-50',
@@ -40,9 +46,7 @@ export default function AdminDashboard() {
         },
         {
             title: "Today's Reports Uploaded",
-            value: '356',
-            trend: '-2%',
-            trendLabel: 'from yesterday',
+            value: dashboardStatsData?.todaysReportsUploaded || '0',
             icon: 'pi pi-cloud-upload',
             color: 'bg-orange-500',
             bgColor: 'bg-orange-50',
@@ -52,7 +56,7 @@ export default function AdminDashboard() {
 
     return (
         <div className="max-w-7xl mx-auto pb-12">
-            <BreadCrumb paths={breadcrumbPaths} />
+            {/* <BreadCrumb paths={breadcrumbPaths} /> */}
             <PagePath title="Dashboard Overview" />
 
             {/* Dashboard Cards */}
@@ -70,9 +74,6 @@ export default function AdminDashboard() {
                         </div>
 
                         <div className="flex items-center gap-2 mt-auto">
-                            <span className={`text-sm font-medium ${data.trend.startsWith('+') ? 'text-green-600' : 'text-red-500'}`}>
-                                {data.trend}
-                            </span>
                             <span className="text-sm text-gray-400">{data.trendLabel}</span>
                         </div>
                     </div>
