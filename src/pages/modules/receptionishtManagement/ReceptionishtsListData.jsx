@@ -26,8 +26,8 @@ export default function ReceptionishtsListData() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [name, setName] = useState("");
-  const debouncedSearch = useDebounce(name, 500);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
 
   const breadcrumbPaths = [
     { label: 'Receptionist Management' },
@@ -103,9 +103,9 @@ export default function ReceptionishtsListData() {
       <PagePath
         title="Receptionist List"
         showSearchBar={true}
-        searchValue={name}
-        searchPlaceholder="Search by email"
-        onSearch={setName}
+        searchValue={search}
+        searchPlaceholder="Search by name or email"
+        onSearch={setSearch}
         showAddButton={true}
         addButtonLabel="Add Receptionist"
         onAdd={() => navigate('/receptionist-management/add')}

@@ -33,8 +33,8 @@ export default function PatientsListData() {
   const { fetchPatients, loading, patientRes } = usePatientMgmt();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [name, setName] = useState("");
-  const debouncedSearch = useDebounce(name, 500);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
 
   const breadcrumbPaths = [
     { label: 'Patient Data', url: '/patient-data' },
@@ -194,9 +194,9 @@ export default function PatientsListData() {
       <PagePath
         title="Patients List"
         showSearchBar={true}
-        searchValue={setName}
-        searchPlaceholder="Search by patient ID"
-        onSearch={setName}
+        searchValue={search}
+        searchPlaceholder="Search by patient ID, ..."
+        onSearch={setSearch}
       />
 
       <DataTable

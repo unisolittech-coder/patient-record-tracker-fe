@@ -17,7 +17,7 @@ export default function BreadCrumb({ paths }) {
       <PrimeBreadCrumb
         model={items}
         home={home}
-        className="bg-transparent border-none p-0"
+        className="bg-transparent border-none pb-1"
         pt={{
           root: { className: 'bg-transparent border-none p-0 m-0' },
           menu: { className: 'm-0 p-0' },

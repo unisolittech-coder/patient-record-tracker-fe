@@ -38,7 +38,7 @@ const useReceptionistMgmt = () => {
             const params = new URLSearchParams();
             if (page) params.append("page", page);
             if (limit) params.append("limit", limit);
-            if (debouncedSearch) params.append("name", debouncedSearch);
+            if (debouncedSearch) params.append("search", debouncedSearch);
             const res = await fetchData({
                 method: "GET",
                 url: `${conf.apiBaseUrl}users?${params.toString()}`,
