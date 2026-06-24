@@ -31,11 +31,16 @@ export default function Login() {
     },
     validationSchema,
     onSubmit: async (values) => {
+      const roleMap = {
+        Admin: "super_admin",
+        Receptionist: "receptionist"
+      };
       const payload = {
         email: validator.trim(values.email),
         password: validator.trim(values.password),
+        role: roleMap[values.role]
       };
-      
+
       const success = await adminLogin(payload);
       if (success) {
         navigate("/dashboard");
