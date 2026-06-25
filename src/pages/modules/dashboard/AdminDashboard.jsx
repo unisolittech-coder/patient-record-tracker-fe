@@ -6,13 +6,12 @@ import {
     BarElement,
     Title,
     Tooltip,
-    Legend,
+   Legend,
     ArcElement,
     PointElement,
     LineElement
 } from 'chart.js';
-import { Bar, Pie, Doughnut } from 'react-chartjs-2';
-import BreadCrumb from '../../../components/common/BreadCrumb';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import PagePath from '../../../components/common/PagePath';
 import useDashboard from '../../../hooks/dashboard/useDashboard';
 import Loader from '../../../components/common/Loader';
@@ -44,23 +43,50 @@ export default function AdminDashboard() {
     const [chartData, setChartData] = useState(null);
     const [genderChartData, setGenderChartData] = useState(null);
 
-    const breadcrumbPaths = [
-        { label: 'Dashboard Overview', url: '/dashboard' }
+    const currentDate = new Date();
+    const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
+    const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
+
+    const monthOptions = [
+        { label: 'January', value: 1 },
+        { label: 'February', value: 2 },
+        { label: 'March', value: 3 },
+        { label: 'April', value: 4 },
+        { label: 'May', value: 5 },
+        { label: 'June', value: 6 },
+        { label: 'July', value: 7 },
+        { label: 'August', value: 8 },
+        { label: 'September', value: 9 },
+        { label: 'October', value: 10 },
+        { label: 'November', value: 11 },
+        { label: 'December', value: 12 }
     ];
 
+    const yearOptions = Array.from({ length: 6 }, (_, index) => currentDate.getFullYear() - index);
+
+    // Initial dashboard data fetch
     useEffect(() => {
         fetchDashboardStats();
-        fetchRegistrationChartData();
         fetchGenderDistributionData();
     }, []);
 
+    // Monthly registration chart fetch
     useEffect(() => {
-        // Process Registration Chart Data
+        fetchRegistrationChartData(selectedMonth, selectedYear);
+    }, [selectedMonth, selectedYear]);
+
+    // Registration chart formatting
+    useEffect(() => {
         if (registrationChartData && registrationChartData.length > 0) {
             const labels = registrationChartData.map(item => {
                 const date = new Date(item.date);
-                return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                return date.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                });
             });
+
             const counts = registrationChartData.map(item => item.count);
 
             setChartData({
@@ -77,17 +103,24 @@ export default function AdminDashboard() {
                     }
                 ]
             });
+        } else {
+            setChartData(null);
         }
+    }, [registrationChartData]);
 
-        // Process Gender Distribution Data
-        if (genderDistributionData) {
-            const { Male, Female, Other, total } = genderDistributionData;
+    // Gender chart formatting
+    useEffect(() => {
+        if (genderDistributionData && typeof genderDistributionData === 'object') {
+            const maleCount = genderDistributionData?.Male?.count || 0;
+            const femaleCount = genderDistributionData?.Female?.count || 0;
+            const otherCount = genderDistributionData?.Other?.count || 0;
 
             setGenderChartData({
                 labels: ['Male', 'Female', 'Other'],
                 datasets: [
                     {
-                        data: [Male?.count || 0, Female?.count || 0, Other?.count || 0],
+                        label: 'Patients',
+                        data: [maleCount, femaleCount, otherCount],
                         backgroundColor: [
                             'rgba(59, 130, 246, 0.8)',
                             'rgba(236, 72, 153, 0.8)',
@@ -102,8 +135,10 @@ export default function AdminDashboard() {
                     }
                 ]
             });
+        } else {
+            setGenderChartData(null);
         }
-    }, [registrationChartData, genderDistributionData]);
+    }, [genderDistributionData]);
 
     const dashboardData = [
         {
@@ -140,7 +175,6 @@ export default function AdminDashboard() {
         }
     ];
 
-    // Chart options
     const barChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -157,55 +191,15 @@ export default function AdminDashboard() {
                     usePointStyle: true,
                     pointStyle: 'circle'
                 }
-            },
-            tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                titleFont: {
-                    size: 14,
-                    weight: 'bold'
-                },
-                bodyFont: {
-                    size: 13
-                },
-                padding: 12,
-                cornerRadius: 8,
-                callbacks: {
-                    label: function (context) {
-                        let label = context.dataset.label || '';
-                        let value = context.parsed.y || 0;
-                        return label + ': ' + value + ' patients';
-                    }
-                }
             }
         },
         scales: {
             y: {
                 beginAtZero: true,
                 ticks: {
-                    stepSize: 1,
-                    font: {
-                        size: 11
-                    }
-                },
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.05)',
-                    drawBorder: false
-                }
-            },
-            x: {
-                grid: {
-                    display: false
-                },
-                ticks: {
-                    font: {
-                        size: 11
-                    }
+                    stepSize: 1
                 }
             }
-        },
-        animation: {
-            duration: 1000,
-            easing: 'easeInOutQuart'
         }
     };
 
@@ -216,41 +210,16 @@ export default function AdminDashboard() {
             legend: {
                 position: 'bottom',
                 labels: {
-                    font: {
-                        size: 13,
-                        weight: 'bold'
-                    },
                     padding: 20,
                     usePointStyle: true,
-                    pointStyle: 'circle'
-                }
-            },
-            tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                titleFont: {
-                    size: 14,
-                    weight: 'bold'
-                },
-                bodyFont: {
-                    size: 13
-                },
-                padding: 12,
-                cornerRadius: 8,
-                callbacks: {
-                    label: function (context) {
-                        let label = context.label || '';
-                        let value = context.parsed || 0;
-                        let total = context.dataset.data.reduce((a, b) => a + b, 0);
-                        let percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                        return label + ': ' + value + ' (' + percentage + '%)';
+                    pointStyle: 'circle',
+                    font: {
+                        size: 12
                     }
                 }
             }
         },
-        animation: {
-            animateRotate: true,
-            duration: 1500
-        }
+        cutout: '65%'
     };
 
     if (loading) {
@@ -268,7 +237,7 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto pb-12">
             <PagePath title="Dashboard Overview" />
 
-            {/* Stats Cards */}
+            {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
                 {dashboardData.map((data, index) => (
                     <div
@@ -288,67 +257,127 @@ export default function AdminDashboard() {
                                 <i className={`${data.icon} text-2xl ${data.textColor}`}></i>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-50">
-                            <span className={`text-xs font-medium ${data.trend?.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                                {data.trend}
-                            </span>
-                            <span className="text-xs text-gray-400">{data.trendLabel}</span>
-                        </div>
                     </div>
                 ))}
             </div>
 
-            {/* Charts Section */}
+            {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Registration Chart - Takes 2/3 of the space */}
+                {/* Registration Chart */}
                 <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
                         <div>
                             <h3 className="text-lg font-bold text-gray-800">Patient Registrations</h3>
-                            <p className="text-sm text-gray-500 mt-1">Last 7 days registration trend</p>
+                            <p className="text-sm text-gray-500 mt-1">
+                                Monthly registration trend
+                            </p>
                         </div>
-                        <div className="flex items-center gap-2">
+
+                        <div className="flex items-center gap-3 flex-wrap">
+                            <select
+                                value={selectedMonth}
+                                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                                className="px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200"
+                            >
+                                {monthOptions.map((month) => (
+                                    <option key={month.value} value={month.value}>
+                                        {month.label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={selectedYear}
+                                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                                className="px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200"
+                            >
+                                {yearOptions.map((year) => (
+                                    <option key={year} value={year}>
+                                        {year}
+                                    </option>
+                                ))}
+                            </select>
+
                             <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium">
                                 {registrationChartData?.reduce((sum, item) => sum + item.count, 0) || 0} Total
                             </span>
                         </div>
                     </div>
+
                     <div className="h-[300px]">
                         {chartData ? (
                             <Bar data={chartData} options={barChartOptions} />
                         ) : (
                             <div className="flex items-center justify-center h-full">
-                                <p className="text-gray-400">No data available</p>
+                                <p className="text-gray-400">No registration data available</p>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Gender Distribution - Takes 1/3 of the space */}
+                {/* Gender Distribution */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <div>
-                            <h3 className="text-lg font-bold text-gray-800">Gender Distribution</h3>
-                            <p className="text-sm text-gray-500 mt-1">Patient demographics</p>
-                        </div>
+                    <div className="mb-4">
+                        <h3 className="text-lg font-bold text-gray-800">Gender Distribution</h3>
+                        <p className="text-sm text-gray-500 mt-1">Patient demographics</p>
                     </div>
+
                     <div className="h-[300px] flex items-center justify-center">
                         {genderChartData && genderDistributionData?.total > 0 ? (
                             <div className="relative w-full h-full">
                                 <Doughnut data={genderChartData} options={pieChartOptions} />
+
+                                {/* Center total */}
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                     <div className="text-center">
-                                        <p className="text-2xl font-bold text-gray-800">{genderDistributionData?.total || 0}</p>
+                                        <p className="text-2xl font-bold text-gray-800">
+                                            {genderDistributionData?.total || 0}
+                                        </p>
                                         <p className="text-xs text-gray-500">Total</p>
                                     </div>
                                 </div>
                             </div>
                         ) : (
                             <div className="text-center">
-                                <p className="text-gray-400">No data available</p>
+                                <p className="text-gray-400">No gender distribution data available</p>
                             </div>
                         )}
                     </div>
+
+                    {/* Gender Summary */}
+                    {genderDistributionData?.total > 0 && (
+                        <div className="mt-4 space-y-2">
+                            <div className="flex items-center justify-between text-sm">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+                                    <span className="text-gray-700">Male</span>
+                                </div>
+                                <span className="font-medium text-gray-800">
+                                    {genderDistributionData?.Male?.count || 0} ({genderDistributionData?.Male?.percentage || 0}%)
+                                </span>
+                            </div>
+
+                            <div className="flex items-center justify-between text-sm">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-3 h-3 rounded-full bg-pink-500"></span>
+                                    <span className="text-gray-700">Female</span>
+                                </div>
+                                <span className="font-medium text-gray-800">
+                                    {genderDistributionData?.Female?.count || 0} ({genderDistributionData?.Female?.percentage || 0}%)
+                                </span>
+                            </div>
+
+                            <div className="flex items-center justify-between text-sm">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-3 h-3 rounded-full bg-gray-400"></span>
+                                    <span className="text-gray-700">Other</span>
+                                </div>
+                                <span className="font-medium text-gray-800">
+                                    {genderDistributionData?.Other?.count || 0} ({genderDistributionData?.Other?.percentage || 0}%)
+                                </span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

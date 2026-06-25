@@ -38,8 +38,6 @@ export default function ReceptionishtsListData() {
     fetchReceptionists(page, limit, debouncedSearch);
   }, [page, limit, debouncedSearch]);
 
-  console.log("receptionistRes", receptionistRes);
-
   const handlePageChange = (newPage) => setPage(newPage);
 
   const handleItemsPerPageChange = (newLimit) => {
@@ -53,6 +51,28 @@ export default function ReceptionishtsListData() {
         rowData={rowData}
         onEdit={(data) => navigate(`/receptionist-management/edit/${data._id}`)}
       />
+    );
+  };
+
+  const nameBodyTemplate = (rowData) => {
+    return (
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center shrink-0">
+          {rowData.photo ? (
+            <img
+              src={rowData.photo}
+              alt={rowData.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <i className="pi pi-user text-gray-400 text-sm" />
+          )}
+        </div>
+
+        <div>
+          <p className="font-medium text-gray-800">{rowData.name}</p>
+        </div>
+      </div>
     );
   };
 
@@ -70,10 +90,17 @@ export default function ReceptionishtsListData() {
       minWidth: '80px'
     },
     {
-      field: 'name',
-      header: 'Data Entry Operator Name',
+      field: 'employeeId',
+      header: 'Employee ID',
       sortable: true,
-      minWidth: '250px'
+      minWidth: '140px'
+    },
+    {
+      field: 'name',
+      header: 'Data Entry Operator',
+      sortable: true,
+      body: nameBodyTemplate,
+      minWidth: '280px'
     },
     {
       field: 'email',
@@ -92,7 +119,7 @@ export default function ReceptionishtsListData() {
       header: 'Actions',
       sortable: false,
       body: actionBodyTemplate,
-      minWidth: '150px'
+      minWidth: '120px'
     }
   ];
 
@@ -115,7 +142,7 @@ export default function ReceptionishtsListData() {
         data={tableData}
         columns={columns}
         loading={loading}
-        emptyMessage="No receptionists found."
+        emptyMessage="No data entry operators found."
       />
 
       <Pagination

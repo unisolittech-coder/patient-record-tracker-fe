@@ -30,12 +30,15 @@ const useDashboard = () => {
         }
     };
 
-    const fetchRegistrationChartData = async () => {
+    const fetchRegistrationChartData = async (month, year) => {
         setLoading(true);
         try {
+            const params = new URLSearchParams();
+            if (month) params.append("month", month);
+            if (year) params.append("year", year)
             const res = await fetchData({
                 method: "GET",
-                url: `${conf.apiBaseUrl}dashboard/registrations-chart`,
+                url: `${conf.apiBaseUrl}dashboard/registrations-chart?${params}`,
             });
             if (res) {
                 setLoading(false);
