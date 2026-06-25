@@ -18,7 +18,7 @@ export default function Sidebar() {
       path: "/dashboard"
     },
     {
-      label: "DTE Management",
+      label: "Data Entry Operator Mgmt",
       icon: "pi pi-users",
       path: "/receptionist-management"
     },

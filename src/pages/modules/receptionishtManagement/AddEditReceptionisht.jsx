@@ -72,7 +72,7 @@ export default function AddEditReceptionisht() {
 
   const breadcrumbPaths = [
     {
-      label: 'DTE Management',
+      label: 'Data Entry Operator Management',
       url: '/receptionist-management'
     },
     {

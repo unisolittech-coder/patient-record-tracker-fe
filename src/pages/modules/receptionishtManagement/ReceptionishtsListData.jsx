@@ -71,7 +71,7 @@ export default function ReceptionishtsListData() {
     },
     {
       field: 'name',
-      header: 'DTE Name',
+      header: 'Data Entry Operator Name',
       sortable: true,
       minWidth: '250px'
     },
