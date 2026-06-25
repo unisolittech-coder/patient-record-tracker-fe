@@ -18,7 +18,7 @@ export default function Sidebar() {
       path: "/dashboard"
     },
     {
-      label: "Receptionist Management",
+      label: "DTE Management",
       icon: "pi pi-users",
       path: "/receptionist-management"
     },
@@ -128,7 +128,7 @@ export default function Sidebar() {
             {!isCollapsed && (
               <div className="overflow-hidden">
                 <p className="text-sm font-medium text-white truncate">{userName}</p>
-                <p className="text-xs text-gray-400 truncate">{userRole === 'super_admin' ? 'Super Admin' : 'Receptionist'}</p>
+                <p className="text-xs text-gray-400 truncate">{userRole === 'super_admin' ? 'Super Admin' : 'Data Entry Operator'}</p>
               </div>
             )}
           </div>

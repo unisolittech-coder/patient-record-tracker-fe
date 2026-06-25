@@ -10,7 +10,7 @@ import useReceptionistMgmt from '../../../hooks/receptionishtManagement/useRecep
 
 const validationSchema = Yup.object({
   name: Yup.string()
-    .required('Receptionist name is required'),
+    .required('Data Entry Operator name is required'),
 
   email: Yup.string()
     .email('Invalid email address')
@@ -72,11 +72,11 @@ export default function AddEditReceptionisht() {
 
   const breadcrumbPaths = [
     {
-      label: 'Receptionist Management',
+      label: 'DTE Management',
       url: '/receptionist-management'
     },
     {
-      label: id ? 'Edit Receptionist' : 'Add Receptionist'
+      label: id ? 'Edit Data Entry Operator' : 'Add Data Entry Operator'
     }
   ];
 
@@ -85,7 +85,7 @@ export default function AddEditReceptionisht() {
       <BreadCrumb paths={breadcrumbPaths} />
 
       <PagePath
-        title={id ? 'Edit Receptionist' : 'Add Receptionist'}
+        title={id ? 'Edit Data Entry Operator' : 'Add Data Entry Operator'}
       />
 
       <form onSubmit={formik.handleSubmit}>
@@ -93,7 +93,7 @@ export default function AddEditReceptionisht() {
 
           <div className="mb-4 pb-4 border-b border-gray-100">
             <h2 className="text-lg font-bold text-gray-800">
-              Receptionist Details
+              Data Entry Operator Details
             </h2>
 
             <p className="text-sm text-gray-500">
@@ -106,7 +106,7 @@ export default function AddEditReceptionisht() {
           <div className="space-y-4">
 
             <TextInput
-              label="Receptionist Name"
+              label="Data Entry Operator Name"
               name="name"
               value={formik.values.name}
               onChange={formik.handleChange}
@@ -170,8 +170,8 @@ export default function AddEditReceptionisht() {
                 loading
                   ? 'Please Wait...'
                   : id
-                    ? 'Update Receptionist'
-                    : 'Save Receptionist'
+                    ? 'Update'
+                    : 'Save'
               }
               variant="primary"
               icon={

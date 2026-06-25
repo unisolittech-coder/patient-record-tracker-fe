@@ -113,8 +113,6 @@ export default function AdminDashboard() {
             color: 'bg-blue-500',
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
-            trend: dashboardStatsData?.totalPatientsGrowth || '+0%',
-            trendLabel: 'vs last month'
         },
         {
             title: "Today's Registrations",
@@ -123,8 +121,6 @@ export default function AdminDashboard() {
             color: 'bg-green-500',
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
-            trend: dashboardStatsData?.todaysRegistrationGrowth || '+0%',
-            trendLabel: 'vs yesterday'
         },
         {
             title: 'Total Reports Uploaded',
@@ -133,8 +129,6 @@ export default function AdminDashboard() {
             color: 'bg-purple-500',
             bgColor: 'bg-purple-50',
             textColor: 'text-purple-600',
-            trend: dashboardStatsData?.totalReportsGrowth || '+0%',
-            trendLabel: 'vs last month'
         },
         {
             title: "Today's Reports Uploaded",
@@ -143,8 +137,6 @@ export default function AdminDashboard() {
             color: 'bg-orange-500',
             bgColor: 'bg-orange-50',
             textColor: 'text-orange-600',
-            trend: dashboardStatsData?.todaysReportsGrowth || '+0%',
-            trendLabel: 'vs yesterday'
         }
     ];
 

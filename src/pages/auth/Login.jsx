@@ -13,7 +13,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const roleOptions = ['Admin', 'Receptionist'];
+  const roleOptions = ['Admin', 'Data Entry Operator'];
 
   const validationSchema = Yup.object({
     role: Yup.string().required('Role is required'),

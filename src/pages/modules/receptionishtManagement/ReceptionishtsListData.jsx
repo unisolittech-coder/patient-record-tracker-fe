@@ -13,7 +13,7 @@ const ActionButtons = ({ rowData, onEdit }) => {
       <button
         onClick={() => onEdit(rowData)}
         className="h-6 w-8 rounded-lg bg-green-100 text-green-600 hover:bg-green-600 hover:text-white transition-all duration-200 flex items-center justify-center"
-        title="Edit Receptionist"
+        title="Edit Data Entry Operator"
       >
         <i className="pi pi-user-edit text-xs" />
       </button>
@@ -30,8 +30,8 @@ export default function ReceptionishtsListData() {
   const debouncedSearch = useDebounce(search, 500);
 
   const breadcrumbPaths = [
-    { label: 'Receptionist Management' },
-    { label: 'Receptionist List' }
+    { label: 'Data Entry Operator Management' },
+    { label: 'Data Entry Operator List' }
   ];
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function ReceptionishtsListData() {
     },
     {
       field: 'name',
-      header: 'Receptionist Name',
+      header: 'DTE Name',
       sortable: true,
       minWidth: '250px'
     },
@@ -101,13 +101,13 @@ export default function ReceptionishtsListData() {
       <BreadCrumb paths={breadcrumbPaths} />
 
       <PagePath
-        title="Receptionist List"
+        title="Data Entry Operator List"
         showSearchBar={true}
         searchValue={search}
         searchPlaceholder="Search by name or email"
         onSearch={setSearch}
         showAddButton={true}
-        addButtonLabel="Add Receptionist"
+        addButtonLabel="Add Data Entry Operator"
         onAdd={() => navigate('/receptionist-management/add')}
       />
 
