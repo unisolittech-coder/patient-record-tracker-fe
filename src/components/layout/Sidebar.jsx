@@ -6,7 +6,7 @@ import { ROLES } from '../../constants/roles';
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
-  const { resetAdminRes } = useLogin();
+  const { resetAdminRes, logout } = useLogin();
   // Assuming you have a useLogin hook to reset adminRes
   const userRole = sessionStorage.getItem('role') || '';
   const userName = sessionStorage.getItem('name') || '';
@@ -31,7 +31,12 @@ export default function Sidebar() {
       label: "Patient Registration",
       icon: "pi pi-user-plus",
       path: "/patient-registration"
-    }
+    },
+    {
+      label: "Analytics",
+      icon: "pi pi-chart-bar",
+      path: "/analytics"
+    },
   ];
 
   const receptionistMenus = [
@@ -58,6 +63,7 @@ export default function Sidebar() {
       : receptionistMenus;
 
   const handleLogout = () => {
+    logout();
     sessionStorage.clear();
     resetAdminRes();
     navigate('/');

@@ -22,6 +22,7 @@ const usePatientMgmt = () => {
             if (res) {
                 setLoading(false);
                 toast.success(res.message);
+                toast.success(res.message2);
                 return true;
             }
         } catch (error) {

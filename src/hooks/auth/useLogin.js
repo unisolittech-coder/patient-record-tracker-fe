@@ -40,11 +40,31 @@ export const useLogin = () => {
         setAdminRes(null);
     }
 
+    const logout = async () => {
+        setLoading(true);
+        try {
+            const res = await fetchData({
+                method: "POST",
+                url: `${conf.apiBaseUrl}auth/logout`,
+            })
+            if (res) {
+                setLoading(false);
+                setAdminRes(null);
+                toast.success(res.message);
+            }
+        } catch (error) {
+            setLoading(false);
+            toast.error(error.response?.data?.message);
+            return false;
+        }
+    };
+
     return {
         loading,
         adminLogin,
         adminRes,
         resetAdminRes,
+        logout
     };
 }
 

@@ -253,7 +253,6 @@ export default function NewPatientRegistration() {
         const success = await addPatient(formData);
 
         if (success) {
-          toast.success('Patient registered successfully');
           resetForm();
 
           fileFields.forEach((key) => {
@@ -343,15 +342,38 @@ export default function NewPatientRegistration() {
 
     const errors = await formik.validateForm();
 
+    console.log("Formik Errors:", errors);
+    console.log("Formik Values:", formik.values);
+
     if (Object.keys(errors).length > 0) {
-      formik.setTouched({
-        patientId: true,
-        patientName: true,
-        gender: true,
-        mobileNumber: true,
-        aadhaarNumber: true
-      });
-      toast.error('Please fill all required fields correctly');
+      // Touch every field that has an error
+      const touchedFields = {};
+
+      const setNestedTouched = (obj, target) => {
+        Object.keys(obj).forEach((key) => {
+          if (
+            obj[key] !== null &&
+            typeof obj[key] === "object" &&
+            !Array.isArray(obj[key])
+          ) {
+            target[key] = {};
+            setNestedTouched(obj[key], target[key]);
+          } else {
+            target[key] = true;
+          }
+        });
+      };
+
+      setNestedTouched(errors, touchedFields);
+
+      formik.setTouched(touchedFields, true);
+
+      toast.error(
+        `Validation Failed:\n${Object.entries(errors)
+          .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
+          .join("\n")}`
+      );
+
       return;
     }
 

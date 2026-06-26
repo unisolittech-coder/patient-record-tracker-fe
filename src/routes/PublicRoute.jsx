@@ -24,6 +24,9 @@ const NewPatientRegistration = lazy(() => import('../pages/modules/patientRegist
 const ReceptionishtsListData = lazy(() => import('../pages/modules/receptionishtManagement/ReceptionishtsListData'));
 const AddEditReceptionisht = lazy(() => import('../pages/modules/receptionishtManagement/AddEditReceptionisht'));
 
+// Analytics
+const Analytics = lazy(() => import('../pages/modules/analytics/Analytics'))
+
 // Fallback loader
 const Loader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -48,6 +51,7 @@ export default function PublicRoute() {
                   <Route path="/receptionist-management" element={<ReceptionishtsListData />} />
                   <Route path="/receptionist-management/add" element={<AddEditReceptionisht />} />
                   <Route path="/receptionist-management/edit/:id" element={<AddEditReceptionisht />} />
+                  <Route path="/analytics" element={<Analytics />} />
                 </Route>
                 <Route path="/patient-data" element={<PatientsListData />} />
                 <Route path="/patient-data/view/:id" element={<PatientDataView />} />

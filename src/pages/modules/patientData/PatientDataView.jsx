@@ -42,6 +42,17 @@ const PatientDataView = () => {
         });
     };
 
+    // Format date only (without time)
+    const formatDateOnly = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
     // Get file name from URL
     const getFileName = (url) => {
         if (!url) return 'N/A';
@@ -77,6 +88,32 @@ const PatientDataView = () => {
         }
     };
 
+    // Get label for report type
+    const getReportLabel = (key) => {
+        const labels = {
+            bloodReport: 'Blood Report',
+            labReport: 'Lab Report',
+            xrayReport: 'X-Ray Report',
+            prescription: 'Prescription',
+            otherMedicalDocuments: 'Other Documents',
+            operationNotes: 'Operation Notes'
+        };
+        return labels[key] || key.replace(/([A-Z])/g, ' $1').trim();
+    };
+
+    // Check if medical has reports
+    const hasReports = (medical) => {
+        if (!medical || !medical.reports) return false;
+        if (medical.reports.length === 0) return false;
+        
+        // Check if any report has actual data
+        return medical.reports.some(report => {
+            return Object.values(report).some(value => 
+                value && typeof value === 'string' && value.startsWith('http')
+            );
+        });
+    };
+
     if (loading) {
         return (
             <div className="max-w-7xl mx-auto pb-12">
@@ -100,6 +137,8 @@ const PatientDataView = () => {
             </div>
         );
     }
+
+    console.log("patientDetails", patientDetails);
 
     return (
         <div className="max-w-7xl mx-auto pb-12">
@@ -139,7 +178,7 @@ const PatientDataView = () => {
                         {patientDetails.dateOfBirth && (
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <label className="text-xs text-gray-500 uppercase font-semibold">Date of Birth</label>
-                                <p className="text-lg font-medium text-gray-800">{formatDate(patientDetails.dateOfBirth)}</p>
+                                <p className="text-lg font-medium text-gray-800">{formatDateOnly(patientDetails.dateOfBirth)}</p>
                             </div>
                         )}
                         {patientDetails.age && (
@@ -160,10 +199,16 @@ const PatientDataView = () => {
                                 <p className="text-lg font-medium text-gray-800">{patientDetails.emailId}</p>
                             </div>
                         )}
-                        {patientDetails.alternateMobileNumber && (
+                        {patientDetails.secondaryContactName && (
                             <div className="bg-gray-50 p-4 rounded-lg">
-                                <label className="text-xs text-gray-500 uppercase font-semibold">Alternate Mobile</label>
-                                <p className="text-lg font-medium text-gray-800">{patientDetails.alternateMobileNumber}</p>
+                                <label className="text-xs text-gray-500 uppercase font-semibold">Secondary Contact</label>
+                                <p className="text-lg font-medium text-gray-800">{patientDetails.secondaryContactName}</p>
+                            </div>
+                        )}
+                        {patientDetails.secondaryContactMobile && (
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <label className="text-xs text-gray-500 uppercase font-semibold">Secondary Mobile</label>
+                                <p className="text-lg font-medium text-gray-800">{patientDetails.secondaryContactMobile}</p>
                             </div>
                         )}
                         {patientDetails.abhaNumber && (
@@ -185,6 +230,12 @@ const PatientDataView = () => {
                                         <p className="text-sm text-gray-800">{patientDetails.address}</p>
                                     </div>
                                 )}
+                                {patientDetails.landMark && (
+                                    <div className="bg-gray-50 p-3 rounded-lg">
+                                        <label className="text-xs text-gray-500 uppercase font-semibold">Landmark</label>
+                                        <p className="text-sm text-gray-800">{patientDetails.landMark}</p>
+                                    </div>
+                                )}
                                 {patientDetails.city && (
                                     <div className="bg-gray-50 p-3 rounded-lg">
                                         <label className="text-xs text-gray-500 uppercase font-semibold">City</label>
@@ -201,6 +252,33 @@ const PatientDataView = () => {
                                     <div className="bg-gray-50 p-3 rounded-lg">
                                         <label className="text-xs text-gray-500 uppercase font-semibold">PIN Code</label>
                                         <p className="text-sm text-gray-800">{patientDetails.pinCode}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Family Information */}
+                    {(patientDetails.fatherName || patientDetails.motherName) && (
+                        <div className="mt-4 pt-4 border-t border-gray-100">
+                            <h3 className="text-sm font-semibold text-gray-700 mb-3">Family Information</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                {patientDetails.fatherName && (
+                                    <div className="bg-gray-50 p-3 rounded-lg">
+                                        <label className="text-xs text-gray-500 uppercase font-semibold">Father Name</label>
+                                        <p className="text-sm text-gray-800">{patientDetails.fatherName}</p>
+                                        {patientDetails.fatherAge && (
+                                            <p className="text-xs text-gray-500">Age: {patientDetails.fatherAge} years</p>
+                                        )}
+                                    </div>
+                                )}
+                                {patientDetails.motherName && (
+                                    <div className="bg-gray-50 p-3 rounded-lg">
+                                        <label className="text-xs text-gray-500 uppercase font-semibold">Mother Name</label>
+                                        <p className="text-sm text-gray-800">{patientDetails.motherName}</p>
+                                        {patientDetails.motherAge && (
+                                            <p className="text-xs text-gray-500">Age: {patientDetails.motherAge} years</p>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -230,7 +308,7 @@ const PatientDataView = () => {
                                     Visit {index + 1}
                                     {item.dateOfVisit && (
                                         <span className="ml-1 text-xs opacity-75">
-                                            ({new Date(item.dateOfVisit).toLocaleDateString()})
+                                            ({formatDateOnly(item.dateOfVisit)})
                                         </span>
                                     )}
                                 </button>
@@ -278,32 +356,77 @@ const PatientDataView = () => {
                                                 {medical.dateOfVisit && (
                                                     <div className="bg-gray-50 p-3 rounded-lg">
                                                         <label className="text-xs text-gray-500 uppercase font-semibold">Date of Visit</label>
-                                                        <p className="text-sm font-medium text-gray-800">{formatDate(medical.dateOfVisit)}</p>
+                                                        <p className="text-sm font-medium text-gray-800">{formatDateOnly(medical.dateOfVisit)}</p>
                                                     </div>
                                                 )}
                                                 {medical.admissionDate && (
                                                     <div className="bg-gray-50 p-3 rounded-lg">
                                                         <label className="text-xs text-gray-500 uppercase font-semibold">Admission Date</label>
-                                                        <p className="text-sm font-medium text-gray-800">{formatDate(medical.admissionDate)}</p>
+                                                        <p className="text-sm font-medium text-gray-800">{formatDateOnly(medical.admissionDate)}</p>
                                                     </div>
                                                 )}
                                                 {medical.dischargeDate && (
                                                     <div className="bg-gray-50 p-3 rounded-lg">
                                                         <label className="text-xs text-gray-500 uppercase font-semibold">Discharge Date</label>
-                                                        <p className="text-sm font-medium text-gray-800">{formatDate(medical.dischargeDate)}</p>
+                                                        <p className="text-sm font-medium text-gray-800">{formatDateOnly(medical.dischargeDate)}</p>
+                                                    </div>
+                                                )}
+                                                {medical.familyRemarks && (
+                                                    <div className="bg-gray-50 p-3 rounded-lg">
+                                                        <label className="text-xs text-gray-500 uppercase font-semibold">Family Remarks</label>
+                                                        <p className="text-sm font-medium text-gray-800">{medical.familyRemarks}</p>
+                                                    </div>
+                                                )}
+                                                {medical.medicalInfoSummary && (
+                                                    <div className="bg-gray-50 p-3 rounded-lg">
+                                                        <label className="text-xs text-gray-500 uppercase font-semibold">Summary</label>
+                                                        <p className="text-sm font-medium text-gray-800">{medical.medicalInfoSummary}</p>
                                                     </div>
                                                 )}
                                             </div>
 
+                                            {/* Siblings Information */}
+                                            {(medical.brothers?.length > 0 || medical.sisters?.length > 0) && (
+                                                <div className="mt-4 pt-4 border-t border-gray-100">
+                                                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Siblings Information</h3>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        {medical.brothers && medical.brothers.length > 0 && (
+                                                            <div className="bg-gray-50 p-3 rounded-lg">
+                                                                <label className="text-xs text-gray-500 uppercase font-semibold">Brothers</label>
+                                                                <div className="mt-1 space-y-1">
+                                                                    {medical.brothers.map((brother, idx) => (
+                                                                        <p key={idx} className="text-sm text-gray-800">
+                                                                            {brother.name} {brother.age && `(Age: ${brother.age})`}
+                                                                        </p>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        {medical.sisters && medical.sisters.length > 0 && (
+                                                            <div className="bg-gray-50 p-3 rounded-lg">
+                                                                <label className="text-xs text-gray-500 uppercase font-semibold">Sisters</label>
+                                                                <div className="mt-1 space-y-1">
+                                                                    {medical.sisters.map((sister, idx) => (
+                                                                        <p key={idx} className="text-sm text-gray-800">
+                                                                            {sister.name} {sister.age && `(Age: ${sister.age})`}
+                                                                        </p>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             {/* Reports Section */}
-                                            {medical.reports && medical.reports.length > 0 && (
+                                            {hasReports(medical) && (
                                                 <div className="mt-4 pt-4 border-t border-gray-100">
                                                     <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                                                         <span className="text-purple-500">📊</span> Reports & Documents
                                                     </h3>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                                         {medical.reports.map((report, idx) => {
-                                                            // Get all report entries
+                                                            // Get all report entries with URLs
                                                             const reportEntries = Object.entries(report).filter(
                                                                 ([key, value]) => value && typeof value === 'string' && value.startsWith('http')
                                                             );
@@ -314,8 +437,8 @@ const PatientDataView = () => {
                                                                         <div className="flex items-center gap-2">
                                                                             <span className="text-2xl">{getFileIcon(url)}</span>
                                                                             <div>
-                                                                                <p className="text-sm font-medium text-gray-700 capitalize">
-                                                                                    {reportType.replace(/([A-Z])/g, ' $1').trim()}
+                                                                                <p className="text-sm font-medium text-gray-700">
+                                                                                    {getReportLabel(reportType)}
                                                                                 </p>
                                                                                 <p className="text-xs text-gray-500 truncate max-w-[150px]">
                                                                                     {getFileName(url)}
@@ -357,18 +480,6 @@ const PatientDataView = () => {
                                                                 </div>
                                                             ));
                                                         })}
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Operation Notes */}
-                                            {medical.operationNotes && (
-                                                <div className="mt-4 pt-4 border-t border-gray-100">
-                                                    <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                                                        <span className="text-orange-500">📝</span> Operation Notes
-                                                    </h3>
-                                                    <div className="bg-gray-50 p-4 rounded-lg">
-                                                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{medical.operationNotes}</p>
                                                     </div>
                                                 </div>
                                             )}

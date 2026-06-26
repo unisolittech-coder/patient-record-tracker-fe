@@ -5,3 +5,7 @@ export const dashboardStatsDataAtom = atom(createPersistedAtom("dashboardStatsDa
 
 export const registrationChartDataAtom = atom(createPersistedAtom("registrationChartDataKey", []));
 export const genderDistributionDataAtom = atom(createPersistedAtom("genderDistributionDataKey", []));
+
+export const analyticsLogsAtom = atom(createPersistedAtom("analyticsLogsKey", []));
+export const analyticsReportUploadAtom = atom(createPersistedAtom("analyticsReportUpload", []));
+export const analyticsReportDownloadAtom = atom(createPersistedAtom("analyticsReportKey", []));

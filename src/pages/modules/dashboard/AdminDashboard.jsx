@@ -6,12 +6,12 @@ import {
     BarElement,
     Title,
     Tooltip,
-   Legend,
+    Legend,
     ArcElement,
     PointElement,
     LineElement
 } from 'chart.js';
-import { Bar, Doughnut } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import PagePath from '../../../components/common/PagePath';
 import useDashboard from '../../../hooks/dashboard/useDashboard';
 import Loader from '../../../components/common/Loader';
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
     } = useDashboard();
 
     const [chartData, setChartData] = useState(null);
-    const [genderChartData, setGenderChartData] = useState(null);
+    const [ageGroupChartData, setAgeGroupChartData] = useState(null);
 
     const currentDate = new Date();
     const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
@@ -64,27 +64,21 @@ export default function AdminDashboard() {
 
     const yearOptions = Array.from({ length: 6 }, (_, index) => currentDate.getFullYear() - index);
 
-    // Initial dashboard data fetch
     useEffect(() => {
         fetchDashboardStats();
         fetchGenderDistributionData();
     }, []);
 
-    // Monthly registration chart fetch
     useEffect(() => {
         fetchRegistrationChartData(selectedMonth, selectedYear);
     }, [selectedMonth, selectedYear]);
 
-    // Registration chart formatting
+    // Patient registration chart
     useEffect(() => {
         if (registrationChartData && registrationChartData.length > 0) {
             const labels = registrationChartData.map(item => {
                 const date = new Date(item.date);
-                return date.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric'
-                });
+                return date.getDate().toString();
             });
 
             const counts = registrationChartData.map(item => item.count);
@@ -108,35 +102,36 @@ export default function AdminDashboard() {
         }
     }, [registrationChartData]);
 
-    // Gender chart formatting
+    // Age Group Bar Chart
     useEffect(() => {
         if (genderDistributionData && typeof genderDistributionData === 'object') {
-            const maleCount = genderDistributionData?.Male?.count || 0;
-            const femaleCount = genderDistributionData?.Female?.count || 0;
-            const otherCount = genderDistributionData?.Other?.count || 0;
+            const ageLabels = ['0-18', '19-35', '36-50', '51-65', '65+'];
 
-            setGenderChartData({
-                labels: ['Male', 'Female', 'Other'],
+            setAgeGroupChartData({
+                labels: ageLabels,
                 datasets: [
                     {
-                        label: 'Patients',
-                        data: [maleCount, femaleCount, otherCount],
-                        backgroundColor: [
-                            'rgba(59, 130, 246, 0.8)',
-                            'rgba(236, 72, 153, 0.8)',
-                            'rgba(156, 163, 175, 0.8)'
-                        ],
-                        borderColor: [
-                            'rgba(59, 130, 246, 1)',
-                            'rgba(236, 72, 153, 1)',
-                            'rgba(156, 163, 175, 1)'
-                        ],
-                        borderWidth: 2,
+                        label: 'Male',
+                        data: ageLabels.map(label => genderDistributionData?.Male?.ageGroups?.[label] || 0),
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                        borderRadius: 6,
+                    },
+                    {
+                        label: 'Female',
+                        data: ageLabels.map(label => genderDistributionData?.Female?.ageGroups?.[label] || 0),
+                        backgroundColor: 'rgba(236, 72, 153, 0.8)',
+                        borderRadius: 6,
+                    },
+                    {
+                        label: 'Other',
+                        data: ageLabels.map(label => genderDistributionData?.Other?.ageGroups?.[label] || 0),
+                        backgroundColor: 'rgba(156, 163, 175, 0.8)',
+                        borderRadius: 6,
                     }
                 ]
             });
         } else {
-            setGenderChartData(null);
+            setAgeGroupChartData(null);
         }
     }, [genderDistributionData]);
 
@@ -145,7 +140,6 @@ export default function AdminDashboard() {
             title: 'Total Patients',
             value: dashboardStatsData?.totalPatients || '0',
             icon: 'pi pi-users',
-            color: 'bg-blue-500',
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
         },
@@ -153,7 +147,6 @@ export default function AdminDashboard() {
             title: "Today's Registrations",
             value: dashboardStatsData?.todaysRegistration || '0',
             icon: 'pi pi-user-plus',
-            color: 'bg-green-500',
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
         },
@@ -161,7 +154,6 @@ export default function AdminDashboard() {
             title: 'Total Reports Uploaded',
             value: dashboardStatsData?.totalReportsUploaded || '0',
             icon: 'pi pi-file-pdf',
-            color: 'bg-purple-500',
             bgColor: 'bg-purple-50',
             textColor: 'text-purple-600',
         },
@@ -169,7 +161,6 @@ export default function AdminDashboard() {
             title: "Today's Reports Uploaded",
             value: dashboardStatsData?.todaysReportsUploaded || '0',
             icon: 'pi pi-cloud-upload',
-            color: 'bg-orange-500',
             bgColor: 'bg-orange-50',
             textColor: 'text-orange-600',
         }
@@ -198,28 +189,56 @@ export default function AdminDashboard() {
                 beginAtZero: true,
                 ticks: {
                     stepSize: 1
+                },
+                grid: {
+                    color: 'rgba(229, 231, 235, 0.6)'
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    maxRotation: 45,
+                    minRotation: 45
                 }
             }
         }
     };
 
-    const pieChartOptions = {
+    const ageGroupBarOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: 'bottom',
+                position: 'top',
                 labels: {
-                    padding: 20,
                     usePointStyle: true,
                     pointStyle: 'circle',
+                    padding: 20,
                     font: {
-                        size: 12
+                        size: 12,
+                        weight: 'bold'
                     }
                 }
             }
         },
-        cutout: '65%'
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                },
+                grid: {
+                    color: 'rgba(229, 231, 235, 0.6)'
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                }
+            }
+        }
     };
 
     if (loading) {
@@ -237,7 +256,7 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto pb-12">
             <PagePath title="Dashboard Overview" />
 
-            {/* Summary Cards */}
+            {/* Top Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
                 {dashboardData.map((data, index) => (
                     <div
@@ -261,121 +280,73 @@ export default function AdminDashboard() {
                 ))}
             </div>
 
-            {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Registration Chart */}
-                <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
-                        <div>
-                            <h3 className="text-lg font-bold text-gray-800">Patient Registrations</h3>
-                            <p className="text-sm text-gray-500 mt-1">
-                                Monthly registration trend
-                            </p>
-                        </div>
-
-                        <div className="flex items-center gap-3 flex-wrap">
-                            <select
-                                value={selectedMonth}
-                                onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                                className="px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200"
-                            >
-                                {monthOptions.map((month) => (
-                                    <option key={month.value} value={month.value}>
-                                        {month.label}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <select
-                                value={selectedYear}
-                                onChange={(e) => setSelectedYear(Number(e.target.value))}
-                                className="px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200"
-                            >
-                                {yearOptions.map((year) => (
-                                    <option key={year} value={year}>
-                                        {year}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium">
-                                {registrationChartData?.reduce((sum, item) => sum + item.count, 0) || 0} Total
-                            </span>
-                        </div>
+            {/* Registration Chart */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-4">
+                <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-800">Patient Registrations</h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                            Monthly registration trend
+                        </p>
                     </div>
 
-                    <div className="h-[300px]">
-                        {chartData ? (
-                            <Bar data={chartData} options={barChartOptions} />
-                        ) : (
-                            <div className="flex items-center justify-center h-full">
-                                <p className="text-gray-400">No registration data available</p>
-                            </div>
-                        )}
+                    <div className="flex items-center gap-3 flex-wrap">
+                        <select
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                            className="px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200"
+                        >
+                            {monthOptions.map((month) => (
+                                <option key={month.value} value={month.value}>
+                                    {month.label}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(Number(e.target.value))}
+                            className="px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200"
+                        >
+                            {yearOptions.map((year) => (
+                                <option key={year} value={year}>
+                                    {year}
+                                </option>
+                            ))}
+                        </select>
+
+                        <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium">
+                            {registrationChartData?.reduce((sum, item) => sum + item.count, 0) || 0} Total
+                        </span>
                     </div>
                 </div>
 
-                {/* Gender Distribution */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <div className="mb-4">
-                        <h3 className="text-lg font-bold text-gray-800">Gender Distribution</h3>
-                        <p className="text-sm text-gray-500 mt-1">Patient demographics</p>
-                    </div>
+                <div className="h-[340px]">
+                    {chartData ? (
+                        <Bar data={chartData} options={barChartOptions} />
+                    ) : (
+                        <div className="flex items-center justify-center h-full">
+                            <p className="text-gray-400">No registration data available</p>
+                        </div>
+                    )}
+                </div>
+            </div>
 
-                    <div className="h-[300px] flex items-center justify-center">
-                        {genderChartData && genderDistributionData?.total > 0 ? (
-                            <div className="relative w-full h-full">
-                                <Doughnut data={genderChartData} options={pieChartOptions} />
+            {/* Age Group Distribution */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <div className="mb-4">
+                    <h3 className="text-lg font-bold text-gray-800">Age Group Distribution</h3>
+                    <p className="text-sm text-gray-500 mt-1">
+                        Gender-wise patient count across age groups
+                    </p>
+                </div>
 
-                                {/* Center total */}
-                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    <div className="text-center">
-                                        <p className="text-2xl font-bold text-gray-800">
-                                            {genderDistributionData?.total || 0}
-                                        </p>
-                                        <p className="text-xs text-gray-500">Total</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="text-center">
-                                <p className="text-gray-400">No gender distribution data available</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Gender Summary */}
-                    {genderDistributionData?.total > 0 && (
-                        <div className="mt-4 space-y-2">
-                            <div className="flex items-center justify-between text-sm">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-                                    <span className="text-gray-700">Male</span>
-                                </div>
-                                <span className="font-medium text-gray-800">
-                                    {genderDistributionData?.Male?.count || 0} ({genderDistributionData?.Male?.percentage || 0}%)
-                                </span>
-                            </div>
-
-                            <div className="flex items-center justify-between text-sm">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-3 h-3 rounded-full bg-pink-500"></span>
-                                    <span className="text-gray-700">Female</span>
-                                </div>
-                                <span className="font-medium text-gray-800">
-                                    {genderDistributionData?.Female?.count || 0} ({genderDistributionData?.Female?.percentage || 0}%)
-                                </span>
-                            </div>
-
-                            <div className="flex items-center justify-between text-sm">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-3 h-3 rounded-full bg-gray-400"></span>
-                                    <span className="text-gray-700">Other</span>
-                                </div>
-                                <span className="font-medium text-gray-800">
-                                    {genderDistributionData?.Other?.count || 0} ({genderDistributionData?.Other?.percentage || 0}%)
-                                </span>
-                            </div>
+                <div className="h-[340px]">
+                    {ageGroupChartData ? (
+                        <Bar data={ageGroupChartData} options={ageGroupBarOptions} />
+                    ) : (
+                        <div className="flex items-center justify-center h-full">
+                            <p className="text-gray-400">No age group data available</p>
                         </div>
                     )}
                 </div>

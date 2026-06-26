@@ -77,7 +77,15 @@ export default function PatientDataUpdate() {
             dischargeSummary: null,
             otherMedicalDocuments: null,
 
-            operationNotes: ""
+            operationNotes: "",
+            fatherName: "",
+            fatherAge: "",
+            motherName: "",
+            motherAge: "",
+            brothers: [{ name: "", age: "" }],
+            sisters: [{ name: "", age: "" }],
+            familyRemarks: "",
+            medicalInfoSummary: ""
         },
 
         validationSchema,
@@ -86,7 +94,6 @@ export default function PatientDataUpdate() {
             try {
                 setIsSubmitting(true);
 
-                // Check if at least one file is uploaded
                 const fileFields = ['prescription', 'labReport', 'bloodReport', 'xrayReport', 'ctScanReport',
                     'mriReport', 'ultrasoundReport', 'ecgReport', 'dischargeSummary', 'otherMedicalDocuments'];
 
@@ -103,10 +110,10 @@ export default function PatientDataUpdate() {
 
                 const formData = new FormData();
 
-                // Append all text fields
                 const textFields = [
                     'opdIpdNumber', 'uhid', 'doctorName', 'department', 'diseaseDiagnosis',
-                    'reportType', 'dateOfVisit', 'admissionDate', 'dischargeDate', 'operationNotes'
+                    'reportType', 'dateOfVisit', 'admissionDate', 'dischargeDate', 'operationNotes',
+                    'fatherName', 'fatherAge', 'motherName', 'motherAge', 'familyRemarks', 'medicalInfoSummary'
                 ];
 
                 textFields.forEach(key => {
@@ -116,7 +123,16 @@ export default function PatientDataUpdate() {
                     }
                 });
 
-                // Append all file fields
+                ['brothers', 'sisters'].forEach(siblingType => {
+                    const siblings = values[siblingType] || [];
+                    siblings.forEach((sibling, index) => {
+                        if (sibling.name && sibling.name.trim()) {
+                            formData.append(`${siblingType}[${index}][name]`, sibling.name);
+                            formData.append(`${siblingType}[${index}][age]`, sibling.age || "");
+                        }
+                    });
+                });
+
                 fileFields.forEach(key => {
                     const value = values[key];
                     if (value instanceof File || (value && typeof value === 'object' && value.name)) {
@@ -124,7 +140,6 @@ export default function PatientDataUpdate() {
                     }
                 });
 
-                // Call the API to update patient with medical info
                 if (updatePatient) {
                     await updatePatient(id, formData);
                 } else {
@@ -132,24 +147,15 @@ export default function PatientDataUpdate() {
                     setIsSubmitting(false);
                     return;
                 }
-
-                toast.success("Medical Information Added Successfully");
-
-                // Mark form as submitted to disable the button
                 setIsFormSubmitted(true);
-
-                // Reset form
                 resetForm();
 
-                // Reset file fields
                 fileFields.forEach(key => {
                     setFieldValue(key, null);
                 });
 
-                // Reset uploaded files state
                 setUploadedFiles({});
 
-                // Reset file inputs
                 setTimeout(() => {
                     const fileInputs = document.querySelectorAll('input[type="file"]');
                     fileInputs.forEach(input => {
@@ -159,10 +165,8 @@ export default function PatientDataUpdate() {
                     });
                 }, 100);
 
-                // Refresh patient details
                 await fetchPatientDetails(id);
 
-                // Close form after a short delay
                 setTimeout(() => {
                     setShowMedicalForm(false);
                     setIsFormSubmitted(false);
@@ -181,19 +185,16 @@ export default function PatientDataUpdate() {
         }
     });
 
-    // Handle file change
     const handleFileChange = (fieldName) => (event) => {
         const file = event?.target?.files?.[0];
 
         if (file) {
-            // Validate file size (10MB max)
             if (file.size > 10 * 1024 * 1024) {
                 toast.error(`File ${file.name} exceeds 10MB limit`);
                 event.target.value = '';
                 return;
             }
 
-            // Validate file type
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf',
                 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
@@ -219,50 +220,101 @@ export default function PatientDataUpdate() {
         }
     };
 
-    // Handle date change - Fixed for DateInput component
-    const handleDateChange = (fieldName) => (value) => {
-        console.log(`Date change for ${fieldName}:`, value);
+    const handleSiblingChange = (type, index, field, value) => {
+        const siblings = [...formik.values[type]];
+        siblings[index][field] = value;
+        formik.setFieldValue(type, siblings);
+    };
 
-        // Handle different value types
-        if (value === null || value === undefined || value === '') {
+    const addSibling = (type) => {
+        const siblings = [...formik.values[type]];
+        siblings.push({ name: "", age: "" });
+        formik.setFieldValue(type, siblings);
+    };
+
+    const removeSibling = (type, index) => {
+        const siblings = [...formik.values[type]];
+        siblings.splice(index, 1);
+        formik.setFieldValue(type, siblings);
+    };
+
+    // FIXED: Updated date handler to work with DateInput component
+    const handleDateChange = (fieldName) => (dateValue) => {
+        console.log(`Date change for ${fieldName}:`, dateValue);
+        
+        // If dateValue is null, undefined, or empty string
+        if (!dateValue) {
             formik.setFieldValue(fieldName, '');
             return;
         }
 
-        // If it's a Date object
-        if (value instanceof Date && !isNaN(value)) {
-            const year = value.getFullYear();
-            const month = String(value.getMonth() + 1).padStart(2, '0');
-            const day = String(value.getDate()).padStart(2, '0');
-            const formattedDate = `${year}-${month}-${day}`;
-            formik.setFieldValue(fieldName, formattedDate);
-            return;
-        }
-
-        // If it's a string
-        if (typeof value === 'string') {
+        // If dateValue is a string
+        if (typeof dateValue === 'string') {
             // Check if it's a valid date string
-            const date = new Date(value);
-            if (!isNaN(date)) {
-                formik.setFieldValue(fieldName, value);
+            const testDate = new Date(dateValue);
+            if (!isNaN(testDate.getTime())) {
+                formik.setFieldValue(fieldName, dateValue);
             } else {
                 formik.setFieldValue(fieldName, '');
             }
             return;
         }
 
-        // If it's a moment or other date library object
-        if (value && typeof value === 'object' && value.format) {
-            const formattedDate = value.format('YYYY-MM-DD');
+        // If dateValue is a Date object
+        if (dateValue instanceof Date && !isNaN(dateValue.getTime())) {
+            const year = dateValue.getFullYear();
+            const month = String(dateValue.getMonth() + 1).padStart(2, '0');
+            const day = String(dateValue.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
             formik.setFieldValue(fieldName, formattedDate);
             return;
         }
 
-        // Default: set as empty
+        // If dateValue is an object with value property (common in some date pickers)
+        if (dateValue && typeof dateValue === 'object' && dateValue.value) {
+            const val = dateValue.value;
+            if (typeof val === 'string') {
+                const testDate = new Date(val);
+                if (!isNaN(testDate.getTime())) {
+                    formik.setFieldValue(fieldName, val);
+                    return;
+                }
+            }
+            if (val instanceof Date && !isNaN(val.getTime())) {
+                const year = val.getFullYear();
+                const month = String(val.getMonth() + 1).padStart(2, '0');
+                const day = String(val.getDate()).padStart(2, '0');
+                const formattedDate = `${year}-${month}-${day}`;
+                formik.setFieldValue(fieldName, formattedDate);
+                return;
+            }
+        }
+
+        // If dateValue has format method (moment.js or similar)
+        if (dateValue && typeof dateValue === 'object' && typeof dateValue.format === 'function') {
+            const formattedDate = dateValue.format('YYYY-MM-DD');
+            formik.setFieldValue(fieldName, formattedDate);
+            return;
+        }
+
+        // Fallback: try to convert to string
+        try {
+            const stringValue = String(dateValue);
+            if (stringValue) {
+                const testDate = new Date(stringValue);
+                if (!isNaN(testDate.getTime())) {
+                    formik.setFieldValue(fieldName, stringValue);
+                    return;
+                }
+            }
+        } catch (e) {
+            console.warn('Date conversion failed:', e);
+        }
+
+        // If all else fails, set empty string
         formik.setFieldValue(fieldName, '');
     };
 
-    // Get file preview URL
     const getFilePreview = (file) => {
         if (!file) return null;
         try {
@@ -272,7 +324,6 @@ export default function PatientDataUpdate() {
         }
     };
 
-    // Get file icon based on type
     const getFileIcon = (file) => {
         if (!file) return '📎';
         const type = file.type;
@@ -283,7 +334,6 @@ export default function PatientDataUpdate() {
         return '📎';
     };
 
-    // Get file size formatted
     const formatFileSize = (bytes) => {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -292,7 +342,6 @@ export default function PatientDataUpdate() {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-    // Remove uploaded file
     const removeFile = (fieldName) => {
         formik.setFieldValue(fieldName, null);
         setUploadedFiles(prev => {
@@ -300,7 +349,6 @@ export default function PatientDataUpdate() {
             delete newState[fieldName];
             return newState;
         });
-        // Reset file input
         if (fileInputRefs.current[fieldName]) {
             fileInputRefs.current[fieldName].value = '';
         }
@@ -313,7 +361,6 @@ export default function PatientDataUpdate() {
         { label: "Patient Data Update" }
     ];
 
-    // Format date for display
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         try {
@@ -358,17 +405,7 @@ export default function PatientDataUpdate() {
             <BreadCrumb paths={breadcrumbPaths} />
             <PagePath title={`Patient Data Update - ${patientDetails.patientName || 'N/A'}`} />
 
-            {/* Back Button */}
-            <div className="mb-4">
-                <Button
-                    label="Back to Patients List"
-                    variant="secondary"
-                    icon="pi pi-arrow-left"
-                    onClick={() => window.history.back()}
-                />
-            </div>
-
-            {/* ===================== BASIC DETAILS ===================== */}
+            {/* Basic Details */}
             <div className="bg-white rounded-xl border p-6 mb-6">
                 <div className="mb-5 border-b pb-3">
                     <h2 className="font-bold text-lg flex items-center gap-2">
@@ -378,66 +415,31 @@ export default function PatientDataUpdate() {
 
                 <DisableFields disabled={true}>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                        <TextInput
-                            label="Patient ID"
-                            value={patientDetails?.patientId || ""}
-                        />
-                        <TextInput
-                            label="Patient Name"
-                            value={patientDetails?.patientName || ""}
-                        />
-                        <TextInput
-                            label="Gender"
-                            value={patientDetails?.gender || ""}
-                        />
-                        <TextInput
-                            label="Age"
-                            value={patientDetails?.age || ""}
-                        />
-                        <TextInput
-                            label="Mobile Number"
-                            value={patientDetails?.mobileNumber || ""}
-                        />
-                        <TextInput
-                            label="Alternate Mobile"
-                            value={patientDetails?.alternateMobileNumber || ""}
-                        />
-                        <TextInput
-                            label="Email"
-                            value={patientDetails?.emailId || ""}
-                        />
-                        <TextInput
-                            label="Aadhaar Number"
-                            value={patientDetails?.aadhaarNumber || ""}
-                        />
-                        <TextInput
-                            label="ABHA Number"
-                            value={patientDetails?.abhaNumber || ""}
-                        />
-                        <TextInput
-                            label="City"
-                            value={patientDetails?.city || ""}
-                        />
-                        <TextInput
-                            label="State"
-                            value={patientDetails?.state || ""}
-                        />
-                        <TextInput
-                            label="Pin Code"
-                            value={patientDetails?.pinCode || ""}
-                        />
+                        <TextInput label="Patient ID" value={patientDetails?.patientId || ""} />
+                        <TextInput label="Patient Name" value={patientDetails?.patientName || ""} />
+                        <TextInput label="Gender" value={patientDetails?.gender || ""} />
+                        <TextInput label="Age" value={patientDetails?.age || ""} />
+                        <TextInput label="Mobile Number" value={patientDetails?.mobileNumber || ""} />
+                        <TextInput label="Alternate Mobile" value={patientDetails?.secondaryContactMobile || patientDetails?.alternateMobileNumber || ""} />
+                        <TextInput label="Email" value={patientDetails?.emailId || ""} />
+                        <TextInput label="Aadhaar Number" value={patientDetails?.aadhaarNumber || ""} />
+                        <TextInput label="ABHA Number" value={patientDetails?.abhaNumber || ""} />
+                        <TextInput label="City" value={patientDetails?.city || ""} />
+                        <TextInput label="State" value={patientDetails?.state || ""} />
+                        <TextInput label="Pin Code" value={patientDetails?.pinCode || ""} />
                         <div className="md:col-span-2 lg:col-span-4">
-                            <TextAreaInput
-                                label="Address"
-                                value={patientDetails?.address || ""}
-                                rows={3}
-                            />
+                            <TextAreaInput label="Address" value={patientDetails?.address || ""} rows={3} />
                         </div>
+                        {patientDetails?.landMark && (
+                            <div className="md:col-span-2 lg:col-span-4">
+                                <TextInput label="Landmark" value={patientDetails?.landMark || ""} />
+                            </div>
+                        )}
                     </div>
                 </DisableFields>
             </div>
 
-            {/* ===================== EXISTING MEDICAL HISTORY ===================== */}
+            {/* Medical History */}
             <div className="bg-white rounded-xl border p-6 mb-6">
                 <div className="flex justify-between items-center mb-5 border-b pb-3">
                     <h2 className="font-bold text-lg flex items-center gap-2">
@@ -458,18 +460,11 @@ export default function PatientDataUpdate() {
 
                 {patientDetails?.medicalInformation?.length > 0 ? (
                     patientDetails.medicalInformation.map((item, index) => (
-                        <div
-                            key={item._id || index}
-                            className="border rounded-lg p-4 mb-4 bg-gray-50 hover:shadow-md transition-shadow"
-                        >
+                        <div key={item._id || index} className="border rounded-lg p-4 mb-4 bg-gray-50 hover:shadow-md transition-shadow">
                             <div className="flex justify-between items-start mb-3">
-                                <h4 className="font-semibold text-gray-700">
-                                    Medical Record #{index + 1}
-                                </h4>
+                                <h4 className="font-semibold text-gray-700">Medical Record #{index + 1}</h4>
                                 {item.dateOfVisit && (
-                                    <span className="text-sm text-gray-500">
-                                        Visit Date: {formatDate(item.dateOfVisit)}
-                                    </span>
+                                    <span className="text-sm text-gray-500">Visit Date: {formatDate(item.dateOfVisit)}</span>
                                 )}
                             </div>
 
@@ -516,7 +511,77 @@ export default function PatientDataUpdate() {
                                 )}
                             </div>
 
-                            {/* Reports */}
+                            {(item.fatherName || item.motherName) && (
+                                <div className="mt-3 pt-3 border-t border-gray-200">
+                                    <label className="text-xs text-gray-500 uppercase font-semibold">Family Information</label>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-1">
+                                        {item.fatherName && (
+                                            <div>
+                                                <p className="text-xs text-gray-500">Father</p>
+                                                <p className="text-sm font-medium text-gray-800">
+                                                    {item.fatherName} {item.fatherAge && `(Age: ${item.fatherAge})`}
+                                                </p>
+                                            </div>
+                                        )}
+                                        {item.motherName && (
+                                            <div>
+                                                <p className="text-xs text-gray-500">Mother</p>
+                                                <p className="text-sm font-medium text-gray-800">
+                                                    {item.motherName} {item.motherAge && `(Age: ${item.motherAge})`}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {(item.brothers?.length > 0 || item.sisters?.length > 0) && (
+                                <div className="mt-3 pt-3 border-t border-gray-200">
+                                    <label className="text-xs text-gray-500 uppercase font-semibold">Siblings</label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
+                                        {item.brothers && item.brothers.length > 0 && (
+                                            <div>
+                                                <p className="text-xs text-gray-500">Brothers</p>
+                                                {item.brothers.map((brother, idx) => (
+                                                    <p key={idx} className="text-sm font-medium text-gray-800">
+                                                        {brother.name} {brother.age && `(Age: ${brother.age})`}
+                                                    </p>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {item.sisters && item.sisters.length > 0 && (
+                                            <div>
+                                                <p className="text-xs text-gray-500">Sisters</p>
+                                                {item.sisters.map((sister, idx) => (
+                                                    <p key={idx} className="text-sm font-medium text-gray-800">
+                                                        {sister.name} {sister.age && `(Age: ${sister.age})`}
+                                                    </p>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {(item.familyRemarks || item.medicalInfoSummary) && (
+                                <div className="mt-3 pt-3 border-t border-gray-200">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {item.familyRemarks && (
+                                            <div>
+                                                <label className="text-xs text-gray-500 uppercase font-semibold">Family Remarks</label>
+                                                <p className="text-sm text-gray-700">{item.familyRemarks}</p>
+                                            </div>
+                                        )}
+                                        {item.medicalInfoSummary && (
+                                            <div>
+                                                <label className="text-xs text-gray-500 uppercase font-semibold">Medical Summary</label>
+                                                <p className="text-sm text-gray-700">{item.medicalInfoSummary}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                             {item.reports && item.reports.length > 0 && (
                                 <div className="mt-3 pt-3 border-t border-gray-200">
                                     <label className="text-xs text-gray-500 uppercase font-semibold">Reports</label>
@@ -525,17 +590,26 @@ export default function PatientDataUpdate() {
                                             const reportEntries = Object.entries(report).filter(
                                                 ([key, value]) => value && typeof value === 'string' && value.startsWith('http')
                                             );
-                                            return reportEntries.map(([reportType, url]) => (
-                                                <a
-                                                    key={`${idx}-${reportType}`}
-                                                    href={url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-100 transition-colors"
-                                                >
-                                                    📎 {reportType.replace(/([A-Z])/g, ' $1').trim()}
-                                                </a>
-                                            ));
+                                            return reportEntries.map(([reportType, url]) => {
+                                                const labels = {
+                                                    bloodReport: 'Blood Report',
+                                                    labReport: 'Lab Report',
+                                                    xrayReport: 'X-Ray Report',
+                                                    prescription: 'Prescription',
+                                                    otherMedicalDocuments: 'Other Documents'
+                                                };
+                                                return (
+                                                    <a
+                                                        key={`${idx}-${reportType}`}
+                                                        href={url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-100 transition-colors"
+                                                    >
+                                                        📎 {labels[reportType] || reportType.replace(/([A-Z])/g, ' $1').trim()}
+                                                    </a>
+                                                );
+                                            });
                                         })}
                                     </div>
                                 </div>
@@ -557,7 +631,7 @@ export default function PatientDataUpdate() {
                 )}
             </div>
 
-            {/* ===================== ADD NEW MEDICAL INFO ===================== */}
+            {/* Add Medical Form */}
             {showMedicalForm && (
                 <form onSubmit={formik.handleSubmit}>
                     <div className="bg-white rounded-xl border p-6">
@@ -643,16 +717,19 @@ export default function PatientDataUpdate() {
                                 />
                             </div>
 
-                            {/* Date Inputs with proper z-index */}
+                            {/* FIXED: Date Inputs with proper onChange handling */}
                             <div className="relative z-50">
                                 <DateInput
                                     name="dateOfVisit"
                                     label="Date Of Visit"
                                     placeholder="Select visit date"
                                     value={formik.values.dateOfVisit}
-                                    onChange={(e) =>
-                                        formik.setFieldValue("dateOfVisit", e.value)
-                                    }
+                                    onChange={(e) => {
+                                        console.log("DateOfVisit onChange:", e);
+                                        // Handle both event and direct value
+                                        const value = e?.target?.value || e?.value || e;
+                                        handleDateChange('dateOfVisit')(value);
+                                    }}
                                     required
                                 />
                                 {formik.touched.dateOfVisit && formik.errors.dateOfVisit && (
@@ -666,9 +743,11 @@ export default function PatientDataUpdate() {
                                     label="Admission Date"
                                     placeholder="Select admission date"
                                     value={formik.values.admissionDate}
-                                    onChange={(e) =>
-                                        formik.setFieldValue("admissionDate", e.value)
-                                    }
+                                    onChange={(e) => {
+                                        console.log("AdmissionDate onChange:", e);
+                                        const value = e?.target?.value || e?.value || e;
+                                        handleDateChange('admissionDate')(value);
+                                    }}
                                 />
                             </div>
 
@@ -678,14 +757,156 @@ export default function PatientDataUpdate() {
                                     label="Discharge Date"
                                     placeholder="Select discharge date"
                                     value={formik.values.dischargeDate}
-                                    onChange={(e) =>
-                                        formik.setFieldValue("dischargeDate", e.value)
-                                    }
+                                    onChange={(e) => {
+                                        console.log("DischargeDate onChange:", e);
+                                        const value = e?.target?.value || e?.value || e;
+                                        handleDateChange('dischargeDate')(value);
+                                    }}
                                 />
                             </div>
                         </div>
 
-                        {/* Reports Section */}
+                        {/* Family Information */}
+                        <div className="mt-6 border-t border-gray-200 pt-6">
+                            <h3 className="font-semibold text-md mb-4 flex items-center gap-2">
+                                <span className="text-indigo-500">👨‍👩‍👧‍👦</span> Family Information
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                                <div>
+                                    <TextInput
+                                        name="fatherName"
+                                        label="Father Name"
+                                        placeholder="Enter father name"
+                                        value={formik.values.fatherName}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                    />
+                                </div>
+                                <div>
+                                    <TextInput
+                                        name="fatherAge"
+                                        label="Father Age"
+                                        type="number"
+                                        placeholder="Enter father age"
+                                        value={formik.values.fatherAge}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                    />
+                                </div>
+                                <div>
+                                    <TextInput
+                                        name="motherName"
+                                        label="Mother Name"
+                                        placeholder="Enter mother name"
+                                        value={formik.values.motherName}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                    />
+                                </div>
+                                <div>
+                                    <TextInput
+                                        name="motherAge"
+                                        label="Mother Age"
+                                        type="number"
+                                        placeholder="Enter mother age"
+                                        value={formik.values.motherAge}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Siblings */}
+                        <div className="mt-6 border-t border-gray-200 pt-6">
+                            <h3 className="font-semibold text-md mb-4 flex items-center gap-2">
+                                <span className="text-pink-500">👫</span> Siblings Information
+                            </h3>
+
+                            <div className="mb-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="text-sm font-medium text-gray-700">Brothers</label>
+                                    <Button
+                                        type="button"
+                                        label="Add Brother"
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={() => addSibling('brothers')}
+                                    />
+                                </div>
+                                {formik.values.brothers.map((brother, index) => (
+                                    <div key={index} className="grid grid-cols-2 gap-3 mb-2 items-end">
+                                        <TextInput
+                                            label={index === 0 ? "Name" : ""}
+                                            placeholder="Enter brother name"
+                                            value={brother.name}
+                                            onChange={(e) => handleSiblingChange('brothers', index, 'name', e.target.value)}
+                                        />
+                                        <div className="flex gap-2">
+                                            <TextInput
+                                                label={index === 0 ? "Age" : ""}
+                                                type="number"
+                                                placeholder="Age"
+                                                value={brother.age}
+                                                onChange={(e) => handleSiblingChange('brothers', index, 'age', e.target.value)}
+                                            />
+                                            {index > 0 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeSibling('brothers', index)}
+                                                    className="text-red-500 hover:text-red-700 text-sm mt-1"
+                                                >
+                                                    Remove
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div>
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="text-sm font-medium text-gray-700">Sisters</label>
+                                    <Button
+                                        type="button"
+                                        label="Add Sister"
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={() => addSibling('sisters')}
+                                    />
+                                </div>
+                                {formik.values.sisters.map((sister, index) => (
+                                    <div key={index} className="grid grid-cols-2 gap-3 mb-2 items-end">
+                                        <TextInput
+                                            label={index === 0 ? "Name" : ""}
+                                            placeholder="Enter sister name"
+                                            value={sister.name}
+                                            onChange={(e) => handleSiblingChange('sisters', index, 'name', e.target.value)}
+                                        />
+                                        <div className="flex gap-2">
+                                            <TextInput
+                                                label={index === 0 ? "Age" : ""}
+                                                type="number"
+                                                placeholder="Age"
+                                                value={sister.age}
+                                                onChange={(e) => handleSiblingChange('sisters', index, 'age', e.target.value)}
+                                            />
+                                            {index > 0 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeSibling('sisters', index)}
+                                                    className="text-red-500 hover:text-red-700 text-sm mt-1"
+                                                >
+                                                    Remove
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Reports */}
                         <div className="mt-8">
                             <h3 className="font-semibold text-md mb-4 flex items-center gap-2">
                                 <span className="text-orange-500">📊</span> Report Upload Module
@@ -751,7 +972,6 @@ export default function PatientDataUpdate() {
                                                             <span className="text-xs text-red-500">✓ PDF</span>
                                                         )}
                                                     </div>
-                                                    {/* Image Preview */}
                                                     {uploadedFile.type?.startsWith('image/') && (
                                                         <div className="mt-2 border rounded overflow-hidden">
                                                             <img
@@ -761,7 +981,6 @@ export default function PatientDataUpdate() {
                                                             />
                                                         </div>
                                                     )}
-                                                    {/* PDF Preview */}
                                                     {uploadedFile.type === 'application/pdf' && (
                                                         <div className="mt-2 flex items-center justify-center bg-red-50 rounded p-2">
                                                             <span className="text-red-500 text-sm">📄 PDF Document</span>
@@ -774,7 +993,6 @@ export default function PatientDataUpdate() {
                                 })}
                             </div>
 
-                            {/* Other Documents */}
                             <div className="mt-4 border-t border-dashed border-gray-200 pt-4">
                                 <div className="border rounded-lg p-4">
                                     <label className="text-sm font-medium text-gray-700 block mb-2">
@@ -819,7 +1037,6 @@ export default function PatientDataUpdate() {
                                                     <span className="text-xs text-red-500">✓ PDF</span>
                                                 )}
                                             </div>
-                                            {/* Image Preview */}
                                             {uploadedFiles.otherMedicalDocuments.type?.startsWith('image/') && (
                                                 <div className="mt-2 border rounded overflow-hidden">
                                                     <img
@@ -829,7 +1046,6 @@ export default function PatientDataUpdate() {
                                                     />
                                                 </div>
                                             )}
-                                            {/* PDF Preview */}
                                             {uploadedFiles.otherMedicalDocuments.type === 'application/pdf' && (
                                                 <div className="mt-2 flex items-center justify-center bg-red-50 rounded p-2">
                                                     <span className="text-red-500 text-sm">📄 PDF Document</span>
@@ -840,8 +1056,32 @@ export default function PatientDataUpdate() {
                                 </div>
                             </div>
 
-                            {/* Operation Notes */}
-                            <div className="mt-6">
+                            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <TextAreaInput
+                                        label="Family Remarks"
+                                        name="familyRemarks"
+                                        placeholder="Enter family remarks..."
+                                        rows={3}
+                                        value={formik.values.familyRemarks}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                    />
+                                </div>
+                                <div>
+                                    <TextAreaInput
+                                        label="Medical Info Summary"
+                                        name="medicalInfoSummary"
+                                        placeholder="Enter medical summary..."
+                                        rows={3}
+                                        value={formik.values.medicalInfoSummary}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="mt-4">
                                 <TextAreaInput
                                     label="Operation Notes"
                                     name="operationNotes"
@@ -854,7 +1094,6 @@ export default function PatientDataUpdate() {
                             </div>
                         </div>
 
-                        {/* Action Buttons */}
                         <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-200">
                             <Button
                                 type="button"
