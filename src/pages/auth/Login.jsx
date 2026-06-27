@@ -33,7 +33,7 @@ export default function Login() {
     onSubmit: async (values) => {
       const roleMap = {
         Admin: "super_admin",
-        Receptionist: "receptionist"
+        "Data Entry Operator": "receptionist"
       };
       const payload = {
         email: validator.trim(values.email),
