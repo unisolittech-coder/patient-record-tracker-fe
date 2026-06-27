@@ -309,24 +309,24 @@ export default function Analytics() {
             },
             minWidth: '150px'
         },
-        {
-            field: 'downloadedBy',
-            header: 'Downloaded By',
-            body: (rowData) => {
-                const user = rowData.downloadedBy || rowData;
-                return (
-                    <div>
-                        <div className="text-sm text-gray-700">
-                            {user?.name || 'Unknown'}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                            {user?.email || ''}
-                        </div>
-                    </div>
-                );
-            },
-            minWidth: '150px'
-        },
+        // {
+        //     field: 'downloadedBy',
+        //     header: 'Downloaded By',
+        //     body: (rowData) => {
+        //         const user = rowData.downloadedBy || rowData;
+        //         return (
+        //             <div>
+        //                 <div className="text-sm text-gray-700">
+        //                     {user?.name || 'Unknown'}
+        //                 </div>
+        //                 <div className="text-xs text-gray-500">
+        //                     {user?.email || ''}
+        //                 </div>
+        //             </div>
+        //         );
+        //     },
+        //     minWidth: '150px'
+        // },
         {
             field: 'dateOfDownload',
             header: 'Date',
