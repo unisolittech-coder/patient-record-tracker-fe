@@ -102,6 +102,27 @@ const usePatientMgmt = () => {
         }
     };
 
+    const resendPatientReport = async(id, data) => {
+      setLoading(true);
+        try {
+            const res = await fetchData({
+                method: "PATCH",
+                url: `${conf.apiBaseUrl}patients/${id}/restore-access`,
+                data
+            });
+            if (res) {
+                setLoading(false);
+                toast.success(res.message);
+                return true;
+            }
+        } catch (error) {
+            console.error("Error updating patient:", error);
+            setLoading(false);
+            toast.error(error.response?.data?.message);
+            return false;
+        }
+    } 
+
     return {
         loading,
         patientRes,
@@ -111,6 +132,7 @@ const usePatientMgmt = () => {
         fetchPatientDetails,
         resetPatientDetails,
         updatePatient,
+        resendPatientReport
     }
 };
 

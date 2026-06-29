@@ -7,7 +7,7 @@ import Button from '../../../components/common/Button';
 import Loader from '../../../components/common/Loader';
 
 const PatientDataView = () => {
-    const { patientDetails, loading, fetchPatientDetails, resetPatientDetails } = usePatientMgmt();
+    const { patientDetails, loading, fetchPatientDetails, resetPatientDetails, resendPatientReport } = usePatientMgmt();
     const { id } = useParams();
     const [activeMedicalIndex, setActiveMedicalIndex] = useState(0);
 
@@ -79,7 +79,7 @@ const PatientDataView = () => {
     // Get file icon based on type
     const getFileIcon = (url) => {
         const type = getFileType(url);
-        switch(type) {
+        switch (type) {
             case 'image': return '🖼️';
             case 'pdf': return '📄';
             case 'word': return '📝';
@@ -105,10 +105,10 @@ const PatientDataView = () => {
     const hasReports = (medical) => {
         if (!medical || !medical.reports) return false;
         if (medical.reports.length === 0) return false;
-        
+
         // Check if any report has actual data
         return medical.reports.some(report => {
-            return Object.values(report).some(value => 
+            return Object.values(report).some(value =>
                 value && typeof value === 'string' && value.startsWith('http')
             );
         });
@@ -218,7 +218,7 @@ const PatientDataView = () => {
                             </div>
                         )}
                     </div>
-                    
+
                     {/* Address Section */}
                     {(patientDetails.address || patientDetails.city || patientDetails.state || patientDetails.pinCode) && (
                         <div className="mt-4 pt-4 border-t border-gray-100">
@@ -292,26 +292,37 @@ const PatientDataView = () => {
                         <h2 className="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
                             <span className="text-green-500">🏥</span> Medical Information
                         </h2>
-                        
+
                         {/* Medical Record Tabs */}
                         <div className="flex flex-wrap gap-2 mb-4">
                             {patientDetails.medicalInformation.map((item, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setActiveMedicalIndex(index)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                        activeMedicalIndex === index
+                                <div key={item._id} className="flex items-center gap-2">
+                                    <button
+                                        key={index}
+                                        onClick={() => setActiveMedicalIndex(index)}
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeMedicalIndex === index
                                             ? 'bg-blue-500 text-white'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
-                                >
-                                    Visit {index + 1}
-                                    {item.dateOfVisit && (
-                                        <span className="ml-1 text-xs opacity-75">
-                                            ({formatDateOnly(item.dateOfVisit)})
-                                        </span>
-                                    )}
-                                </button>
+                                            }`}
+                                    >
+                                        Visit {index + 1}
+                                        {item.dateOfVisit && (
+                                            <span className="ml-1 text-xs opacity-75">
+                                                ({formatDateOnly(item.dateOfVisit)})
+                                            </span>
+                                        )}
+                                    </button>
+                                    <Button
+                                        label="Resend Report"
+                                        type="button"
+                                        variant="primary"
+                                        onClick={() =>
+                                            resendPatientReport(id, {
+                                                medicalInformationId: item._id,
+                                            })
+                                        }
+                                    />
+                                </div>
                             ))}
                         </div>
 
@@ -430,7 +441,7 @@ const PatientDataView = () => {
                                                             const reportEntries = Object.entries(report).filter(
                                                                 ([key, value]) => value && typeof value === 'string' && value.startsWith('http')
                                                             );
-                                                            
+
                                                             return reportEntries.map(([reportType, url]) => (
                                                                 <div key={`${idx}-${reportType}`} className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
                                                                     <div className="flex items-start justify-between">
@@ -465,8 +476,8 @@ const PatientDataView = () => {
                                                                     </div>
                                                                     {getFileType(url) === 'image' && (
                                                                         <div className="mt-2 border rounded overflow-hidden">
-                                                                            <img 
-                                                                                src={url} 
+                                                                            <img
+                                                                                src={url}
                                                                                 alt={reportType}
                                                                                 className="w-full h-24 object-cover"
                                                                             />
