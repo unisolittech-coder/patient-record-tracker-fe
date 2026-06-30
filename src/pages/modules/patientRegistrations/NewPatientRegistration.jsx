@@ -43,7 +43,11 @@ export default function NewPatientRegistration() {
     { label: 'Cardiology', value: 'Cardiology' },
     { label: 'Neurology', value: 'Neurology' },
     { label: 'Orthopedics', value: 'Orthopedics' },
-    { label: 'General Medicine', value: 'General Medicine' }
+    { label: 'General Medicine', value: 'General Medicine' },
+    { label: 'Radiology Reports', value: 'Radiology Reports'},
+    { label: 'Bio Chemistry', value: 'Bio Chemistry'},
+    { label: 'Pathalogy', value: 'Pathalogy'},
+    { label: 'Micro Biology', value: 'Micro Biology'}
   ];
 
   const validationSchema = Yup.object({
@@ -119,9 +123,9 @@ export default function NewPatientRegistration() {
       xrayReport: null,
       ctScanReport: null,
       mriReport: null,
-      ultrasoundReport: null,
-      ecgReport: null,
-      dischargeSummary: null,
+      // ultrasoundReport: null,
+      // ecgReport: null,
+      // dischargeSummary: null,
       otherMedicalDocuments: null,
 
       // Notes
@@ -156,9 +160,9 @@ export default function NewPatientRegistration() {
           'xrayReport',
           'ctScanReport',
           'mriReport',
-          'ultrasoundReport',
-          'ecgReport',
-          'dischargeSummary',
+          // 'ultrasoundReport',
+          // 'ecgReport',
+          // 'dischargeSummary',
           'otherMedicalDocuments'
         ];
 

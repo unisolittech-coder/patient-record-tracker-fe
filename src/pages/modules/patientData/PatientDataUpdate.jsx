@@ -72,9 +72,9 @@ export default function PatientDataUpdate() {
             xrayReport: null,
             ctScanReport: null,
             mriReport: null,
-            ultrasoundReport: null,
-            ecgReport: null,
-            dischargeSummary: null,
+            // ultrasoundReport: null,
+            // ecgReport: null,
+            // dischargeSummary: null,
             otherMedicalDocuments: null,
 
             operationNotes: "",
@@ -95,8 +95,8 @@ export default function PatientDataUpdate() {
                 setIsSubmitting(true);
 
                 const fileFields = ['prescription', 'labReport', 'bloodReport', 'xrayReport', 'ctScanReport',
-                    'mriReport', 'ultrasoundReport', 'ecgReport', 'dischargeSummary', 'otherMedicalDocuments'];
-
+                    'mriReport', 'otherMedicalDocuments'];
+// 'ultrasoundReport', 'ecgReport', 'dischargeSummary',
                 const hasFile = fileFields.some(key => {
                     const value = values[key];
                     return value instanceof File || (value && typeof value === 'object' && value.name);
@@ -921,9 +921,9 @@ export default function PatientDataUpdate() {
                                     { id: 'xrayReport', label: 'X-Ray Report' },
                                     { id: 'ctScanReport', label: 'CT Scan Report' },
                                     { id: 'mriReport', label: 'MRI Report' },
-                                    { id: 'ultrasoundReport', label: 'Ultrasound Report' },
-                                    { id: 'ecgReport', label: 'ECG Report' },
-                                    { id: 'dischargeSummary', label: 'Discharge Summary' },
+                                    // { id: 'ultrasoundReport', label: 'Ultrasound Report' },
+                                    // { id: 'ecgReport', label: 'ECG Report' },
+                                    // { id: 'dischargeSummary', label: 'Discharge Summary' },
                                 ].map((file) => {
                                     const uploadedFile = uploadedFiles[file.id];
                                     const isUploaded = !!uploadedFile;

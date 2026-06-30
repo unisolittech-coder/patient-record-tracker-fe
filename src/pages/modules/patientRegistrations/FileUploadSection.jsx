@@ -11,9 +11,9 @@ const FileUploadSection = ({ formik, onFileChange, onRemoveFile }) => {
     { id: 'xrayReport', label: 'X-Ray Reports', icon: '🦴' },
     { id: 'ctScanReport', label: 'CT Scan Reports', icon: '🧠' },
     { id: 'mriReport', label: 'MRI Reports', icon: '🔍' },
-    { id: 'ultrasoundReport', label: 'Ultrasound Reports', icon: '👶' },
-    { id: 'ecgReport', label: 'ECG Reports', icon: '❤️' },
-    { id: 'dischargeSummary', label: 'Discharge Summary', icon: '📄' },
+    // { id: 'ultrasoundReport', label: 'Ultrasound Reports', icon: '👶' },
+    // { id: 'ecgReport', label: 'ECG Reports', icon: '❤️' },
+    // { id: 'dischargeSummary', label: 'Discharge Summary', icon: '📄' },
     { id: 'operationNotes', label: 'Operation Notes Document', icon: '📝' }, // added as upload
   ];
 
