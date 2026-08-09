@@ -1,0 +1,164 @@
+.container {
+  width: 100%;
+  margin: 0 auto;
+  background: #f9fafb;
+  font-family: Arial, sans-serif;
+}
+
+.card {
+  background: #fff;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.headerLeft {
+  flex: 1;
+}
+
+.headerTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #111827;
+}
+
+.headerSubtitle {
+  margin: 2px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.headerAddress,
+.headerAddress2 {
+  margin: 3px 0;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.headerAddress2 {
+  color: #6b7280;
+}
+
+.logoPlaceholder {
+  width: 70px;
+  height: 70px;
+  margin-left: 16px;
+  flex-shrink: 0;
+}
+
+.logoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.patientInfoBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: #eff6ff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.patientIdLabel,
+.doctorLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.patientIdValue,
+.doctorValue {
+  font-weight: 700;
+  color: #111827;
+}
+
+.quickInfoRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 12px 24px;
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.roomLabel,
+.counterLabel {
+  font-weight: 600;
+  color: #374151;
+}
+
+.roomValue,
+.counterValue {
+  color: #111827;
+  font-weight: 500;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 32px;
+  padding: 16px 24px;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.infoLabel {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.infoValue {
+  margin-left: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  text-align: right;
+}
+
+@media print {
+  .container {
+    background: #fff;
+  }
+
+  .card {
+    border: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .header,
+  .patientInfoBar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .logoPlaceholder {
+    margin: 12px 0 0;
+  }
+
+  .doctorLabel {
+    margin-top: 8px;
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}
