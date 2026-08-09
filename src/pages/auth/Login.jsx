@@ -1,19 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SelectButton } from 'primereact/selectbutton';
+import Select from 'react-select';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useLogin } from '../../hooks/auth/useLogin';
 import validator from "validator";
+import useDropdowns from '../../hooks/dropdown/useDropdowns';
+
+const roleDisplayMap = {
+  super_admin: 'Admin',
+  regstraion_officer: 'Registration Officer',
+  doctor: 'Doctor',
+  Lab_payment: 'Lab Payment',
+  'blood Collection Center': 'Blood Collection Center',
+  lab_technician: 'Lab Technician',
+  lab_Head: 'Lab Head'
+};
 
 export default function Login() {
   const { loading, adminLogin } = useLogin();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const roleOptions = ['Admin', 'Data Entry Operator'];
+  const { roles, fetchRoles } = useDropdowns();
+
+  const roleOptions = roles.map((role) => ({
+    value: role,
+    label: roleDisplayMap[role] || role
+  }));
+
+  useEffect(() => {
+    fetchRoles();
+  }, [fetchRoles]);
 
   const validationSchema = Yup.object({
     role: Yup.string().required('Role is required'),
@@ -25,20 +45,16 @@ export default function Login() {
 
   const formik = useFormik({
     initialValues: {
-      role: 'Admin',
+      role: roleOptions[0]?.value || 'super_admin',
       email: '',
       password: ''
     },
     validationSchema,
     onSubmit: async (values) => {
-      const roleMap = {
-        Admin: "super_admin",
-        "Data Entry Operator": "receptionist"
-      };
       const payload = {
         email: validator.trim(values.email),
         password: validator.trim(values.password),
-        role: roleMap[values.role]
+        role: values.role
       };
 
       const success = await adminLogin(payload);
@@ -78,33 +94,35 @@ export default function Login() {
             className="flex flex-col gap-5"
           >
             {/* Role Selection */}
-            <div className="flex justify-center">
-              <SelectButton
-                value={formik.values.role}
-                onChange={(e) =>
-                  formik.setFieldValue('role', e.value)
-                }
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <i className="pi pi-user text-blue-500"></i>
+                Role
+              </label>
+
+              <Select
+                value={roleOptions.find((opt) => opt.value === formik.values.role) || null}
+                onChange={(option) => formik.setFieldValue('role', option?.value || '')}
+                onBlur={() => formik.setFieldTouched('role', true)}
                 options={roleOptions}
+                placeholder="Select role"
+                classNamePrefix="react-select"
+                isClearable
                 className="w-full"
-                pt={{
-                  root: {
-                    className:
-                      'bg-blue-50/50 rounded-xl p-1 border border-blue-100 flex gap-2 w-full'
-                  },
-                  button: ({ context }) => ({
-                    className: context.selected
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white flex-1 py-2.5 px-4 font-semibold rounded-lg transition-all duration-300 shadow-md shadow-blue-300/50 text-center'
-                      : 'bg-transparent text-gray-600 hover:text-gray-800 hover:bg-blue-100/50 flex-1 py-2.5 px-4 font-medium rounded-lg transition-all duration-300 text-center'
-                  })
-                }}
               />
+
+              {formik.touched.role && formik.errors.role && (
+                <small className="text-red-500 text-xs">
+                  {formik.errors.role}
+                </small>
+              )}
             </div>
 
             {/* User ID */}
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                 <i className="pi pi-user text-blue-500"></i>
-                {formik.values.role} ID
+                User ID
               </label>
 
               <div className="relative">
@@ -115,7 +133,7 @@ export default function Login() {
                   value={formik.values.email}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  placeholder={`Enter your ${formik.values.role.toLowerCase()} email`}
+                  placeholder="Enter your email"
                   className={`w-full pl-12 pr-4 py-3.5 bg-blue-50/50 border-2 rounded-xl text-gray-700 placeholder:text-gray-400 focus:ring-4 focus:ring-blue-200/50 focus:border-blue-400 transition-all duration-300 ${formik.touched.email && formik.errors.email
                     ? 'border-red-400'
                     : 'border-blue-100'
