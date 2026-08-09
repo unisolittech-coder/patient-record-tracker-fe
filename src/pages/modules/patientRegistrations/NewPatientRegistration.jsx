@@ -9,6 +9,8 @@ import {
 import PagePath from "../../../components/common/PagePath";
 // import FileUploadSection from './FileUploadSection';
 import usePatientMgmt from "../../../hooks/patientMgmt/usePatientMgmt";
+import useFetch from "../../../hooks/useFetch";
+import conf from "../../../config/index";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
@@ -376,8 +378,25 @@ const departmentOptions = [
 
 export default function NewPatientRegistration() {
   const { addPatient, loading } = usePatientMgmt();
+  const [fetchData] = useFetch();
   const [showPrintForm, setShowPrintForm] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+
+  // Dummy API call to check departments-management-dropdown response
+  useEffect(() => {
+    const fetchDepartmentsDropdown = async () => {
+      try {
+        const res = await fetchData({
+          method: "GET",
+          url: `${conf.apiBaseUrl}patients/departments-management-dropdown`,
+        });
+        console.log("Departments Management Dropdown Response:", res);
+      } catch (error) {
+        console.error("Error fetching departments dropdown:", error);
+      }
+    };
+    fetchDepartmentsDropdown();
+  }, []);
 
   const validationSchema = Yup.object({
     patientName: Yup.string().required("Patient Name is required"),
@@ -386,7 +405,7 @@ export default function NewPatientRegistration() {
     mobileNumber: Yup.string()
       .required("Mobile Number is required")
       .matches(/^[0-9]{10}$/, "Enter valid mobile number"),
-    department: Yup.string().required("Department is required"),
+    referToDepartment: Yup.string().required("Department is required"),
     floor: Yup.string().required("Floor is required"),
     doctorName: Yup.string().required("Doctor is required"),
     roomNumber: Yup.string().required("Room Number is required"),
@@ -407,7 +426,7 @@ export default function NewPatientRegistration() {
       dateOfBirth: null,
       age: "",
       mobileNumber: "",
-      department: "",
+      referToDepartment: "",
       floor: "",
       doctorName: "",
       roomNumber: "",
@@ -430,7 +449,7 @@ export default function NewPatientRegistration() {
           "gender",
           "age",
           "mobileNumber",
-          "department",
+          "referToDepartment",
           "floor",
           "doctorName",
           "roomNumber",
@@ -455,7 +474,7 @@ export default function NewPatientRegistration() {
           gender: values.gender,
           age: values.age,
           mobileNumber: values.mobileNumber,
-          department: values.department,
+          referToDepartment: values.referToDepartment,
           floorNumber: values.floor,
           doctorName: values.doctorName,
           roomNumber: values.roomNumber,
@@ -545,7 +564,7 @@ export default function NewPatientRegistration() {
     const dept = departmentOptions.find(
       (option) => option.value === selectedOption?.value,
     );
-    formik.setFieldValue("department", selectedOption?.value || "");
+    formik.setFieldValue("referToDepartment", selectedOption?.value || "");
     formik.setFieldValue("floor", dept?.floor || "");
     formik.setFieldValue("doctorName", "");
     formik.setFieldValue("roomNumber", "");
@@ -553,9 +572,9 @@ export default function NewPatientRegistration() {
 
   const selectedDepartment = useMemo(() => {
     return departmentOptions.find(
-      (option) => option.value === formik.values.department,
+      (option) => option.value === formik.values.referToDepartment,
     );
-  }, [formik.values.department]);
+  }, [formik.values.referToDepartment]);
 
   const roomNumberOptions = useMemo(() => {
     if (!selectedDepartment) return [];
@@ -820,21 +839,27 @@ export default function NewPatientRegistration() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="relative z-20">
                 <SelectInput
-                  id="department"
-                  name="department"
-                  label="Department"
+                  id="referToDepartment"
+                  name="referToDepartment"
+                  label="Refer To Department"
                   options={departmentOptions}
                   placeholder="Select Department"
                   value={
                     departmentOptions.find(
-                      (option) => option.value === formik.values.department,
+                      (option) =>
+                        option.value === formik.values.referToDepartment,
                     ) || null
                   }
                   onChange={handleDepartmentChange}
-                  onBlur={() => formik.setFieldTouched("department", true)}
+                  onBlur={() =>
+                    formik.setFieldTouched("referToDepartment", true)
+                  }
                   isDisabled={isSaved}
                   required
-                  error={formik.touched.department && formik.errors.department}
+                  error={
+                    formik.touched.referToDepartment &&
+                    formik.errors.referToDepartment
+                  }
                 />
               </div>
 
