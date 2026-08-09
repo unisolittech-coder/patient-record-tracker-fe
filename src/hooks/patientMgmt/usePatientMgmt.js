@@ -22,8 +22,10 @@ const usePatientMgmt = () => {
             if (res) {
                 setLoading(false);
                 toast.success(res.message);
-                toast.success(res.message2);
-                return true;
+                if (res.message2) {
+                    toast.success(res.message2);
+                }
+                return res;
             }
         } catch (error) {
             console.error("Error adding patient:", error);

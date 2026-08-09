@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import BreadCrumb from "../../../components/common/BreadCrumb";
 import Button from "../../../components/common/Button";
 import {
@@ -14,369 +14,370 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import RegFormFormate from "../../../helper/print/RegFormFormate";
 
+const breadcrumbPaths = [
+  { label: "Patient Registration", url: "/patient-registration" },
+  { label: "New Patient" },
+];
+
+const genderOptions = [
+  { label: "Male", value: "Male" },
+  { label: "Female", value: "Female" },
+  { label: "Other", value: "Other" },
+];
+
+const patientTypeOptions = [
+  { label: "General / OPD", value: "General / OPD" },
+  { label: "Emergency", value: "Emergency" },
+  { label: "MLC (Medico-Legal Case)", value: "MLC (Medico-Legal Case)" },
+  { label: "IPD / Admission", value: "IPD / Admission" },
+  { label: "Referral", value: "Referral" },
+  { label: "Follow-up", value: "Follow-up" },
+  { label: "Pregnancy / Maternity", value: "Pregnancy / Maternity" },
+  { label: "Pediatric", value: "Pediatric" },
+  { label: "Day Care", value: "Day Care" },
+];
+
+const mlcTypeOptions = [
+  { label: "No", value: "No" },
+  { label: "Road Traffic Accident", value: "Road Traffic Accident" },
+  { label: "Assault", value: "Assault" },
+  { label: "Poisoning", value: "Poisoning" },
+  { label: "Burn Injury", value: "Burn Injury" },
+  { label: "Fall / Accident", value: "Fall / Accident" },
+  { label: "Sexual Assault", value: "Sexual Assault" },
+  { label: "Unidentified Patient", value: "Unidentified Patient" },
+  { label: "Other", value: "Other" },
+];
+
+const departmentOptions = [
+  {
+    label: "General Medicine",
+    value: "General Medicine",
+    roomStart: 1,
+    roomEnd: 5,
+    floor: "Ground Floor",
+    doctors: [
+      "Dr. A. Sharma",
+      "Dr. B. Patil",
+      "Dr. C. Deshmukh",
+      "Dr. D. Gupta",
+      "Dr. E. Joshi",
+    ],
+  },
+  {
+    label: "General Surgery",
+    value: "General Surgery",
+    roomStart: 6,
+    roomEnd: 10,
+    floor: "Ground Floor",
+    doctors: [
+      "Dr. F. Kulkarni",
+      "Dr. G. Rao",
+      "Dr. H. Mehra",
+      "Dr. I. Nair",
+      "Dr. J. Singh",
+    ],
+  },
+  {
+    label: "Pediatrics / Child Medicine",
+    value: "Pediatrics / Child Medicine",
+    roomStart: 11,
+    roomEnd: 15,
+    floor: "1st Floor",
+    doctors: [
+      "Dr. K. Verma",
+      "Dr. L. Bose",
+      "Dr. M. Chakra",
+      "Dr. N. Das",
+      "Dr. O. Pillai",
+    ],
+  },
+  {
+    label: "Obstetrics & Gynaecology (OBGY)",
+    value: "Obstetrics & Gynaecology (OBGY)",
+    roomStart: 16,
+    roomEnd: 20,
+    floor: "1st Floor",
+    doctors: [
+      "Dr. P. Menon",
+      "Dr. Q. Iyer",
+      "Dr. R. Khanna",
+      "Dr. S. Bhat",
+      "Dr. T. Reddy",
+    ],
+  },
+  {
+    label: "Orthopedics",
+    value: "Orthopedics",
+    roomStart: 21,
+    roomEnd: 25,
+    floor: "2nd Floor",
+    doctors: [
+      "Dr. U. Saxena",
+      "Dr. V. Trivedi",
+      "Dr. W. Kaur",
+      "Dr. X. Malhotra",
+      "Dr. Y. Pandey",
+    ],
+  },
+  {
+    label: "ENT (Ear, Nose & Throat)",
+    value: "ENT (Ear, Nose & Throat)",
+    roomStart: 26,
+    roomEnd: 30,
+    floor: "2nd Floor",
+    doctors: [
+      "Dr. Z. Agarwal",
+      "Dr. AA. Bansal",
+      "Dr. AB. Chawla",
+      "Dr. AC. Dube",
+      "Dr. AD. Eknath",
+    ],
+  },
+  {
+    label: "Ophthalmology / Eye",
+    value: "Ophthalmology / Eye",
+    roomStart: 31,
+    roomEnd: 35,
+    floor: "3rd Floor",
+    doctors: [
+      "Dr. AE. Fadnavis",
+      "Dr. AF. Gokhale",
+      "Dr. AG. Hegde",
+      "Dr. AH. Inamdar",
+      "Dr. AI. Jain",
+    ],
+  },
+  {
+    label: "Dermatology / Skin & VD",
+    value: "Dermatology / Skin & VD",
+    roomStart: 36,
+    roomEnd: 40,
+    floor: "3rd Floor",
+    doctors: [
+      "Dr. AJ. Kapoor",
+      "Dr. AK. Lakhani",
+      "Dr. AL. Mishra",
+      "Dr. AM. Nadkarni",
+      "Dr. AN. Oak",
+    ],
+  },
+  {
+    label: "Psychiatry / Mental Health",
+    value: "Psychiatry / Mental Health",
+    roomStart: 41,
+    roomEnd: 45,
+    floor: "3rd Floor",
+    doctors: [
+      "Dr. AO. Parikh",
+      "Dr. AP. Qureshi",
+      "Dr. AQ. Rane",
+      "Dr. AR. Somani",
+      "Dr. AS. Talwar",
+    ],
+  },
+  {
+    label: "Respiratory Medicine / Chest & TB",
+    value: "Respiratory Medicine / Chest & TB",
+    roomStart: 46,
+    roomEnd: 50,
+    floor: "4th Floor",
+    doctors: [
+      "Dr. AT. Uppal",
+      "Dr. AU. Vaidya",
+      "Dr. AV. Wagle",
+      "Dr. AW. Yadav",
+      "Dr. AX. Zope",
+    ],
+  },
+  {
+    label: "Cardiology",
+    value: "Cardiology",
+    roomStart: 51,
+    roomEnd: 55,
+    floor: "4th Floor",
+    doctors: [
+      "Dr. AY. Anand",
+      "Dr. AZ. Bhide",
+      "Dr. BA. Chopra",
+      "Dr. BB. Dandekar",
+      "Dr. BC. Erande",
+    ],
+  },
+  {
+    label: "Neurology",
+    value: "Neurology",
+    roomStart: 56,
+    roomEnd: 60,
+    floor: "4th Floor",
+    doctors: [
+      "Dr. BD. Furtado",
+      "Dr. BE. Gade",
+      "Dr. BF. Haldar",
+      "Dr. BG. Irani",
+      "Dr. BH. Joglekar",
+    ],
+  },
+  {
+    label: "Nephrology",
+    value: "Nephrology",
+    roomStart: 61,
+    roomEnd: 65,
+    floor: "5th Floor",
+    doctors: [
+      "Dr. BI. Kulkarni",
+      "Dr. BJ. Lobo",
+      "Dr. BK. Mankad",
+      "Dr. BL. Nair",
+      "Dr. BM. Oza",
+    ],
+  },
+  {
+    label: "Urology",
+    value: "Urology",
+    roomStart: 66,
+    roomEnd: 70,
+    floor: "5th Floor",
+    doctors: [
+      "Dr. BN. Pradhan",
+      "Dr. BO. Qazi",
+      "Dr. BP. Rathod",
+      "Dr. BQ. Sane",
+      "Dr. BR. Tendulkar",
+    ],
+  },
+  {
+    label: "Gastroenterology",
+    value: "Gastroenterology",
+    roomStart: 71,
+    roomEnd: 75,
+    floor: "5th Floor",
+    doctors: [
+      "Dr. BS. Udeshi",
+      "Dr. BT. Vartak",
+      "Dr. BU. Wadhwa",
+      "Dr. BV. Xavier",
+      "Dr. BW. Yewale",
+    ],
+  },
+  {
+    label: "Endocrinology",
+    value: "Endocrinology",
+    roomStart: 76,
+    roomEnd: 80,
+    floor: "6th Floor",
+    doctors: [
+      "Dr. BX. Ahuja",
+      "Dr. BY. Bajaj",
+      "Dr. BZ. Chitnis",
+      "Dr. CA. Dhawan",
+      "Dr. CB. Ebrahim",
+    ],
+  },
+  {
+    label: "Dental",
+    value: "Dental",
+    roomStart: 81,
+    roomEnd: 85,
+    floor: "6th Floor",
+    doctors: [
+      "Dr. CC. Fernandes",
+      "Dr. CD. Gaikwad",
+      "Dr. CE. Handa",
+      "Dr. CF. Iyengar",
+      "Dr. CG. Jha",
+    ],
+  },
+  {
+    label: "Oncology / Cancer",
+    value: "Oncology / Cancer",
+    roomStart: 86,
+    roomEnd: 90,
+    floor: "6th Floor",
+    doctors: [
+      "Dr. CH. Kakkar",
+      "Dr. CI. Lal",
+      "Dr. CJ. Mukherjee",
+      "Dr. CK. Naik",
+      "Dr. CL. Oberoi",
+    ],
+  },
+  {
+    label: "Radiology / Radio Diagnosis",
+    value: "Radiology / Radio Diagnosis",
+    roomStart: 91,
+    roomEnd: 95,
+    floor: "7th Floor",
+    doctors: [
+      "Dr. CM. Pandit",
+      "Dr. CN. Qureshi",
+      "Dr. CO. Raut",
+      "Dr. CP. Sethi",
+      "Dr. CQ. Tandon",
+    ],
+  },
+  {
+    label: "Anesthesiology",
+    value: "Anesthesiology",
+    roomStart: 96,
+    roomEnd: 100,
+    floor: "7th Floor",
+    doctors: [
+      "Dr. CR. Umarkar",
+      "Dr. CS. Vyas",
+      "Dr. CT. Wani",
+      "Dr. CU. Yadhav",
+      "Dr. CV. Zaveri",
+    ],
+  },
+  {
+    label: "Physiotherapy",
+    value: "Physiotherapy",
+    roomStart: 101,
+    roomEnd: 105,
+    floor: "8th Floor",
+    doctors: [
+      "Dr. CW. Apte",
+      "Dr. CX. Bhosale",
+      "Dr. CY. Chitale",
+      "Dr. CZ. Dalal",
+      "Dr. DA. Engineer",
+    ],
+  },
+  {
+    label: "Emergency / Casualty",
+    value: "Emergency / Casualty",
+    roomStart: 106,
+    roomEnd: 110,
+    floor: "Ground Floor",
+    doctors: [
+      "Dr. DB. Fonseca",
+      "Dr. DC. Gaitonde",
+      "Dr. DD. Hiranandani",
+      "Dr. DE. Iyer",
+      "Dr. DF. Jaiswal",
+    ],
+  },
+  {
+    label: "ICU / Critical Care",
+    value: "ICU / Critical Care",
+    roomStart: 111,
+    roomEnd: 115,
+    floor: "Ground Floor",
+    doctors: [
+      "Dr. DG. Khandelwal",
+      "Dr. DH. Luthra",
+      "Dr. DI. Motwani",
+      "Dr. DJ. Nihalani",
+      "Dr. DK. Oswal",
+    ],
+  },
+];
+
 export default function NewPatientRegistration() {
   const { addPatient, loading } = usePatientMgmt();
   const [showPrintForm, setShowPrintForm] = useState(false);
-
-  const breadcrumbPaths = [
-    { label: "Patient Registration", url: "/patient-registration" },
-    { label: "New Patient" },
-  ];
-
-  const genderOptions = [
-    { label: "Male", value: "Male" },
-    { label: "Female", value: "Female" },
-    { label: "Other", value: "Other" },
-  ];
-
-  const patientTypeOptions = [
-    { label: "General / OPD", value: "General / OPD" },
-    { label: "Emergency", value: "Emergency" },
-    { label: "MLC (Medico-Legal Case)", value: "MLC (Medico-Legal Case)" },
-    { label: "IPD / Admission", value: "IPD / Admission" },
-    { label: "Referral", value: "Referral" },
-    { label: "Follow-up", value: "Follow-up" },
-    { label: "Pregnancy / Maternity", value: "Pregnancy / Maternity" },
-    { label: "Pediatric", value: "Pediatric" },
-    { label: "Day Care", value: "Day Care" },
-  ];
-
-  const mlcTypeOptions = [
-    { label: "No", value: "No" },
-    { label: "Road Traffic Accident", value: "Road Traffic Accident" },
-    { label: "Assault", value: "Assault" },
-    { label: "Poisoning", value: "Poisoning" },
-    { label: "Burn Injury", value: "Burn Injury" },
-    { label: "Fall / Accident", value: "Fall / Accident" },
-    { label: "Sexual Assault", value: "Sexual Assault" },
-    { label: "Unidentified Patient", value: "Unidentified Patient" },
-    { label: "Other", value: "Other" },
-  ];
-
-  const departmentOptions = [
-    {
-      label: "General Medicine",
-      value: "General Medicine",
-      roomStart: 1,
-      roomEnd: 5,
-      floor: "Ground Floor",
-      doctors: [
-        "Dr. A. Sharma",
-        "Dr. B. Patil",
-        "Dr. C. Deshmukh",
-        "Dr. D. Gupta",
-        "Dr. E. Joshi",
-      ],
-    },
-    {
-      label: "General Surgery",
-      value: "General Surgery",
-      roomStart: 6,
-      roomEnd: 10,
-      floor: "Ground Floor",
-      doctors: [
-        "Dr. F. Kulkarni",
-        "Dr. G. Rao",
-        "Dr. H. Mehra",
-        "Dr. I. Nair",
-        "Dr. J. Singh",
-      ],
-    },
-    {
-      label: "Pediatrics / Child Medicine",
-      value: "Pediatrics / Child Medicine",
-      roomStart: 11,
-      roomEnd: 15,
-      floor: "1st Floor",
-      doctors: [
-        "Dr. K. Verma",
-        "Dr. L. Bose",
-        "Dr. M. Chakra",
-        "Dr. N. Das",
-        "Dr. O. Pillai",
-      ],
-    },
-    {
-      label: "Obstetrics & Gynaecology (OBGY)",
-      value: "Obstetrics & Gynaecology (OBGY)",
-      roomStart: 16,
-      roomEnd: 20,
-      floor: "1st Floor",
-      doctors: [
-        "Dr. P. Menon",
-        "Dr. Q. Iyer",
-        "Dr. R. Khanna",
-        "Dr. S. Bhat",
-        "Dr. T. Reddy",
-      ],
-    },
-    {
-      label: "Orthopedics",
-      value: "Orthopedics",
-      roomStart: 21,
-      roomEnd: 25,
-      floor: "2nd Floor",
-      doctors: [
-        "Dr. U. Saxena",
-        "Dr. V. Trivedi",
-        "Dr. W. Kaur",
-        "Dr. X. Malhotra",
-        "Dr. Y. Pandey",
-      ],
-    },
-    {
-      label: "ENT (Ear, Nose & Throat)",
-      value: "ENT (Ear, Nose & Throat)",
-      roomStart: 26,
-      roomEnd: 30,
-      floor: "2nd Floor",
-      doctors: [
-        "Dr. Z. Agarwal",
-        "Dr. AA. Bansal",
-        "Dr. AB. Chawla",
-        "Dr. AC. Dube",
-        "Dr. AD. Eknath",
-      ],
-    },
-    {
-      label: "Ophthalmology / Eye",
-      value: "Ophthalmology / Eye",
-      roomStart: 31,
-      roomEnd: 35,
-      floor: "3rd Floor",
-      doctors: [
-        "Dr. AE. Fadnavis",
-        "Dr. AF. Gokhale",
-        "Dr. AG. Hegde",
-        "Dr. AH. Inamdar",
-        "Dr. AI. Jain",
-      ],
-    },
-    {
-      label: "Dermatology / Skin & VD",
-      value: "Dermatology / Skin & VD",
-      roomStart: 36,
-      roomEnd: 40,
-      floor: "3rd Floor",
-      doctors: [
-        "Dr. AJ. Kapoor",
-        "Dr. AK. Lakhani",
-        "Dr. AL. Mishra",
-        "Dr. AM. Nadkarni",
-        "Dr. AN. Oak",
-      ],
-    },
-    {
-      label: "Psychiatry / Mental Health",
-      value: "Psychiatry / Mental Health",
-      roomStart: 41,
-      roomEnd: 45,
-      floor: "3rd Floor",
-      doctors: [
-        "Dr. AO. Parikh",
-        "Dr. AP. Qureshi",
-        "Dr. AQ. Rane",
-        "Dr. AR. Somani",
-        "Dr. AS. Talwar",
-      ],
-    },
-    {
-      label: "Respiratory Medicine / Chest & TB",
-      value: "Respiratory Medicine / Chest & TB",
-      roomStart: 46,
-      roomEnd: 50,
-      floor: "4th Floor",
-      doctors: [
-        "Dr. AT. Uppal",
-        "Dr. AU. Vaidya",
-        "Dr. AV. Wagle",
-        "Dr. AW. Yadav",
-        "Dr. AX. Zope",
-      ],
-    },
-    {
-      label: "Cardiology",
-      value: "Cardiology",
-      roomStart: 51,
-      roomEnd: 55,
-      floor: "4th Floor",
-      doctors: [
-        "Dr. AY. Anand",
-        "Dr. AZ. Bhide",
-        "Dr. BA. Chopra",
-        "Dr. BB. Dandekar",
-        "Dr. BC. Erande",
-      ],
-    },
-    {
-      label: "Neurology",
-      value: "Neurology",
-      roomStart: 56,
-      roomEnd: 60,
-      floor: "4th Floor",
-      doctors: [
-        "Dr. BD. Furtado",
-        "Dr. BE. Gade",
-        "Dr. BF. Haldar",
-        "Dr. BG. Irani",
-        "Dr. BH. Joglekar",
-      ],
-    },
-    {
-      label: "Nephrology",
-      value: "Nephrology",
-      roomStart: 61,
-      roomEnd: 65,
-      floor: "5th Floor",
-      doctors: [
-        "Dr. BI. Kulkarni",
-        "Dr. BJ. Lobo",
-        "Dr. BK. Mankad",
-        "Dr. BL. Nair",
-        "Dr. BM. Oza",
-      ],
-    },
-    {
-      label: "Urology",
-      value: "Urology",
-      roomStart: 66,
-      roomEnd: 70,
-      floor: "5th Floor",
-      doctors: [
-        "Dr. BN. Pradhan",
-        "Dr. BO. Qazi",
-        "Dr. BP. Rathod",
-        "Dr. BQ. Sane",
-        "Dr. BR. Tendulkar",
-      ],
-    },
-    {
-      label: "Gastroenterology",
-      value: "Gastroenterology",
-      roomStart: 71,
-      roomEnd: 75,
-      floor: "5th Floor",
-      doctors: [
-        "Dr. BS. Udeshi",
-        "Dr. BT. Vartak",
-        "Dr. BU. Wadhwa",
-        "Dr. BV. Xavier",
-        "Dr. BW. Yewale",
-      ],
-    },
-    {
-      label: "Endocrinology",
-      value: "Endocrinology",
-      roomStart: 76,
-      roomEnd: 80,
-      floor: "6th Floor",
-      doctors: [
-        "Dr. BX. Ahuja",
-        "Dr. BY. Bajaj",
-        "Dr. BZ. Chitnis",
-        "Dr. CA. Dhawan",
-        "Dr. CB. Ebrahim",
-      ],
-    },
-    {
-      label: "Dental",
-      value: "Dental",
-      roomStart: 81,
-      roomEnd: 85,
-      floor: "6th Floor",
-      doctors: [
-        "Dr. CC. Fernandes",
-        "Dr. CD. Gaikwad",
-        "Dr. CE. Handa",
-        "Dr. CF. Iyengar",
-        "Dr. CG. Jha",
-      ],
-    },
-    {
-      label: "Oncology / Cancer",
-      value: "Oncology / Cancer",
-      roomStart: 86,
-      roomEnd: 90,
-      floor: "6th Floor",
-      doctors: [
-        "Dr. CH. Kakkar",
-        "Dr. CI. Lal",
-        "Dr. CJ. Mukherjee",
-        "Dr. CK. Naik",
-        "Dr. CL. Oberoi",
-      ],
-    },
-    {
-      label: "Radiology / Radio Diagnosis",
-      value: "Radiology / Radio Diagnosis",
-      roomStart: 91,
-      roomEnd: 95,
-      floor: "7th Floor",
-      doctors: [
-        "Dr. CM. Pandit",
-        "Dr. CN. Qureshi",
-        "Dr. CO. Raut",
-        "Dr. CP. Sethi",
-        "Dr. CQ. Tandon",
-      ],
-    },
-    {
-      label: "Anesthesiology",
-      value: "Anesthesiology",
-      roomStart: 96,
-      roomEnd: 100,
-      floor: "7th Floor",
-      doctors: [
-        "Dr. CR. Umarkar",
-        "Dr. CS. Vyas",
-        "Dr. CT. Wani",
-        "Dr. CU. Yadhav",
-        "Dr. CV. Zaveri",
-      ],
-    },
-    {
-      label: "Physiotherapy",
-      value: "Physiotherapy",
-      roomStart: 101,
-      roomEnd: 105,
-      floor: "8th Floor",
-      doctors: [
-        "Dr. CW. Apte",
-        "Dr. CX. Bhosale",
-        "Dr. CY. Chitale",
-        "Dr. CZ. Dalal",
-        "Dr. DA. Engineer",
-      ],
-    },
-    {
-      label: "Emergency / Casualty",
-      value: "Emergency / Casualty",
-      roomStart: 106,
-      roomEnd: 110,
-      floor: "Ground Floor",
-      doctors: [
-        "Dr. DB. Fonseca",
-        "Dr. DC. Gaitonde",
-        "Dr. DD. Hiranandani",
-        "Dr. DE. Iyer",
-        "Dr. DF. Jaiswal",
-      ],
-    },
-    {
-      label: "ICU / Critical Care",
-      value: "ICU / Critical Care",
-      roomStart: 111,
-      roomEnd: 115,
-      floor: "Ground Floor",
-      doctors: [
-        "Dr. DG. Khandelwal",
-        "Dr. DH. Luthra",
-        "Dr. DI. Motwani",
-        "Dr. DJ. Nihalani",
-        "Dr. DK. Oswal",
-      ],
-    },
-  ];
+  const [isSaved, setIsSaved] = useState(false);
 
   const validationSchema = Yup.object({
     patientName: Yup.string().required("Patient Name is required"),
@@ -395,6 +396,7 @@ export default function NewPatientRegistration() {
       /^[0-9]{12}$/,
       "Enter valid Aadhaar Number",
     ),
+    address: Yup.string().required("Patient Address is required"),
   });
 
   const formik = useFormik({
@@ -412,6 +414,11 @@ export default function NewPatientRegistration() {
       patientType: "",
       mlcType: "No",
       aadhaarNumber: "",
+      address: "",
+      operatorName: "",
+      counterNumber: "",
+      registrationDate: "",
+      registrationTime: "",
     },
 
     validationSchema,
@@ -429,6 +436,7 @@ export default function NewPatientRegistration() {
           "roomNumber",
           "patientType",
           "mlcType",
+          "address",
         ];
 
         const missingFields = requiredFields.filter(
@@ -442,43 +450,37 @@ export default function NewPatientRegistration() {
           return;
         }
 
-        const formData = new FormData();
-
-        const textFields = [
-          "patientName",
-          "gender",
-          "age",
-          "mobileNumber",
-          "department",
-          "floorNumber",
-          "doctorName",
-          "roomNumber",
-          "patientType",
-          "mlcType",
-          "aadhaarNumber",
-        ];
-
-        textFields.forEach((key) => {
-          // Map floor to floorNumber for the backend
-          const sourceKey = key === "floorNumber" ? "floor" : key;
-          const value = values[sourceKey];
-          if (value !== null && value !== undefined && value !== "") {
-            formData.append(key, value);
-          }
-        });
+        const payload = {
+          patientName: values.patientName,
+          gender: values.gender,
+          age: values.age,
+          mobileNumber: values.mobileNumber,
+          department: values.department,
+          floorNumber: values.floor,
+          doctorName: values.doctorName,
+          roomNumber: values.roomNumber,
+          patientType: values.patientType,
+          mlcType: values.mlcType,
+          aadhaarNumber: values.aadhaarNumber || undefined,
+          address: values.address,
+          operatorName: values.operatorName,
+          counterNumber: values.counterNumber,
+        };
 
         if (values.dateOfBirth) {
-          formData.append(
-            "dateOfBirth",
-            new Date(values.dateOfBirth).toISOString(),
-          );
+          payload.dateOfBirth = new Date(values.dateOfBirth).toISOString();
         }
 
-        const response = await addPatient(formData);
+        const response = await addPatient(payload);
 
-        if (response?.success) {
-          const { patientId } = response.data;
-          formik.setFieldValue("patientId", patientId);
+        if (response?.data) {
+          const { patientId, registrarName, counterNo, registrationDate, registrationTime } = response.data;
+          if (patientId) formik.setFieldValue("patientId", patientId);
+          if (registrarName) formik.setFieldValue("operatorName", registrarName);
+          if (counterNo) formik.setFieldValue("counterNumber", String(counterNo));
+          if (registrationDate) formik.setFieldValue("registrationDate", registrationDate);
+          if (registrationTime) formik.setFieldValue("registrationTime", registrationTime);
+          setIsSaved(true);
 
           toast.success(
             `Patient saved successfully!\nPatient ID: ${patientId}`,
@@ -509,13 +511,13 @@ export default function NewPatientRegistration() {
   // -----------------------------
   // Input restriction handlers
   // -----------------------------
-  const handleNumericInput = (fieldName, maxLength) => (e) => {
+  const handleNumericInput = useCallback((fieldName, maxLength) => (e) => {
     const value = e.target.value;
     const sanitized = value.replace(/[^0-9]/g, "").slice(0, maxLength);
     formik.setFieldValue(fieldName, sanitized);
-  };
+  }, [formik]);
 
-  const handleNumericKeyDown = (e) => {
+  const handleNumericKeyDown = useCallback((e) => {
     const allowedKeys = [
       "Backspace",
       "Delete",
@@ -533,12 +535,11 @@ export default function NewPatientRegistration() {
     if (!/^[0-9]$/.test(e.key)) {
       e.preventDefault();
     }
-  };
-
+  }, []);
   // -----------------------------
   // Department handlers
   // -----------------------------
-  const handleDepartmentChange = (selectedOption) => {
+  const handleDepartmentChange = useCallback((selectedOption) => {
     const dept = departmentOptions.find(
       (option) => option.value === selectedOption?.value,
     );
@@ -546,27 +547,31 @@ export default function NewPatientRegistration() {
     formik.setFieldValue("floor", dept?.floor || "");
     formik.setFieldValue("doctorName", "");
     formik.setFieldValue("roomNumber", "");
-  };
+  }, [formik]);
 
-  const selectedDepartment = departmentOptions.find(
-    (option) => option.value === formik.values.department,
-  );
+  const selectedDepartment = useMemo(() => {
+    return departmentOptions.find(
+      (option) => option.value === formik.values.department,
+    );
+  }, [formik.values.department]);
 
-  const roomNumberOptions = selectedDepartment
-    ? Array.from(
-        {
-          length: selectedDepartment.roomEnd - selectedDepartment.roomStart + 1,
-        },
-        (_, i) => {
-          const room = selectedDepartment.roomStart + i;
-          return { label: `Room ${room}`, value: String(room) };
-        },
-      )
-    : [];
+  const roomNumberOptions = useMemo(() => {
+    if (!selectedDepartment) return [];
+    return Array.from(
+      {
+        length: selectedDepartment.roomEnd - selectedDepartment.roomStart + 1,
+      },
+      (_, i) => {
+        const room = selectedDepartment.roomStart + i;
+        return { label: `Room ${room}`, value: String(room) };
+      },
+    );
+  }, [selectedDepartment]);
 
-  const doctorOptions = selectedDepartment
-    ? selectedDepartment.doctors.map((doc) => ({ label: doc, value: doc }))
-    : [];
+  const doctorOptions = useMemo(() => {
+    if (!selectedDepartment) return [];
+    return selectedDepartment.doctors.map((doc) => ({ label: doc, value: doc }));
+  }, [selectedDepartment]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -717,6 +722,22 @@ export default function NewPatientRegistration() {
                   onBlur={formik.handleBlur}
                   error={
                     formik.touched.aadhaarNumber && formik.errors.aadhaarNumber
+                  }
+                />
+              </div>
+
+              <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
+                <TextInput
+                  id="address"
+                  name="address"
+                  label="Patient Address"
+                  placeholder="Enter patient address"
+                  value={formik.values.address}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  required
+                  error={
+                    formik.touched.address && formik.errors.address
                   }
                 />
               </div>
@@ -883,7 +904,7 @@ export default function NewPatientRegistration() {
               Patient ID
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
                 <TextInput
                   id="patientId"
@@ -894,34 +915,62 @@ export default function NewPatientRegistration() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   readOnly
-                  
+                />
+              </div>
+
+              <div>
+                <TextInput
+                  id="operatorName"
+                  name="operatorName"
+                  label="Operator Name"
+                  placeholder="Auto-filled on Save"
+                  value={formik.values.operatorName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  readOnly
+                />
+              </div>
+
+              <div className="max-w-xs">
+                <TextInput
+                  id="counterNumber"
+                  name="counterNumber"
+                  label="Counter Number"
+                  placeholder="Auto-filled on Save"
+                  value={formik.values.counterNumber}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  readOnly
                 />
               </div>
             </div>
 
             <p className="mt-4 text-sm text-gray-500 flex items-center gap-2">
               <i className="pi pi-info-circle" style={{ fontSize: "0.9rem" }} />
-              Patient ID will be automatically generated when you click Save.
+              Patient ID, Operator Name and Counter Number will be automatically generated when you click Save.
             </p>
           </section>
 
           <div className="flex justify-end gap-3 mt-8">
-            <Button
-              type="button"
-              label="Print"
-              variant="secondary"
-              icon="pi pi-print"
-              className="px-8"
-              onClick={handlePrint}
-            />
-            <Button
-              type="submit"
-              label={loading ? "Saving..." : "Save"}
-              variant="primary"
-              icon="pi pi-save"
-              className="px-8"
-              disabled={loading}
-            />
+            {isSaved ? (
+              <Button
+                type="button"
+                label="Print"
+                variant="secondary"
+                icon="pi pi-print"
+                className="px-8"
+                onClick={handlePrint}
+              />
+            ) : (
+              <Button
+                type="submit"
+                label={loading ? "Saving..." : "Save"}
+                variant="primary"
+                icon="pi pi-save"
+                className="px-8"
+                disabled={loading}
+              />
+            )}
           </div>
         </div>
       </form>
