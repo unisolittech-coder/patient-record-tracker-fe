@@ -65,7 +65,11 @@ export default function DepartmentManagement() {
   const loadDropdownData = () => {
     fetchDepartmentDropdown().then((data) => {
       if (data && Array.isArray(data)) {
-        const options = data.map((item) => ({
+        // Only show departments that DON'T have a floor assigned yet
+        const unassigned = data.filter(
+          (item) => !item.floorNo || item.floorNo === "",
+        );
+        const options = unassigned.map((item) => ({
           label: item.department || item.name || item,
           value: item.department || item.name || item,
         }));
@@ -221,6 +225,13 @@ export default function DepartmentManagement() {
   };
 
   const handleRoomKeyDown = (e) => {
+    // Enter key - add the room
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddRoom();
+      return;
+    }
+
     // Block non-numeric keys
     const allowedKeys = [
       "Backspace",
@@ -232,17 +243,11 @@ export default function DepartmentManagement() {
       "ArrowDown",
       "Home",
       "End",
-      "Enter",
     ];
     if (allowedKeys.includes(e.key)) return;
     if (e.ctrlKey || e.metaKey) return;
     if (!/^[0-9]$/.test(e.key)) {
       e.preventDefault();
-    }
-
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddRoom();
     }
   };
 
