@@ -145,6 +145,7 @@ export default function DepartmentManagement() {
       roomNos: rowData.roomNos || [],
     });
     setRoomInput("");
+    setShowDetailsModal(false);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -261,6 +262,13 @@ export default function DepartmentManagement() {
 
   const handleRemoveRoom = (roomToRemove) => {
     const currentRooms = formik.values.roomNos || [];
+
+    // In edit mode, prevent removing the last room
+    if (editingId && currentRooms.length <= 1) {
+      toast.warning("At least one room is required");
+      return;
+    }
+
     formik.setFieldValue(
       "roomNos",
       currentRooms.filter((room) => room !== roomToRemove),
@@ -313,13 +321,6 @@ export default function DepartmentManagement() {
           <i className="pi pi-eye text-xs" />
         </button>
         <button
-          onClick={() => handleEditClick(rowData)}
-          className="h-8 w-8 rounded-lg bg-green-100 text-green-600 hover:bg-green-600 hover:text-white transition-all duration-200 flex items-center justify-center"
-          title="Edit Department"
-        >
-          <i className="pi pi-pencil text-xs" />
-        </button>
-        <button
           onClick={() => handleDeleteClick(rowData)}
           className="h-8 w-8 rounded-lg bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-200 flex items-center justify-center"
           title="Delete Department"
@@ -364,7 +365,7 @@ export default function DepartmentManagement() {
       header: "Actions",
       sortable: false,
       body: actionBodyTemplate,
-      minWidth: "160px",
+      minWidth: "120px",
     },
   ];
 
@@ -602,14 +603,6 @@ export default function DepartmentManagement() {
                       </p>
                     </div>
 
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                        Department ID
-                      </p>
-                      <p className="mt-1 text-lg font-bold text-gray-800 truncate">
-                        {viewDetails._id || "-"}
-                      </p>
-                    </div>
                   </div>
 
                   {/* Room Numbers */}
@@ -644,6 +637,24 @@ export default function DepartmentManagement() {
                         ? new Date(viewDetails.createdAt).toLocaleString()
                         : "-"}
                     </p>
+                  </div>
+
+                  {/* Edit Button */}
+                  <div className="pt-6 border-t border-gray-100 flex justify-end gap-3">
+                    <Button
+                      type="button"
+                      label="Edit Department"
+                      variant="primary"
+                      icon="pi pi-pencil"
+                      onClick={() => {
+                        handleEditClick({
+                          _id: viewDetails._id,
+                          department: viewDetails.department,
+                          floorNo: viewDetails.floorNo,
+                          roomNos: viewDetails.roomNos || [],
+                        });
+                      }}
+                    />
                   </div>
                 </div>
               ) : (
