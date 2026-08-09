@@ -27,6 +27,9 @@ const AddEditReceptionisht = lazy(() => import('../pages/modules/receptionishtMa
 // Analytics
 const Analytics = lazy(() => import('../pages/modules/analytics/Analytics'))
 
+//DOctor Patient Management 
+const DoctorPatientManagement = lazy(() => import('../pages/modules/doctorManagment/DoctorPatientManagement'));
+
 // Fallback loader
 const Loader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -53,6 +56,17 @@ export default function PublicRoute() {
                   <Route path="/receptionist-management/edit/:id" element={<AddEditReceptionisht />} />
                   <Route path="/analytics" element={<Analytics />} />
                 </Route>
+
+
+<Route element={<RoleProtectedRoute allowedRoles={[ROLES.DOCTOR, ROLES.SUPER_ADMIN]} />}>
+    <Route path="/doctor/patient-management" element={<DoctorPatientManagement />} />
+    {/* Other doctor routes */}
+</Route>
+
+
+
+
+
                 <Route path="/patient-data" element={<PatientsListData />} />
                 <Route path="/patient-data/view/:id" element={<PatientDataView />} />
                 <Route path="/patient-data/edit/:id" element={<PatientDataUpdate />} />
