@@ -4,18 +4,32 @@ import BreadCrumb from '../../../components/common/BreadCrumb';
 import PagePath from '../../../components/common/PagePath';
 import Button from '../../../components/common/Button';
 import { TextInput } from '../../../components/common/FormFields';
+import Select from 'react-select';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import useReceptionistMgmt from '../../../hooks/receptionishtManagement/useReceptionistMgmt';
+import useDropdowns from '../../../hooks/dropdown/useDropdowns';
+
+const mapToSelectOptions = (items) => {
+  if (!items || !Array.isArray(items)) return [];
+  return items.map((item) => ({
+    value: item,
+    label: item
+  }));
+};
 
 const validationSchema = Yup.object({
+  // employeeId: Yup.string().required('Employee ID is required'),
   name: Yup.string().required('Data Entry Operator name is required'),
   email: Yup.string()
     .email('Invalid email address')
     .required('Email is required'),
   password: Yup.string()
     .required('Password is required')
-    .min(6, 'Password must be at least 6 characters')
+    .min(6, 'Password must be at least 6 characters'),
+  designation: Yup.object().nullable().required('Designation is required'),
+  department: Yup.object().nullable().required('Department is required'),
+  role: Yup.object().nullable().required('Role is required')
 });
 
 export default function AddEditReceptionisht() {
@@ -31,8 +45,27 @@ export default function AddEditReceptionisht() {
     loading
   } = useReceptionistMgmt();
 
+  const {
+    departments,
+    designations,
+    roles,
+    fetchDepartments,
+    fetchDesignations,
+    fetchRoles
+  } = useDropdowns();
+
   const [photoPreview, setPhotoPreview] = useState('');
   const [selectedPhoto, setSelectedPhoto] = useState(null);
+
+  const designationOptions = mapToSelectOptions(designations);
+  const departmentOptions = mapToSelectOptions(departments);
+  const roleOptions = mapToSelectOptions(roles);
+
+  useEffect(() => {
+    fetchDesignations();
+    fetchDepartments();
+    fetchRoles();
+  }, [fetchDesignations, fetchDepartments, fetchRoles]);
 
   useEffect(() => {
     if (id) {
@@ -44,12 +77,6 @@ export default function AddEditReceptionisht() {
     };
   }, [id]);
 
-  useEffect(() => {
-    if (id && receptionistDetails) {
-      setPhotoPreview(receptionistDetails?.photo || '');
-    }
-  }, [id, receptionistDetails]);
-
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -57,6 +84,15 @@ export default function AddEditReceptionisht() {
       name: receptionistDetails?.name || '',
       email: receptionistDetails?.email || '',
       password: receptionistDetails?.password || '',
+      designation: designationOptions.find(
+        (opt) => opt.value === receptionistDetails?.designation
+      ) || null,
+      department: departmentOptions.find(
+        (opt) => opt.value === receptionistDetails?.department
+      ) || null,
+      role: roleOptions.find(
+        (opt) => opt.value === receptionistDetails?.role
+      ) || null,
       photo: null
     },
     validationSchema,
@@ -67,6 +103,10 @@ export default function AddEditReceptionisht() {
         formData.append('name', values.name);
         formData.append('email', values.email);
         formData.append('password', values.password);
+        formData.append('employeeId', values.employeeId || '');
+        formData.append('designation', values.designation?.value || '');
+        formData.append('department', values.department?.value || '');
+        formData.append('role', values.role?.value || '');
 
         if (selectedPhoto) {
           formData.append('photo', selectedPhoto);
@@ -84,6 +124,24 @@ export default function AddEditReceptionisht() {
       }
     }
   });
+
+  useEffect(() => {
+    if (id && receptionistDetails) {
+      setPhotoPreview(receptionistDetails?.photo || '');
+      const designationOpt = designationOptions.find(
+        (opt) => opt.value === receptionistDetails?.designation
+      );
+      const departmentOpt = departmentOptions.find(
+        (opt) => opt.value === receptionistDetails?.department
+      );
+      const roleOpt = roleOptions.find(
+        (opt) => opt.value === receptionistDetails?.role
+      );
+      formik.setFieldValue('designation', designationOpt || null);
+      formik.setFieldValue('department', departmentOpt || null);
+      formik.setFieldValue('role', roleOpt || null);
+    }
+  }, [id, receptionistDetails, formik]);
 
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
@@ -129,18 +187,77 @@ export default function AddEditReceptionisht() {
           </div>
 
           <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Designation <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  name="designation"
+                  options={designationOptions}
+                  value={formik.values.designation}
+                  onChange={(option) => formik.setFieldValue('designation', option)}
+                  onBlur={() => formik.setFieldTouched('designation', true)}
+                  placeholder="Select designation"
+                  classNamePrefix="react-select"
+                  isClearable
+                />
+                {formik.touched.designation && formik.errors.designation && (
+                  <p className="text-xs text-red-500 mt-1">{formik.errors.designation}</p>
+                )}
+              </div>
 
-            {/* Employee ID only in Edit mode */}
-            {id && (
-              <TextInput
-                label="Employee ID"
-                name="employeeId"
-                value={formik.values.employeeId}
-                disabled
-                placeholder="Employee ID"
-                icon="pi-id-card"
-              />
-            )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Department <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  name="department"
+                  options={departmentOptions}
+                  value={formik.values.department}
+                  onChange={(option) => formik.setFieldValue('department', option)}
+                  onBlur={() => formik.setFieldTouched('department', true)}
+                  placeholder="Select department"
+                  classNamePrefix="react-select"
+                  isClearable
+                />
+                {formik.touched.department && formik.errors.department && (
+                  <p className="text-xs text-red-500 mt-1">{formik.errors.department}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Role <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  name="role"
+                  options={roleOptions}
+                  value={formik.values.role}
+                  onChange={(option) => formik.setFieldValue('role', option)}
+                  onBlur={() => formik.setFieldTouched('role', true)}
+                  placeholder="Select role"
+                  classNamePrefix="react-select"
+                  isClearable
+                />
+                {formik.touched.role && formik.errors.role && (
+                  <p className="text-xs text-red-500 mt-1">{formik.errors.role}</p>
+                )}
+              </div>
+            </div>
+
+            <TextInput
+              label="Employee ID"
+              name="employeeId"
+              value={formik.values.employeeId}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              placeholder="Enter employee ID"
+              required
+              icon="pi-id-card"
+              disabled={id}
+              error={formik.touched.employeeId && formik.errors.employeeId}
+            />
 
             <TextInput
               label="Data Entry Operator Name"
