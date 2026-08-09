@@ -51,338 +51,14 @@ const mlcTypeOptions = [
   { label: "Other", value: "Other" },
 ];
 
-const departmentOptions = [
-  {
-    label: "General Medicine",
-    value: "General Medicine",
-    roomStart: 1,
-    roomEnd: 5,
-    floor: "Ground Floor",
-    doctors: [
-      "Dr. A. Sharma",
-      "Dr. B. Patil",
-      "Dr. C. Deshmukh",
-      "Dr. D. Gupta",
-      "Dr. E. Joshi",
-    ],
-  },
-  {
-    label: "General Surgery",
-    value: "General Surgery",
-    roomStart: 6,
-    roomEnd: 10,
-    floor: "Ground Floor",
-    doctors: [
-      "Dr. F. Kulkarni",
-      "Dr. G. Rao",
-      "Dr. H. Mehra",
-      "Dr. I. Nair",
-      "Dr. J. Singh",
-    ],
-  },
-  {
-    label: "Pediatrics / Child Medicine",
-    value: "Pediatrics / Child Medicine",
-    roomStart: 11,
-    roomEnd: 15,
-    floor: "1st Floor",
-    doctors: [
-      "Dr. K. Verma",
-      "Dr. L. Bose",
-      "Dr. M. Chakra",
-      "Dr. N. Das",
-      "Dr. O. Pillai",
-    ],
-  },
-  {
-    label: "Obstetrics & Gynaecology (OBGY)",
-    value: "Obstetrics & Gynaecology (OBGY)",
-    roomStart: 16,
-    roomEnd: 20,
-    floor: "1st Floor",
-    doctors: [
-      "Dr. P. Menon",
-      "Dr. Q. Iyer",
-      "Dr. R. Khanna",
-      "Dr. S. Bhat",
-      "Dr. T. Reddy",
-    ],
-  },
-  {
-    label: "Orthopedics",
-    value: "Orthopedics",
-    roomStart: 21,
-    roomEnd: 25,
-    floor: "2nd Floor",
-    doctors: [
-      "Dr. U. Saxena",
-      "Dr. V. Trivedi",
-      "Dr. W. Kaur",
-      "Dr. X. Malhotra",
-      "Dr. Y. Pandey",
-    ],
-  },
-  {
-    label: "ENT (Ear, Nose & Throat)",
-    value: "ENT (Ear, Nose & Throat)",
-    roomStart: 26,
-    roomEnd: 30,
-    floor: "2nd Floor",
-    doctors: [
-      "Dr. Z. Agarwal",
-      "Dr. AA. Bansal",
-      "Dr. AB. Chawla",
-      "Dr. AC. Dube",
-      "Dr. AD. Eknath",
-    ],
-  },
-  {
-    label: "Ophthalmology / Eye",
-    value: "Ophthalmology / Eye",
-    roomStart: 31,
-    roomEnd: 35,
-    floor: "3rd Floor",
-    doctors: [
-      "Dr. AE. Fadnavis",
-      "Dr. AF. Gokhale",
-      "Dr. AG. Hegde",
-      "Dr. AH. Inamdar",
-      "Dr. AI. Jain",
-    ],
-  },
-  {
-    label: "Dermatology / Skin & VD",
-    value: "Dermatology / Skin & VD",
-    roomStart: 36,
-    roomEnd: 40,
-    floor: "3rd Floor",
-    doctors: [
-      "Dr. AJ. Kapoor",
-      "Dr. AK. Lakhani",
-      "Dr. AL. Mishra",
-      "Dr. AM. Nadkarni",
-      "Dr. AN. Oak",
-    ],
-  },
-  {
-    label: "Psychiatry / Mental Health",
-    value: "Psychiatry / Mental Health",
-    roomStart: 41,
-    roomEnd: 45,
-    floor: "3rd Floor",
-    doctors: [
-      "Dr. AO. Parikh",
-      "Dr. AP. Qureshi",
-      "Dr. AQ. Rane",
-      "Dr. AR. Somani",
-      "Dr. AS. Talwar",
-    ],
-  },
-  {
-    label: "Respiratory Medicine / Chest & TB",
-    value: "Respiratory Medicine / Chest & TB",
-    roomStart: 46,
-    roomEnd: 50,
-    floor: "4th Floor",
-    doctors: [
-      "Dr. AT. Uppal",
-      "Dr. AU. Vaidya",
-      "Dr. AV. Wagle",
-      "Dr. AW. Yadav",
-      "Dr. AX. Zope",
-    ],
-  },
-  {
-    label: "Cardiology",
-    value: "Cardiology",
-    roomStart: 51,
-    roomEnd: 55,
-    floor: "4th Floor",
-    doctors: [
-      "Dr. AY. Anand",
-      "Dr. AZ. Bhide",
-      "Dr. BA. Chopra",
-      "Dr. BB. Dandekar",
-      "Dr. BC. Erande",
-    ],
-  },
-  {
-    label: "Neurology",
-    value: "Neurology",
-    roomStart: 56,
-    roomEnd: 60,
-    floor: "4th Floor",
-    doctors: [
-      "Dr. BD. Furtado",
-      "Dr. BE. Gade",
-      "Dr. BF. Haldar",
-      "Dr. BG. Irani",
-      "Dr. BH. Joglekar",
-    ],
-  },
-  {
-    label: "Nephrology",
-    value: "Nephrology",
-    roomStart: 61,
-    roomEnd: 65,
-    floor: "5th Floor",
-    doctors: [
-      "Dr. BI. Kulkarni",
-      "Dr. BJ. Lobo",
-      "Dr. BK. Mankad",
-      "Dr. BL. Nair",
-      "Dr. BM. Oza",
-    ],
-  },
-  {
-    label: "Urology",
-    value: "Urology",
-    roomStart: 66,
-    roomEnd: 70,
-    floor: "5th Floor",
-    doctors: [
-      "Dr. BN. Pradhan",
-      "Dr. BO. Qazi",
-      "Dr. BP. Rathod",
-      "Dr. BQ. Sane",
-      "Dr. BR. Tendulkar",
-    ],
-  },
-  {
-    label: "Gastroenterology",
-    value: "Gastroenterology",
-    roomStart: 71,
-    roomEnd: 75,
-    floor: "5th Floor",
-    doctors: [
-      "Dr. BS. Udeshi",
-      "Dr. BT. Vartak",
-      "Dr. BU. Wadhwa",
-      "Dr. BV. Xavier",
-      "Dr. BW. Yewale",
-    ],
-  },
-  {
-    label: "Endocrinology",
-    value: "Endocrinology",
-    roomStart: 76,
-    roomEnd: 80,
-    floor: "6th Floor",
-    doctors: [
-      "Dr. BX. Ahuja",
-      "Dr. BY. Bajaj",
-      "Dr. BZ. Chitnis",
-      "Dr. CA. Dhawan",
-      "Dr. CB. Ebrahim",
-    ],
-  },
-  {
-    label: "Dental",
-    value: "Dental",
-    roomStart: 81,
-    roomEnd: 85,
-    floor: "6th Floor",
-    doctors: [
-      "Dr. CC. Fernandes",
-      "Dr. CD. Gaikwad",
-      "Dr. CE. Handa",
-      "Dr. CF. Iyengar",
-      "Dr. CG. Jha",
-    ],
-  },
-  {
-    label: "Oncology / Cancer",
-    value: "Oncology / Cancer",
-    roomStart: 86,
-    roomEnd: 90,
-    floor: "6th Floor",
-    doctors: [
-      "Dr. CH. Kakkar",
-      "Dr. CI. Lal",
-      "Dr. CJ. Mukherjee",
-      "Dr. CK. Naik",
-      "Dr. CL. Oberoi",
-    ],
-  },
-  {
-    label: "Radiology / Radio Diagnosis",
-    value: "Radiology / Radio Diagnosis",
-    roomStart: 91,
-    roomEnd: 95,
-    floor: "7th Floor",
-    doctors: [
-      "Dr. CM. Pandit",
-      "Dr. CN. Qureshi",
-      "Dr. CO. Raut",
-      "Dr. CP. Sethi",
-      "Dr. CQ. Tandon",
-    ],
-  },
-  {
-    label: "Anesthesiology",
-    value: "Anesthesiology",
-    roomStart: 96,
-    roomEnd: 100,
-    floor: "7th Floor",
-    doctors: [
-      "Dr. CR. Umarkar",
-      "Dr. CS. Vyas",
-      "Dr. CT. Wani",
-      "Dr. CU. Yadhav",
-      "Dr. CV. Zaveri",
-    ],
-  },
-  {
-    label: "Physiotherapy",
-    value: "Physiotherapy",
-    roomStart: 101,
-    roomEnd: 105,
-    floor: "8th Floor",
-    doctors: [
-      "Dr. CW. Apte",
-      "Dr. CX. Bhosale",
-      "Dr. CY. Chitale",
-      "Dr. CZ. Dalal",
-      "Dr. DA. Engineer",
-    ],
-  },
-  {
-    label: "Emergency / Casualty",
-    value: "Emergency / Casualty",
-    roomStart: 106,
-    roomEnd: 110,
-    floor: "Ground Floor",
-    doctors: [
-      "Dr. DB. Fonseca",
-      "Dr. DC. Gaitonde",
-      "Dr. DD. Hiranandani",
-      "Dr. DE. Iyer",
-      "Dr. DF. Jaiswal",
-    ],
-  },
-  {
-    label: "ICU / Critical Care",
-    value: "ICU / Critical Care",
-    roomStart: 111,
-    roomEnd: 115,
-    floor: "Ground Floor",
-    doctors: [
-      "Dr. DG. Khandelwal",
-      "Dr. DH. Luthra",
-      "Dr. DI. Motwani",
-      "Dr. DJ. Nihalani",
-      "Dr. DK. Oswal",
-    ],
-  },
-];
-
 export default function NewPatientRegistration() {
   const { addPatient, loading } = usePatientMgmt();
   const [fetchData] = useFetch();
   const [showPrintForm, setShowPrintForm] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [departmentsData, setDepartmentsData] = useState([]);
 
-  // Dummy API call to check departments-management-dropdown response
+  // Fetch departments-management-dropdown API
   useEffect(() => {
     const fetchDepartmentsDropdown = async () => {
       try {
@@ -391,6 +67,8 @@ export default function NewPatientRegistration() {
           url: `${conf.apiBaseUrl}patients/departments-management-dropdown`,
         });
         console.log("Departments Management Dropdown Response:", res);
+        const data = res?.data || [];
+        setDepartmentsData(data);
       } catch (error) {
         console.error("Error fetching departments dropdown:", error);
       }
@@ -560,88 +238,51 @@ export default function NewPatientRegistration() {
   // -----------------------------
   // Department handlers
   // -----------------------------
+  const departmentOptions = useMemo(() => {
+    return departmentsData.map((item) => ({
+      label: item.department,
+      value: item.department,
+    }));
+  }, [departmentsData]);
+
   const handleDepartmentChange = useCallback((selectedOption) => {
-    const dept = departmentOptions.find(
-      (option) => option.value === selectedOption?.value,
+    const dept = departmentsData.find(
+      (item) => item.department === selectedOption?.value,
     );
     formik.setFieldValue("referToDepartment", selectedOption?.value || "");
-    formik.setFieldValue("floor", dept?.floor || "");
+    formik.setFieldValue("floor", dept?.floorNo || "");
     formik.setFieldValue("doctorName", "");
     formik.setFieldValue("roomNumber", "");
-  }, [formik]);
+  }, [formik, departmentsData]);
 
   const selectedDepartment = useMemo(() => {
-    return departmentOptions.find(
-      (option) => option.value === formik.values.referToDepartment,
+    return departmentsData.find(
+      (item) => item.department === formik.values.referToDepartment,
     );
-  }, [formik.values.referToDepartment]);
+  }, [formik.values.referToDepartment, departmentsData]);
 
   const roomNumberOptions = useMemo(() => {
     if (!selectedDepartment) return [];
-    return Array.from(
-      {
-        length: selectedDepartment.roomEnd - selectedDepartment.roomStart + 1,
-      },
-      (_, i) => {
-        const room = selectedDepartment.roomStart + i;
-        return { label: `Room ${room}`, value: String(room) };
-      },
-    );
+    return (selectedDepartment.roomNos || []).map((room) => ({
+      label: `Room ${room}`,
+      value: String(room),
+    }));
   }, [selectedDepartment]);
 
   const doctorOptions = useMemo(() => {
     if (!selectedDepartment) return [];
-    return selectedDepartment.doctors.map((doc) => ({ label: doc, value: doc }));
+    return (selectedDepartment.doctors || []).map((doc) => ({
+      label: doc,
+      value: doc,
+    }));
   }, [selectedDepartment]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const errors = await formik.validateForm();
-
-    console.log("Formik Errors:", errors);
-    console.log("Formik Values:", formik.values);
-
-    if (Object.keys(errors).length > 0) {
-      const touchedFields = {};
-
-      const setNestedTouched = (obj, target) => {
-        Object.keys(obj).forEach((key) => {
-          if (
-            obj[key] !== null &&
-            typeof obj[key] === "object" &&
-            !Array.isArray(obj[key])
-          ) {
-            target[key] = {};
-            setNestedTouched(obj[key], target[key]);
-          } else {
-            target[key] = true;
-          }
-        });
-      };
-
-      setNestedTouched(errors, touchedFields);
-
-      formik.setTouched(touchedFields, true);
-
-      toast.error(
-        `Validation Failed:\n${Object.entries(errors)
-          .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
-          .join("\n")}`,
-      );
-
-      return;
-    }
-
-    formik.handleSubmit();
-  };
 
   return (
     <div className="max-w-7xl mx-auto pb-12">
       <BreadCrumb paths={breadcrumbPaths} />
       <PagePath title="Register New Patient" />
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={formik.handleSubmit}>
         <div className="space-y-4">
           {/* Basic Information */}
           <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -684,6 +325,7 @@ export default function NewPatientRegistration() {
                   }
                   onBlur={() => formik.setFieldTouched("gender", true)}
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
                   error={formik.touched.gender && formik.errors.gender}
                 />
@@ -799,6 +441,7 @@ export default function NewPatientRegistration() {
                   }
                   onBlur={() => formik.setFieldTouched("patientType", true)}
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
                   error={
                     formik.touched.patientType && formik.errors.patientType
@@ -823,6 +466,7 @@ export default function NewPatientRegistration() {
                   }
                   onBlur={() => formik.setFieldTouched("mlcType", true)}
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
                   error={formik.touched.mlcType && formik.errors.mlcType}
                 />
@@ -855,6 +499,7 @@ export default function NewPatientRegistration() {
                     formik.setFieldTouched("referToDepartment", true)
                   }
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
                   error={
                     formik.touched.referToDepartment &&
@@ -902,6 +547,7 @@ export default function NewPatientRegistration() {
                   }
                   onBlur={() => formik.setFieldTouched("doctorName", true)}
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
                   error={formik.touched.doctorName && formik.errors.doctorName}
                 />
@@ -915,7 +561,7 @@ export default function NewPatientRegistration() {
                   options={roomNumberOptions}
                   placeholder={
                     selectedDepartment
-                      ? `Select Room (${selectedDepartment.roomStart}-${selectedDepartment.roomEnd})`
+                      ? "Select Room"
                       : "Select Department First"
                   }
                   value={
@@ -931,6 +577,7 @@ export default function NewPatientRegistration() {
                   }
                   onBlur={() => formik.setFieldTouched("roomNumber", true)}
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
                   error={formik.touched.roomNumber && formik.errors.roomNumber}
                 />
