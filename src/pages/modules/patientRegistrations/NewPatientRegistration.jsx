@@ -503,10 +503,12 @@ export default function NewPatientRegistration() {
   useEffect(() => {
     const handleAfterPrint = () => {
       setShowPrintForm(false);
+      setIsSaved(false);
+      formik.resetForm();
     };
     window.addEventListener("afterprint", handleAfterPrint);
     return () => window.removeEventListener("afterprint", handleAfterPrint);
-  }, []);
+  }, [formik]);
 
   // -----------------------------
   // Input restriction handlers
@@ -638,6 +640,7 @@ export default function NewPatientRegistration() {
                   value={formik.values.patientName}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={isSaved}
                   required
                   error={
                     formik.touched.patientName && formik.errors.patientName
@@ -661,6 +664,7 @@ export default function NewPatientRegistration() {
                     formik.setFieldValue("gender", selectedOption?.value || "")
                   }
                   onBlur={() => formik.setFieldTouched("gender", true)}
+                  isDisabled={isSaved}
                   required
                   error={formik.touched.gender && formik.errors.gender}
                 />
@@ -676,6 +680,7 @@ export default function NewPatientRegistration() {
                   value={formik.values.age}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={isSaved}
                   required
                   error={formik.touched.age && formik.errors.age}
                 />
@@ -690,6 +695,7 @@ export default function NewPatientRegistration() {
                   value={formik.values.dateOfBirth}
                   onChange={(date) => formik.setFieldValue("dateOfBirth", date)}
                   onBlur={() => formik.setFieldTouched("dateOfBirth", true)}
+                  disabled={isSaved}
                 />
               </div>
 
@@ -703,6 +709,7 @@ export default function NewPatientRegistration() {
                   onChange={handleNumericInput("mobileNumber", 10)}
                   onKeyDown={handleNumericKeyDown}
                   onBlur={formik.handleBlur}
+                  disabled={isSaved}
                   required
                   error={
                     formik.touched.mobileNumber && formik.errors.mobileNumber
@@ -720,6 +727,7 @@ export default function NewPatientRegistration() {
                   onChange={handleNumericInput("aadhaarNumber", 12)}
                   onKeyDown={handleNumericKeyDown}
                   onBlur={formik.handleBlur}
+                  disabled={isSaved}
                   error={
                     formik.touched.aadhaarNumber && formik.errors.aadhaarNumber
                   }
@@ -735,6 +743,7 @@ export default function NewPatientRegistration() {
                   value={formik.values.address}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={isSaved}
                   required
                   error={
                     formik.touched.address && formik.errors.address
@@ -770,6 +779,7 @@ export default function NewPatientRegistration() {
                     )
                   }
                   onBlur={() => formik.setFieldTouched("patientType", true)}
+                  isDisabled={isSaved}
                   required
                   error={
                     formik.touched.patientType && formik.errors.patientType
@@ -793,6 +803,7 @@ export default function NewPatientRegistration() {
                     formik.setFieldValue("mlcType", selectedOption?.value || "")
                   }
                   onBlur={() => formik.setFieldTouched("mlcType", true)}
+                  isDisabled={isSaved}
                   required
                   error={formik.touched.mlcType && formik.errors.mlcType}
                 />
@@ -821,6 +832,7 @@ export default function NewPatientRegistration() {
                   }
                   onChange={handleDepartmentChange}
                   onBlur={() => formik.setFieldTouched("department", true)}
+                  isDisabled={isSaved}
                   required
                   error={formik.touched.department && formik.errors.department}
                 />
@@ -835,6 +847,7 @@ export default function NewPatientRegistration() {
                   value={formik.values.floor}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={isSaved}
                   required
                   error={formik.touched.floor && formik.errors.floor}
                 />
@@ -863,6 +876,7 @@ export default function NewPatientRegistration() {
                     )
                   }
                   onBlur={() => formik.setFieldTouched("doctorName", true)}
+                  isDisabled={isSaved}
                   required
                   error={formik.touched.doctorName && formik.errors.doctorName}
                 />
@@ -891,6 +905,7 @@ export default function NewPatientRegistration() {
                     )
                   }
                   onBlur={() => formik.setFieldTouched("roomNumber", true)}
+                  isDisabled={isSaved}
                   required
                   error={formik.touched.roomNumber && formik.errors.roomNumber}
                 />
@@ -914,6 +929,7 @@ export default function NewPatientRegistration() {
                   value={formik.values.patientId}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={isSaved}
                   readOnly
                 />
               </div>
@@ -927,6 +943,7 @@ export default function NewPatientRegistration() {
                   value={formik.values.operatorName}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={isSaved}
                   readOnly
                 />
               </div>
@@ -940,6 +957,7 @@ export default function NewPatientRegistration() {
                   value={formik.values.counterNumber}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={isSaved}
                   readOnly
                 />
               </div>
