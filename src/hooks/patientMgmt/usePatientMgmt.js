@@ -10,6 +10,7 @@ const usePatientMgmt = () => {
     const [loading, setLoading] = useState(false);
     const [patientRes, setPatientRes] = useRecoilState(patientResAtom);
     const [patientDetails, setPatientDetails] = useRecoilState(patientDetailsAtom);
+    const [departmentsData, setDepartmentsData] = useState([]);
 
     const addPatient = async (data) => {
         setLoading(true);
@@ -32,6 +33,28 @@ const usePatientMgmt = () => {
             setLoading(false);
             toast.error(error.response?.data?.message);
             return false;
+        }
+    };
+
+    const fetchDepartmentsDropdown = async () => {
+        setLoading(true);
+        try {
+            const res = await fetchData({
+                method: "GET",
+                url: `${conf.apiBaseUrl}patients/departments-management-dropdown`,
+            });
+            if (res) {
+                const data = res?.data || [];
+                setDepartmentsData(data);
+                return data;
+            }
+            return [];
+        } catch (error) {
+            console.error("Error fetching departments dropdown:", error);
+            toast.error(error.response?.data?.message);
+            return false;
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -129,12 +152,14 @@ const usePatientMgmt = () => {
         loading,
         patientRes,
         patientDetails,
+        departmentsData,
         addPatient,
         fetchPatients,
         fetchPatientDetails,
         resetPatientDetails,
         updatePatient,
-        resendPatientReport
+        resendPatientReport,
+        fetchDepartmentsDropdown,
     }
 };
 

@@ -49,335 +49,16 @@ const mlcTypeOptions = [
   { label: "Other", value: "Other" },
 ];
 
-const departmentOptions = [
-  {
-    label: "General Medicine",
-    value: "General Medicine",
-    roomStart: 1,
-    roomEnd: 5,
-    floor: "Ground Floor",
-    doctors: [
-      "Dr. A. Sharma",
-      "Dr. B. Patil",
-      "Dr. C. Deshmukh",
-      "Dr. D. Gupta",
-      "Dr. E. Joshi",
-    ],
-  },
-  {
-    label: "General Surgery",
-    value: "General Surgery",
-    roomStart: 6,
-    roomEnd: 10,
-    floor: "Ground Floor",
-    doctors: [
-      "Dr. F. Kulkarni",
-      "Dr. G. Rao",
-      "Dr. H. Mehra",
-      "Dr. I. Nair",
-      "Dr. J. Singh",
-    ],
-  },
-  {
-    label: "Pediatrics / Child Medicine",
-    value: "Pediatrics / Child Medicine",
-    roomStart: 11,
-    roomEnd: 15,
-    floor: "1st Floor",
-    doctors: [
-      "Dr. K. Verma",
-      "Dr. L. Bose",
-      "Dr. M. Chakra",
-      "Dr. N. Das",
-      "Dr. O. Pillai",
-    ],
-  },
-  {
-    label: "Obstetrics & Gynaecology (OBGY)",
-    value: "Obstetrics & Gynaecology (OBGY)",
-    roomStart: 16,
-    roomEnd: 20,
-    floor: "1st Floor",
-    doctors: [
-      "Dr. P. Menon",
-      "Dr. Q. Iyer",
-      "Dr. R. Khanna",
-      "Dr. S. Bhat",
-      "Dr. T. Reddy",
-    ],
-  },
-  {
-    label: "Orthopedics",
-    value: "Orthopedics",
-    roomStart: 21,
-    roomEnd: 25,
-    floor: "2nd Floor",
-    doctors: [
-      "Dr. U. Saxena",
-      "Dr. V. Trivedi",
-      "Dr. W. Kaur",
-      "Dr. X. Malhotra",
-      "Dr. Y. Pandey",
-    ],
-  },
-  {
-    label: "ENT (Ear, Nose & Throat)",
-    value: "ENT (Ear, Nose & Throat)",
-    roomStart: 26,
-    roomEnd: 30,
-    floor: "2nd Floor",
-    doctors: [
-      "Dr. Z. Agarwal",
-      "Dr. AA. Bansal",
-      "Dr. AB. Chawla",
-      "Dr. AC. Dube",
-      "Dr. AD. Eknath",
-    ],
-  },
-  {
-    label: "Ophthalmology / Eye",
-    value: "Ophthalmology / Eye",
-    roomStart: 31,
-    roomEnd: 35,
-    floor: "3rd Floor",
-    doctors: [
-      "Dr. AE. Fadnavis",
-      "Dr. AF. Gokhale",
-      "Dr. AG. Hegde",
-      "Dr. AH. Inamdar",
-      "Dr. AI. Jain",
-    ],
-  },
-  {
-    label: "Dermatology / Skin & VD",
-    value: "Dermatology / Skin & VD",
-    roomStart: 36,
-    roomEnd: 40,
-    floor: "3rd Floor",
-    doctors: [
-      "Dr. AJ. Kapoor",
-      "Dr. AK. Lakhani",
-      "Dr. AL. Mishra",
-      "Dr. AM. Nadkarni",
-      "Dr. AN. Oak",
-    ],
-  },
-  {
-    label: "Psychiatry / Mental Health",
-    value: "Psychiatry / Mental Health",
-    roomStart: 41,
-    roomEnd: 45,
-    floor: "3rd Floor",
-    doctors: [
-      "Dr. AO. Parikh",
-      "Dr. AP. Qureshi",
-      "Dr. AQ. Rane",
-      "Dr. AR. Somani",
-      "Dr. AS. Talwar",
-    ],
-  },
-  {
-    label: "Respiratory Medicine / Chest & TB",
-    value: "Respiratory Medicine / Chest & TB",
-    roomStart: 46,
-    roomEnd: 50,
-    floor: "4th Floor",
-    doctors: [
-      "Dr. AT. Uppal",
-      "Dr. AU. Vaidya",
-      "Dr. AV. Wagle",
-      "Dr. AW. Yadav",
-      "Dr. AX. Zope",
-    ],
-  },
-  {
-    label: "Cardiology",
-    value: "Cardiology",
-    roomStart: 51,
-    roomEnd: 55,
-    floor: "4th Floor",
-    doctors: [
-      "Dr. AY. Anand",
-      "Dr. AZ. Bhide",
-      "Dr. BA. Chopra",
-      "Dr. BB. Dandekar",
-      "Dr. BC. Erande",
-    ],
-  },
-  {
-    label: "Neurology",
-    value: "Neurology",
-    roomStart: 56,
-    roomEnd: 60,
-    floor: "4th Floor",
-    doctors: [
-      "Dr. BD. Furtado",
-      "Dr. BE. Gade",
-      "Dr. BF. Haldar",
-      "Dr. BG. Irani",
-      "Dr. BH. Joglekar",
-    ],
-  },
-  {
-    label: "Nephrology",
-    value: "Nephrology",
-    roomStart: 61,
-    roomEnd: 65,
-    floor: "5th Floor",
-    doctors: [
-      "Dr. BI. Kulkarni",
-      "Dr. BJ. Lobo",
-      "Dr. BK. Mankad",
-      "Dr. BL. Nair",
-      "Dr. BM. Oza",
-    ],
-  },
-  {
-    label: "Urology",
-    value: "Urology",
-    roomStart: 66,
-    roomEnd: 70,
-    floor: "5th Floor",
-    doctors: [
-      "Dr. BN. Pradhan",
-      "Dr. BO. Qazi",
-      "Dr. BP. Rathod",
-      "Dr. BQ. Sane",
-      "Dr. BR. Tendulkar",
-    ],
-  },
-  {
-    label: "Gastroenterology",
-    value: "Gastroenterology",
-    roomStart: 71,
-    roomEnd: 75,
-    floor: "5th Floor",
-    doctors: [
-      "Dr. BS. Udeshi",
-      "Dr. BT. Vartak",
-      "Dr. BU. Wadhwa",
-      "Dr. BV. Xavier",
-      "Dr. BW. Yewale",
-    ],
-  },
-  {
-    label: "Endocrinology",
-    value: "Endocrinology",
-    roomStart: 76,
-    roomEnd: 80,
-    floor: "6th Floor",
-    doctors: [
-      "Dr. BX. Ahuja",
-      "Dr. BY. Bajaj",
-      "Dr. BZ. Chitnis",
-      "Dr. CA. Dhawan",
-      "Dr. CB. Ebrahim",
-    ],
-  },
-  {
-    label: "Dental",
-    value: "Dental",
-    roomStart: 81,
-    roomEnd: 85,
-    floor: "6th Floor",
-    doctors: [
-      "Dr. CC. Fernandes",
-      "Dr. CD. Gaikwad",
-      "Dr. CE. Handa",
-      "Dr. CF. Iyengar",
-      "Dr. CG. Jha",
-    ],
-  },
-  {
-    label: "Oncology / Cancer",
-    value: "Oncology / Cancer",
-    roomStart: 86,
-    roomEnd: 90,
-    floor: "6th Floor",
-    doctors: [
-      "Dr. CH. Kakkar",
-      "Dr. CI. Lal",
-      "Dr. CJ. Mukherjee",
-      "Dr. CK. Naik",
-      "Dr. CL. Oberoi",
-    ],
-  },
-  {
-    label: "Radiology / Radio Diagnosis",
-    value: "Radiology / Radio Diagnosis",
-    roomStart: 91,
-    roomEnd: 95,
-    floor: "7th Floor",
-    doctors: [
-      "Dr. CM. Pandit",
-      "Dr. CN. Qureshi",
-      "Dr. CO. Raut",
-      "Dr. CP. Sethi",
-      "Dr. CQ. Tandon",
-    ],
-  },
-  {
-    label: "Anesthesiology",
-    value: "Anesthesiology",
-    roomStart: 96,
-    roomEnd: 100,
-    floor: "7th Floor",
-    doctors: [
-      "Dr. CR. Umarkar",
-      "Dr. CS. Vyas",
-      "Dr. CT. Wani",
-      "Dr. CU. Yadhav",
-      "Dr. CV. Zaveri",
-    ],
-  },
-  {
-    label: "Physiotherapy",
-    value: "Physiotherapy",
-    roomStart: 101,
-    roomEnd: 105,
-    floor: "8th Floor",
-    doctors: [
-      "Dr. CW. Apte",
-      "Dr. CX. Bhosale",
-      "Dr. CY. Chitale",
-      "Dr. CZ. Dalal",
-      "Dr. DA. Engineer",
-    ],
-  },
-  {
-    label: "Emergency / Casualty",
-    value: "Emergency / Casualty",
-    roomStart: 106,
-    roomEnd: 110,
-    floor: "Ground Floor",
-    doctors: [
-      "Dr. DB. Fonseca",
-      "Dr. DC. Gaitonde",
-      "Dr. DD. Hiranandani",
-      "Dr. DE. Iyer",
-      "Dr. DF. Jaiswal",
-    ],
-  },
-  {
-    label: "ICU / Critical Care",
-    value: "ICU / Critical Care",
-    roomStart: 111,
-    roomEnd: 115,
-    floor: "Ground Floor",
-    doctors: [
-      "Dr. DG. Khandelwal",
-      "Dr. DH. Luthra",
-      "Dr. DI. Motwani",
-      "Dr. DJ. Nihalani",
-      "Dr. DK. Oswal",
-    ],
-  },
-];
-
 export default function NewPatientRegistration() {
-  const { addPatient, loading } = usePatientMgmt();
+  const { addPatient, loading, departmentsData, fetchDepartmentsDropdown } =
+    usePatientMgmt();
   const [showPrintForm, setShowPrintForm] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+
+  // Fetch departments-management-dropdown API via hook
+  useEffect(() => {
+    fetchDepartmentsDropdown();
+  }, []);
 
   const validationSchema = Yup.object({
     patientName: Yup.string().required("Patient Name is required"),
@@ -386,7 +67,7 @@ export default function NewPatientRegistration() {
     mobileNumber: Yup.string()
       .required("Mobile Number is required")
       .matches(/^[0-9]{10}$/, "Enter valid mobile number"),
-    department: Yup.string().required("Department is required"),
+    referToDepartment: Yup.string().required("Department is required"),
     floor: Yup.string().required("Floor is required"),
     doctorName: Yup.string().required("Doctor is required"),
     roomNumber: Yup.string().required("Room Number is required"),
@@ -407,7 +88,7 @@ export default function NewPatientRegistration() {
       dateOfBirth: null,
       age: "",
       mobileNumber: "",
-      department: "",
+      referToDepartment: "",
       floor: "",
       doctorName: "",
       roomNumber: "",
@@ -430,7 +111,7 @@ export default function NewPatientRegistration() {
           "gender",
           "age",
           "mobileNumber",
-          "department",
+          "referToDepartment",
           "floor",
           "doctorName",
           "roomNumber",
@@ -455,7 +136,7 @@ export default function NewPatientRegistration() {
           gender: values.gender,
           age: values.age,
           mobileNumber: values.mobileNumber,
-          department: values.department,
+          referToDepartment: values.referToDepartment,
           floorNumber: values.floor,
           doctorName: values.doctorName,
           roomNumber: values.roomNumber,
@@ -474,17 +155,23 @@ export default function NewPatientRegistration() {
         const response = await addPatient(payload);
 
         if (response?.data) {
-          const { patientId, registrarName, counterNo, registrationDate, registrationTime } = response.data;
+          const {
+            patientId,
+            registrarName,
+            counterNo,
+            registrationDate,
+            registrationTime,
+          } = response.data;
           if (patientId) formik.setFieldValue("patientId", patientId);
-          if (registrarName) formik.setFieldValue("operatorName", registrarName);
-          if (counterNo) formik.setFieldValue("counterNumber", String(counterNo));
-          if (registrationDate) formik.setFieldValue("registrationDate", registrationDate);
-          if (registrationTime) formik.setFieldValue("registrationTime", registrationTime);
+          if (registrarName)
+            formik.setFieldValue("operatorName", registrarName);
+          if (counterNo)
+            formik.setFieldValue("counterNumber", String(counterNo));
+          if (registrationDate)
+            formik.setFieldValue("registrationDate", registrationDate);
+          if (registrationTime)
+            formik.setFieldValue("registrationTime", registrationTime);
           setIsSaved(true);
-
-          toast.success(
-            `Patient saved successfully!\nPatient ID: ${patientId}`,
-          );
         }
       } catch (error) {
         console.error("Patient registration error:", error);
@@ -513,11 +200,14 @@ export default function NewPatientRegistration() {
   // -----------------------------
   // Input restriction handlers
   // -----------------------------
-  const handleNumericInput = useCallback((fieldName, maxLength) => (e) => {
-    const value = e.target.value;
-    const sanitized = value.replace(/[^0-9]/g, "").slice(0, maxLength);
-    formik.setFieldValue(fieldName, sanitized);
-  }, [formik]);
+  const handleNumericInput = useCallback(
+    (fieldName, maxLength) => (e) => {
+      const value = e.target.value;
+      const sanitized = value.replace(/[^0-9]/g, "").slice(0, maxLength);
+      formik.setFieldValue(fieldName, sanitized);
+    },
+    [formik],
+  );
 
   const handleNumericKeyDown = useCallback((e) => {
     const allowedKeys = [
@@ -541,88 +231,54 @@ export default function NewPatientRegistration() {
   // -----------------------------
   // Department handlers
   // -----------------------------
-  const handleDepartmentChange = useCallback((selectedOption) => {
-    const dept = departmentOptions.find(
-      (option) => option.value === selectedOption?.value,
-    );
-    formik.setFieldValue("department", selectedOption?.value || "");
-    formik.setFieldValue("floor", dept?.floor || "");
-    formik.setFieldValue("doctorName", "");
-    formik.setFieldValue("roomNumber", "");
-  }, [formik]);
+  const departmentOptions = useMemo(() => {
+    return departmentsData.map((item) => ({
+      label: item.department,
+      value: item.department,
+    }));
+  }, [departmentsData]);
+
+  const handleDepartmentChange = useCallback(
+    (selectedOption) => {
+      const dept = departmentsData.find(
+        (item) => item.department === selectedOption?.value,
+      );
+      formik.setFieldValue("referToDepartment", selectedOption?.value || "");
+      formik.setFieldValue("floor", dept?.floorNo || "");
+      formik.setFieldValue("doctorName", "");
+      formik.setFieldValue("roomNumber", "");
+    },
+    [formik, departmentsData],
+  );
 
   const selectedDepartment = useMemo(() => {
-    return departmentOptions.find(
-      (option) => option.value === formik.values.department,
+    return departmentsData.find(
+      (item) => item.department === formik.values.referToDepartment,
     );
-  }, [formik.values.department]);
+  }, [formik.values.referToDepartment, departmentsData]);
 
   const roomNumberOptions = useMemo(() => {
     if (!selectedDepartment) return [];
-    return Array.from(
-      {
-        length: selectedDepartment.roomEnd - selectedDepartment.roomStart + 1,
-      },
-      (_, i) => {
-        const room = selectedDepartment.roomStart + i;
-        return { label: `Room ${room}`, value: String(room) };
-      },
-    );
+    return (selectedDepartment.roomNos || []).map((room) => ({
+      label: `Room ${room}`,
+      value: String(room),
+    }));
   }, [selectedDepartment]);
 
   const doctorOptions = useMemo(() => {
     if (!selectedDepartment) return [];
-    return selectedDepartment.doctors.map((doc) => ({ label: doc, value: doc }));
+    return (selectedDepartment.doctors || []).map((doc) => ({
+      label: doc,
+      value: doc,
+    }));
   }, [selectedDepartment]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const errors = await formik.validateForm();
-
-    console.log("Formik Errors:", errors);
-    console.log("Formik Values:", formik.values);
-
-    if (Object.keys(errors).length > 0) {
-      const touchedFields = {};
-
-      const setNestedTouched = (obj, target) => {
-        Object.keys(obj).forEach((key) => {
-          if (
-            obj[key] !== null &&
-            typeof obj[key] === "object" &&
-            !Array.isArray(obj[key])
-          ) {
-            target[key] = {};
-            setNestedTouched(obj[key], target[key]);
-          } else {
-            target[key] = true;
-          }
-        });
-      };
-
-      setNestedTouched(errors, touchedFields);
-
-      formik.setTouched(touchedFields, true);
-
-      toast.error(
-        `Validation Failed:\n${Object.entries(errors)
-          .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
-          .join("\n")}`,
-      );
-
-      return;
-    }
-
-    formik.handleSubmit();
-  };
 
   return (
     <div className="max-w-7xl mx-auto pb-12">
       <BreadCrumb paths={breadcrumbPaths} />
       <PagePath title="Register New Patient" />
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={formik.handleSubmit}>
         <div className="space-y-4">
           {/* Basic Information */}
           <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -665,6 +321,7 @@ export default function NewPatientRegistration() {
                   }
                   onBlur={() => formik.setFieldTouched("gender", true)}
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
                   error={formik.touched.gender && formik.errors.gender}
                 />
@@ -745,9 +402,7 @@ export default function NewPatientRegistration() {
                   onBlur={formik.handleBlur}
                   disabled={isSaved}
                   required
-                  error={
-                    formik.touched.address && formik.errors.address
-                  }
+                  error={formik.touched.address && formik.errors.address}
                 />
               </div>
             </div>
@@ -780,6 +435,7 @@ export default function NewPatientRegistration() {
                   }
                   onBlur={() => formik.setFieldTouched("patientType", true)}
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
                   error={
                     formik.touched.patientType && formik.errors.patientType
@@ -804,6 +460,7 @@ export default function NewPatientRegistration() {
                   }
                   onBlur={() => formik.setFieldTouched("mlcType", true)}
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
                   error={formik.touched.mlcType && formik.errors.mlcType}
                 />
@@ -820,21 +477,28 @@ export default function NewPatientRegistration() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="relative z-20">
                 <SelectInput
-                  id="department"
-                  name="department"
-                  label="Department"
+                  id="referToDepartment"
+                  name="referToDepartment"
+                  label="Refer To Department"
                   options={departmentOptions}
                   placeholder="Select Department"
                   value={
                     departmentOptions.find(
-                      (option) => option.value === formik.values.department,
+                      (option) =>
+                        option.value === formik.values.referToDepartment,
                     ) || null
                   }
                   onChange={handleDepartmentChange}
-                  onBlur={() => formik.setFieldTouched("department", true)}
+                  onBlur={() =>
+                    formik.setFieldTouched("referToDepartment", true)
+                  }
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
-                  error={formik.touched.department && formik.errors.department}
+                  error={
+                    formik.touched.referToDepartment &&
+                    formik.errors.referToDepartment
+                  }
                 />
               </div>
 
@@ -877,6 +541,7 @@ export default function NewPatientRegistration() {
                   }
                   onBlur={() => formik.setFieldTouched("doctorName", true)}
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
                   error={formik.touched.doctorName && formik.errors.doctorName}
                 />
@@ -890,7 +555,7 @@ export default function NewPatientRegistration() {
                   options={roomNumberOptions}
                   placeholder={
                     selectedDepartment
-                      ? `Select Room (${selectedDepartment.roomStart}-${selectedDepartment.roomEnd})`
+                      ? "Select Room"
                       : "Select Department First"
                   }
                   value={
@@ -906,6 +571,7 @@ export default function NewPatientRegistration() {
                   }
                   onBlur={() => formik.setFieldTouched("roomNumber", true)}
                   isDisabled={isSaved}
+                  isSearchable={false}
                   required
                   error={formik.touched.roomNumber && formik.errors.roomNumber}
                 />
@@ -965,7 +631,8 @@ export default function NewPatientRegistration() {
 
             <p className="mt-4 text-sm text-gray-500 flex items-center gap-2">
               <i className="pi pi-info-circle" style={{ fontSize: "0.9rem" }} />
-              Patient ID, Operator Name and Counter Number will be automatically generated when you click Save.
+              Patient ID, Operator Name and Counter Number will be automatically
+              generated when you click Save.
             </p>
           </section>
 

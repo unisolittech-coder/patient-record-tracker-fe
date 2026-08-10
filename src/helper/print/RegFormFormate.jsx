@@ -6,7 +6,7 @@ function RegFormFormate({ values }) {
   const gender = values?.gender || "";
   const age = values?.age || "";
   const mobileNumber = values?.mobileNumber || "";
-  const department = values?.department || "";
+  const department = values?.referToDepartment || values?.department || "";
   const doctorName = values?.doctorName || "";
   const roomNumber = values?.roomNumber || "";
   const patientType = values?.patientType || "";
