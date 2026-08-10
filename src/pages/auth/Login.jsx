@@ -8,6 +8,7 @@ import * as Yup from 'yup';
 import { useLogin } from '../../hooks/auth/useLogin';
 import validator from "validator";
 import useDropdowns from '../../hooks/dropdown/useDropdowns';
+import { ROLES } from '../../constants/roles';
 
 const roleDisplayMap = {
   super_admin: 'Admin',
@@ -59,7 +60,11 @@ export default function Login() {
 
       const success = await adminLogin(payload);
       if (success) {
-        navigate("/dashboard");
+        if (values.role === ROLES.DOCTOR) {
+          navigate("/doctor/patient-management");
+        } else {
+          navigate("/dashboard");
+        }
       }
     }
   });

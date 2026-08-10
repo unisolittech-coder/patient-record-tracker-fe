@@ -88,15 +88,10 @@ export default function PublicRoute() {
                   <Route path="/analytics" element={<Analytics />} />
                 </Route>
 
-
-<Route element={<RoleProtectedRoute allowedRoles={[ROLES.DOCTOR, ROLES.SUPER_ADMIN]} />}>
-    <Route path="/doctor/patient-management" element={<DoctorPatientManagement />} />
-    {/* Other doctor routes */}
-</Route>
-
-
-
-
+                <Route element={<RoleProtectedRoute allowedRoles={[ROLES.DOCTOR, ROLES.SUPER_ADMIN]} />}>
+                  <Route path="/doctor/patient-management" element={<DoctorPatientManagement />} />
+                  {/* Other doctor routes */}
+                </Route>
 
                 <Route path="/patient-data" element={<PatientsListData />} />
                 <Route
