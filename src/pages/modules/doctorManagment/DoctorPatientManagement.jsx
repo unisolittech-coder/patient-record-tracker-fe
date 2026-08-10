@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import useDoctorManagement from '../../../hooks/doctorManagment/useDoctorManagement';
 import PatientSearch from './PatientSearch';
 import PatientDetailsCard from './PatientDetailsCard';

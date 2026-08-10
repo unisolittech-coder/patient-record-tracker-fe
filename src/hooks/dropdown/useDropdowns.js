@@ -38,7 +38,7 @@ const useDropdowns = () => {
         try {
             const res = await fetchData({
                 method: "GET",
-                url: `$ {conf.apiBaseUrl}users/designations`,
+                url: `${conf.apiBaseUrl}users/designations`,
             });
             if (res) {
                 setLoading(false);
