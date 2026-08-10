@@ -1,74 +1,42 @@
 import { atom } from "recoil";
+import { createPersistedAtom } from "../recoilConfig";
 
 // Patient data atom
-export const patientDataAtom = atom({
-    key: "patientDataAtom",
-    default: null,
-});
+export const patientDataAtom = atom(createPersistedAtom("patientDataAtom", null));
 
 // Patient search results
-export const patientSearchResultsAtom = atom({
-    key: "patientSearchResultsAtom",
-    default: [],
-});
+export const patientSearchResultsAtom = atom(createPersistedAtom("patientSearchResultsAtom", []));
 
 // Patient medical history
-export const patientHistoryAtom = atom({
-    key: "patientHistoryAtom",
-    default: [],
-});
+export const patientHistoryAtom = atom(createPersistedAtom("patientHistoryAtom", []));
 
 // Current treatment
-export const currentTreatmentAtom = atom({
-    key: "currentTreatmentAtom",
-    default: null,
-});
+export const currentTreatmentAtom = atom(createPersistedAtom("currentTreatmentAtom", null));
 
 // Lab tests
-export const labTestsAtom = atom({
-    key: "labTestsAtom",
-    default: [],
-});
+export const labTestsAtom = atom(createPersistedAtom("labTestsAtom", []));
 
 // Departments
-export const departmentsAtom = atom({
-    key: "departmentsAtom",
-    default: [],
-});
+export const departmentsAtom = atom(createPersistedAtom("departmentsAtom", []));
 
 // Doctors list
-export const doctorsListAtom = atom({
-    key: "doctorsListAtom",
-    default: [],
-});
+export const doctorsListAtom = atom(createPersistedAtom("doctorsListAtom", []));
 
 // Loading state
-export const patientLoadingAtom = atom({
-    key: "patientLoadingAtom",
-    default: false,
-});
+export const patientLoadingAtom = atom(createPersistedAtom("patientLoadingAtom", false));
 
 // Error state
-export const patientErrorAtom = atom({
-    key: "patientErrorAtom",
-    default: null,
-});
+export const patientErrorAtom = atom(createPersistedAtom("patientErrorAtom", null));
 
 // Selected patient ID (for navigation)
-export const selectedPatientIdAtom = atom({
-    key: "selectedPatientIdAtom",
-    default: null,
-});
+export const selectedPatientIdAtom = atom(createPersistedAtom("selectedPatientIdAtom", null));
 
 // Treatment form data (for multi-step forms)
-export const treatmentFormDataAtom = atom({
-    key: "treatmentFormDataAtom",
-    default: {
-        symptoms: '',
-        diagnosis: '',
-        prescription: [],
-        labTests: [],
-        assignedTo: '',
-        notes: ''
-    },
-});
+export const treatmentFormDataAtom = atom(createPersistedAtom("treatmentFormDataAtom", {
+    symptoms: '',
+    diagnosis: '',
+    prescription: [],
+    labTests: [],
+    assignedTo: '',
+    notes: ''
+}));

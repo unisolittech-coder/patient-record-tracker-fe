@@ -332,7 +332,8 @@ import {
     departmentsAtom,
     doctorsListAtom,
     patientLoadingAtom,
-    patientErrorAtom
+    patientErrorAtom,
+    selectedPatientIdAtom
 } from "../../state/doctor/doctorState";
 
 const useDoctorManagement = () => {
@@ -415,11 +416,22 @@ const useDoctorManagement = () => {
         try {
             const res = await fetchData({
                 method: "GET",
-                url: `${conf.apiBaseUrl}patients/${patientId}/history`,
+                url: `${conf.apiBaseUrl}patients/getpatientHistory/${patientId}`,
             });
             
             if (res) {
-                setPatientHistory(res?.data?.history || res?.data || []);
+                const historyObj = res?.data?.history || {};
+                const normalizedHistory = [];
+                Object.entries(historyObj).forEach(([date, records]) => {
+                    const items = Array.isArray(records) ? records : [records];
+                    items.forEach(record => {
+                        normalizedHistory.push({
+                            ...record,
+                            date
+                        });
+                    });
+                });
+                setPatientHistory(normalizedHistory);
                 return res?.data;
             }
         } catch (error) {
@@ -589,6 +601,7 @@ const useDoctorManagement = () => {
         setPatientHistory([]);
         setCurrentTreatment(null);
         setError(null);
+        setSelectedPatientIdAtom(null);
     };
 
     return {

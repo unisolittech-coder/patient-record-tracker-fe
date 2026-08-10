@@ -19,6 +19,7 @@ export default function DoctorPatientManagement() {
         doctorsList,
         searchPatient,
         fetchPatientById,
+        fetchPatientHistory,
         submitPrescription,   // ✅ This is the correct method
         assignPatient,
         fetchDepartments,
@@ -26,6 +27,7 @@ export default function DoctorPatientManagement() {
     } = useDoctorManagement();
 
     const [selectedPatient, setSelectedPatient] = useState(null);
+    const [searchKey, setSearchKey] = useState(0);
 
     // Load initial data
     useEffect(() => {
@@ -44,6 +46,7 @@ export default function DoctorPatientManagement() {
             if (result.data?.length === 1) {
                 const patient = result.data[0];
                 setSelectedPatient(patient);
+                await fetchPatientHistory(patient.patientId || patient.id);
                 toast.success('Patient found!');
             } else if (result.data?.length > 1) {
                 toast.info(`Found ${result.data.length} patients. Please select one.`);
@@ -58,6 +61,7 @@ export default function DoctorPatientManagement() {
         console.log('Selected patient:', patient);
         setSelectedPatient(patient);
         await fetchPatientById(patient.patientId || patient.id);
+        await fetchPatientHistory(patient.patientId || patient.id);
     };
 
     // Handle patient assignment/referral
@@ -94,18 +98,19 @@ export default function DoctorPatientManagement() {
                         </p>
                     </div>
                     <div className="flex gap-3">
-                        <button
+                        {/* <button
                             onClick={() => navigate('/patient-registration')}
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
                         >
                             <i className="pi pi-user-plus"></i>
                             New Patient
-                        </button>
+                        </button> */}
                         {selectedPatient && (
                             <button
                                 onClick={() => {
                                     clearPatientData();
                                     setSelectedPatient(null);
+                                    setSearchKey(prev => prev + 1);
                                 }}
                                 className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2"
                             >
@@ -118,6 +123,7 @@ export default function DoctorPatientManagement() {
 
                 {/* Search Section */}
                 <PatientSearch 
+                    key={searchKey}
                     onSearch={handlePatientSearch} 
                     loading={loading} 
                     results={searchResults}
