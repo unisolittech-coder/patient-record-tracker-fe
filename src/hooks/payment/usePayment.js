@@ -14,7 +14,7 @@ const usePayment = () => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
-            if (debouncedSearch) params.append("patientId ", debouncedSearch);
+            if (debouncedSearch) params.append("patientId", debouncedSearch);
 
             const res = await fetchData({
                 method: "GET",
@@ -31,14 +31,14 @@ const usePayment = () => {
             return false;
         }
     };
-
-    const updatePaymentCollectionStatus = async (id, data) => {
+  
+    const markPaymentDone = async (patientId, testNames) => {
         setLoading(true);
         try {
             const res = await fetchData({
                 method: "PUT",
-                url: `${conf.apiBaseUrl}payment-collector/${id}`,
-                data,
+                url: `${conf.apiBaseUrl}payment-collector/${patientId}`,
+                data: { testNames },
             });
             if (res) {
                 setLoading(false);
@@ -46,14 +46,14 @@ const usePayment = () => {
                 return true;
             }
         } catch (error) {
-            console.error("Error updating payment collection status:", error);
+            console.error("Error marking payment done:", error);
             setLoading(false);
             toast.error(error.response?.data?.message);
             return false;
         }
     };
 
-    return { paymentCollectorPatient, loading, fetchPaymentCollectorPatients, updatePaymentCollectionStatus };
+    return { paymentCollectorPatient, loading, fetchPaymentCollectorPatients, markPaymentDone };
 }
 
 export default usePayment;
