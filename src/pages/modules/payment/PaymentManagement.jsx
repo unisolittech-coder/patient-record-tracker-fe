@@ -140,7 +140,10 @@ export default function PaymentManagement() {
                               : 'bg-red-50 border-red-100'
                           }`}
                         >
-                          <span className="text-sm font-medium text-gray-700">{test.testName}</span>
+                          <div>
+                            <span className="text-sm font-medium text-gray-700 block">{test.testName}</span>
+                            <span className="text-xs text-gray-500">₹{test.price || 0}</span>
+                          </div>
                           <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
                             test.paymentStatus === 'paid'
                               ? 'bg-green-100 text-green-700'
@@ -171,23 +174,39 @@ export default function PaymentManagement() {
             </div>
             <div className="p-6">
               <div className="space-y-3">
-                {selectedPatient?.tests?.map((test) => (
-                  <label key={test._id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedTests.includes(test.testName)}
-                      disabled={test.paymentStatus === 'paid'}
-                      onChange={() => toggleTest(test.testName)}
-                      className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className={`text-sm flex-1 ${test.paymentStatus === 'paid' ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
-                      {test.testName}
-                    </span>
-                    {test.paymentStatus === 'paid' && (
-                      <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Paid</span>
-                    )}
-                  </label>
-                ))}
+                {selectedPatient?.tests?.map((test) => {
+                  const isSelected = selectedTests.includes(test.testName);
+                  return (
+                    <label key={test._id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={test.paymentStatus === 'paid' || isSelected}
+                        disabled={test.paymentStatus === 'paid'}
+                        onChange={() => toggleTest(test.testName)}
+                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                      />
+                      <span className={`text-sm flex-1 ${test.paymentStatus === 'paid' ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                        {test.testName}
+                      </span>
+                      <span className="text-sm font-medium text-gray-700">₹{test.price || 0}</span>
+                      {test.paymentStatus === 'paid' && (
+                        <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Paid</span>
+                      )}
+                    </label>
+                  );
+                })}
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Total</span>
+                  <span className="text-lg font-bold text-blue-600">
+                    ₹{selectedTests.reduce((total, testName) => {
+                      const test = selectedPatient?.tests?.find(t => t.testName === testName);
+                      return total + (test?.price || 0);
+                    }, 0)}
+                  </span>
+                </div>
               </div>
             </div>
             <div className="p-6 border-t border-gray-100 flex justify-end gap-3">

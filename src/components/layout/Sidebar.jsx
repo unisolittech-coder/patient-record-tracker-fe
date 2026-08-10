@@ -83,6 +83,14 @@ export default function Sidebar() {
     },
   ];
 
+  const bloodCollectionOperatorMenus = [
+    {
+      label: "Blood Collection Center",
+      icon: "pi pi-heart",
+      path: "/blood-collection-center",
+    },
+  ];
+
   const menuItems =
     userRole === ROLES.SUPER_ADMIN
       ? superAdminMenus
@@ -90,7 +98,9 @@ export default function Sidebar() {
         ? doctorMenus
         : userRole === ROLES.PAYMENT_OFFICER
           ? paymentOfficerMenus
-          : receptionistMenus;
+          : userRole === ROLES.blood_collection_officer
+            ? bloodCollectionOperatorMenus
+            : receptionistMenus;
 
   const handleLogout = () => {
     logout();
@@ -184,17 +194,19 @@ export default function Sidebar() {
                 <p className="text-sm font-medium text-white truncate">
                   {userName}
                 </p>
-                  <p className="text-xs text-gray-400 truncate">
-                    {userRole === "super_admin"
-                      ? "Super Admin"
-                      : userRole === "receptionist"
-                        ? "Receptionist"
-                        : userRole === "doctor"
-                          ? "Doctor"
-                          : userRole === "payment_officer"
-                            ? "Payment Officer"
-                            : userRole}
-                  </p>
+                   <p className="text-xs text-gray-400 truncate">
+                     {userRole === "super_admin"
+                       ? "Super Admin"
+                       : userRole === "receptionist"
+                         ? "Receptionist"
+                         : userRole === "doctor"
+                           ? "Doctor"
+                           : userRole === "payment_officer"
+                             ? "Payment Officer"
+                             : userRole === "blood_collection_officer"
+                               ? "Blood Collection Operator"
+                               : userRole}
+                   </p>
               </div>
             )}
           </div>

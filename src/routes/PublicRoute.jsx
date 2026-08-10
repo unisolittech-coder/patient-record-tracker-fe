@@ -47,6 +47,9 @@ const Analytics = lazy(() => import("../pages/modules/analytics/Analytics"));
 //DOctor Patient Management 
 const DoctorPatientManagement = lazy(() => import('../pages/modules/doctorManagment/DoctorPatientManagement'));
 
+// Blood Collection Center
+const BloodCollectionCenter = lazy(() => import('../pages/modules/bloodCollectionCenter/BloodCollectionCenter'));
+
 // Fallback loader
 const Loader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -114,6 +117,16 @@ export default function PublicRoute() {
                   path="/payment-management"
                   element={<PaymentManagement />}
                 />
+                <Route
+                  element={
+                    <RoleProtectedRoute allowedRoles={[ROLES.blood_collection_officer, ROLES.SUPER_ADMIN]} />
+                  }
+                >
+                  <Route
+                    path="/blood-collection-center"
+                    element={<BloodCollectionCenter />}
+                  />
+                </Route>
               </Route>
             </Route>
 
