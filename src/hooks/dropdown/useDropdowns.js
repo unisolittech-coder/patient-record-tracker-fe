@@ -13,22 +13,25 @@ const useDropdowns = () => {
     const [designations, setDesignations] = useRecoilState(designationsAtom);
     const [roles, setRoles] = useRecoilState(rolesAtom);
 
-    const fetchDepartments = useCallback(async () => {
+    const fetchDepartments = useCallback(async (role) => {
         setLoading(true);
         try {
+            const url = role
+                ? `${conf.apiBaseUrl}users/departments?role=${role}`
+                : `${conf.apiBaseUrl}users/departments`;
             const res = await fetchData({
                 method: "GET",
-                url: `${conf.apiBaseUrl}users/departments`,
+                url,
             });
             if (res) {
                 setLoading(false);
-                setDepartments(Array.isArray(res?.departments) ? res.departments : []);
+                setDepartments(Array.isArray(res?.data) ? res.data : []);
                 return true;
             }
         } catch (error) {
             console.error("Error fetching departments:", error);
             setLoading(false);
-            toast.error(error.response?.data?.message);
+            // toast.error(error.response?.data?.message);
             return false;
         }
     }, [fetchData, setDepartments]);
@@ -71,6 +74,44 @@ const useDropdowns = () => {
         }
     }, [setLoading, setRoles]);
 
+    // Fetch departments specifically for prescription/treatment form
+    const fetchPrescriptionDepartments = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await fetchData({
+                method: "GET",
+                url: `${conf.apiBaseUrl}prescriptions/departments`,
+            });
+            if (res) {
+                setLoading(false);
+                return Array.isArray(res?.data) ? res.data : [];
+            }
+        } catch (error) {
+            console.error("Error fetching prescription departments:", error);
+            setLoading(false);
+            return [];
+        }
+    }, [fetchData]);
+
+    // Fetch doctors specifically for prescription/treatment form based on department
+    const fetchPrescriptionDoctors = useCallback(async (department) => {
+        setLoading(true);
+        try {
+            const res = await fetchData({
+                method: "GET",
+                url: `${conf.apiBaseUrl}prescriptions/doctors?Department=${encodeURIComponent(department)}`,
+            });
+            if (res) {
+                setLoading(false);
+                return Array.isArray(res?.data) ? res.data : [];
+            }
+        } catch (error) {
+            console.error("Error fetching prescription doctors:", error);
+            setLoading(false);
+            return [];
+        }
+    }, [fetchData]);
+
     return {
         loading,
         departments,
@@ -78,7 +119,9 @@ const useDropdowns = () => {
         roles,
         fetchDepartments,
         fetchDesignations,
-        fetchRoles
+        fetchRoles,
+        fetchPrescriptionDepartments,
+        fetchPrescriptionDoctors
     };
 };
 
