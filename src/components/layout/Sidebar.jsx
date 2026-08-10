@@ -67,8 +67,20 @@ export default function Sidebar() {
     },
   ];
 
+  const doctorMenus = [
+    {
+      label: "Clinical Orders",
+      icon: "pi pi-folder",
+      path: "/doctor/patient-management",
+    },
+  ]
+
   const menuItems =
-    userRole === ROLES.SUPER_ADMIN ? superAdminMenus : receptionistMenus;
+    userRole === ROLES.SUPER_ADMIN
+      ? superAdminMenus
+      : userRole === ROLES.DOCTOR
+        ? doctorMenus
+        : receptionistMenus;
 
   const handleLogout = () => {
     logout();
