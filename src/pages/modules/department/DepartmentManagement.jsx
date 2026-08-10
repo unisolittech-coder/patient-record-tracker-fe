@@ -112,11 +112,6 @@ export default function DepartmentManagement() {
         }
 
         if (success) {
-          toast.success(
-            editingId
-              ? "Department updated successfully!"
-              : "Department added successfully!",
-          );
           setShowForm(false);
           setEditingId(null);
           setIsAddNewMode(false);

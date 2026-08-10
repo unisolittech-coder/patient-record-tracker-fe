@@ -21,7 +21,7 @@ const useDepartmentMgmt = () => {
             });
 
             if (res) {
-                toast.success(res.message || "Department added successfully");
+                toast.success(res.message);
                 return res;
             }
         } catch (error) {
@@ -128,7 +128,7 @@ const useDepartmentMgmt = () => {
 
             if (res) {
                 toast.success(
-                    res.message || "Department updated successfully"
+                    res.message
                 );
                 return res;
             }
@@ -137,8 +137,7 @@ const useDepartmentMgmt = () => {
         } catch (error) {
             console.error("Error updating department:", error);
             toast.error(
-                error.response?.data?.message ||
-                "Failed to update department"
+                error.response?.data?.message
             );
             return false;
         } finally {
@@ -158,7 +157,7 @@ const useDepartmentMgmt = () => {
 
             if (res) {
                 toast.success(
-                    res.message || "Department deleted successfully"
+                    res.message
                 );
                 return res;
             }

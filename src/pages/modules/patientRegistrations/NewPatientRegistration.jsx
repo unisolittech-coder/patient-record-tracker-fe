@@ -171,17 +171,23 @@ export default function NewPatientRegistration() {
         const response = await addPatient(payload);
 
         if (response?.data) {
-          const { patientId, registrarName, counterNo, registrationDate, registrationTime } = response.data;
+          const {
+            patientId,
+            registrarName,
+            counterNo,
+            registrationDate,
+            registrationTime,
+          } = response.data;
           if (patientId) formik.setFieldValue("patientId", patientId);
-          if (registrarName) formik.setFieldValue("operatorName", registrarName);
-          if (counterNo) formik.setFieldValue("counterNumber", String(counterNo));
-          if (registrationDate) formik.setFieldValue("registrationDate", registrationDate);
-          if (registrationTime) formik.setFieldValue("registrationTime", registrationTime);
+          if (registrarName)
+            formik.setFieldValue("operatorName", registrarName);
+          if (counterNo)
+            formik.setFieldValue("counterNumber", String(counterNo));
+          if (registrationDate)
+            formik.setFieldValue("registrationDate", registrationDate);
+          if (registrationTime)
+            formik.setFieldValue("registrationTime", registrationTime);
           setIsSaved(true);
-
-          toast.success(
-            `Patient saved successfully!\nPatient ID: ${patientId}`,
-          );
         }
       } catch (error) {
         console.error("Patient registration error:", error);
@@ -210,11 +216,14 @@ export default function NewPatientRegistration() {
   // -----------------------------
   // Input restriction handlers
   // -----------------------------
-  const handleNumericInput = useCallback((fieldName, maxLength) => (e) => {
-    const value = e.target.value;
-    const sanitized = value.replace(/[^0-9]/g, "").slice(0, maxLength);
-    formik.setFieldValue(fieldName, sanitized);
-  }, [formik]);
+  const handleNumericInput = useCallback(
+    (fieldName, maxLength) => (e) => {
+      const value = e.target.value;
+      const sanitized = value.replace(/[^0-9]/g, "").slice(0, maxLength);
+      formik.setFieldValue(fieldName, sanitized);
+    },
+    [formik],
+  );
 
   const handleNumericKeyDown = useCallback((e) => {
     const allowedKeys = [
@@ -245,15 +254,18 @@ export default function NewPatientRegistration() {
     }));
   }, [departmentsData]);
 
-  const handleDepartmentChange = useCallback((selectedOption) => {
-    const dept = departmentsData.find(
-      (item) => item.department === selectedOption?.value,
-    );
-    formik.setFieldValue("referToDepartment", selectedOption?.value || "");
-    formik.setFieldValue("floor", dept?.floorNo || "");
-    formik.setFieldValue("doctorName", "");
-    formik.setFieldValue("roomNumber", "");
-  }, [formik, departmentsData]);
+  const handleDepartmentChange = useCallback(
+    (selectedOption) => {
+      const dept = departmentsData.find(
+        (item) => item.department === selectedOption?.value,
+      );
+      formik.setFieldValue("referToDepartment", selectedOption?.value || "");
+      formik.setFieldValue("floor", dept?.floorNo || "");
+      formik.setFieldValue("doctorName", "");
+      formik.setFieldValue("roomNumber", "");
+    },
+    [formik, departmentsData],
+  );
 
   const selectedDepartment = useMemo(() => {
     return departmentsData.find(
@@ -406,9 +418,7 @@ export default function NewPatientRegistration() {
                   onBlur={formik.handleBlur}
                   disabled={isSaved}
                   required
-                  error={
-                    formik.touched.address && formik.errors.address
-                  }
+                  error={formik.touched.address && formik.errors.address}
                 />
               </div>
             </div>
@@ -637,7 +647,8 @@ export default function NewPatientRegistration() {
 
             <p className="mt-4 text-sm text-gray-500 flex items-center gap-2">
               <i className="pi pi-info-circle" style={{ fontSize: "0.9rem" }} />
-              Patient ID, Operator Name and Counter Number will be automatically generated when you click Save.
+              Patient ID, Operator Name and Counter Number will be automatically
+              generated when you click Save.
             </p>
           </section>
 
