@@ -9,8 +9,6 @@ import {
 import PagePath from "../../../components/common/PagePath";
 // import FileUploadSection from './FileUploadSection';
 import usePatientMgmt from "../../../hooks/patientMgmt/usePatientMgmt";
-import useFetch from "../../../hooks/useFetch";
-import conf from "../../../config/index";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
@@ -52,27 +50,13 @@ const mlcTypeOptions = [
 ];
 
 export default function NewPatientRegistration() {
-  const { addPatient, loading } = usePatientMgmt();
-  const [fetchData] = useFetch();
+  const { addPatient, loading, departmentsData, fetchDepartmentsDropdown } =
+    usePatientMgmt();
   const [showPrintForm, setShowPrintForm] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [departmentsData, setDepartmentsData] = useState([]);
 
-  // Fetch departments-management-dropdown API
+  // Fetch departments-management-dropdown API via hook
   useEffect(() => {
-    const fetchDepartmentsDropdown = async () => {
-      try {
-        const res = await fetchData({
-          method: "GET",
-          url: `${conf.apiBaseUrl}patients/departments-management-dropdown`,
-        });
-        console.log("Departments Management Dropdown Response:", res);
-        const data = res?.data || [];
-        setDepartmentsData(data);
-      } catch (error) {
-        console.error("Error fetching departments dropdown:", error);
-      }
-    };
     fetchDepartmentsDropdown();
   }, []);
 
