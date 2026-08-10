@@ -6,6 +6,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import RoleProtectedRoute from "./RoleProtectedRoute";
 import { ROLES } from "../constants/roles";
 import DepartmentManagement from "../pages/modules/department/DepartmentManagement";
+import PaymentManagement from "../pages/modules/payment/PaymentManagement";
 
 // Lazy loading components
 const Login = lazy(() => import("../pages/auth/Login"));
@@ -99,6 +100,10 @@ export default function PublicRoute() {
                 <Route
                   path="/department-management"
                   element={<DepartmentManagement />}
+                />
+                <Route
+                  path="/payment-management"
+                  element={<PaymentManagement />}
                 />
               </Route>
             </Route>

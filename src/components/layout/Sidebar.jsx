@@ -38,6 +38,11 @@ export default function Sidebar() {
       path: "/department-management",
     },
     {
+      label: "Payment Management",
+      icon: "pi pi-money-bill",
+      path: "/payment-management",
+    },
+    {
       label: "Analytics",
       icon: "pi pi-chart-bar",
       path: "/analytics",
