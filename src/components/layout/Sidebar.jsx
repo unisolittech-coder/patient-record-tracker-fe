@@ -75,12 +75,22 @@ export default function Sidebar() {
     },
   ]
 
+  const paymentOfficerMenus = [
+    {
+      label: "Payment Management",
+      icon: "pi pi-money-bill",
+      path: "/payment-management",
+    },
+  ];
+
   const menuItems =
     userRole === ROLES.SUPER_ADMIN
       ? superAdminMenus
       : userRole === ROLES.DOCTOR
         ? doctorMenus
-        : receptionistMenus;
+        : userRole === ROLES.PAYMENT_OFFICER
+          ? paymentOfficerMenus
+          : receptionistMenus;
 
   const handleLogout = () => {
     logout();
@@ -110,10 +120,9 @@ export default function Sidebar() {
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
-                isActive
-                  ? "bg-gradient-to-r from-blue-600/90 to-purple-600/90 text-white shadow-lg shadow-blue-500/20 scale-[1.02]"
-                  : "text-gray-300 hover:bg-white/10 hover:text-white hover:scale-[1.02]"
+              `relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive
+                ? "bg-gradient-to-r from-blue-600/90 to-purple-600/90 text-white shadow-lg shadow-blue-500/20 scale-[1.02]"
+                : "text-gray-300 hover:bg-white/10 hover:text-white hover:scale-[1.02]"
               }`
             }
           >
@@ -126,11 +135,10 @@ export default function Sidebar() {
 
                 {/* Icon with background */}
                 <div
-                  className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-all ${
-                    isActive
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-all ${isActive
                       ? "bg-white/20 shadow-inner"
                       : "bg-white/5 group-hover:bg-white/10"
-                  }`}
+                    }`}
                 >
                   <i
                     className={`${item.icon} text-lg ${isActive ? "text-white" : "text-gray-400 group-hover:text-white"}`}
@@ -145,11 +153,10 @@ export default function Sidebar() {
 
                     {/* Hover arrow */}
                     <div
-                      className={`ml-auto transition-all duration-300 ${
-                        isActive
+                      className={`ml-auto transition-all duration-300 ${isActive
                           ? "opacity-100 translate-x-0"
                           : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
-                      }`}
+                        }`}
                     >
                       <i className="pi pi-chevron-right text-xs text-blue-300"></i>
                     </div>
@@ -177,11 +184,17 @@ export default function Sidebar() {
                 <p className="text-sm font-medium text-white truncate">
                   {userName}
                 </p>
-                <p className="text-xs text-gray-400 truncate">
-                  {userRole === "super_admin"
-                    ? "Super Admin"
-                    : "Data Entry Operator"}
-                </p>
+                  <p className="text-xs text-gray-400 truncate">
+                    {userRole === "super_admin"
+                      ? "Super Admin"
+                      : userRole === "receptionist"
+                        ? "Receptionist"
+                        : userRole === "doctor"
+                          ? "Doctor"
+                          : userRole === "payment_officer"
+                            ? "Payment Officer"
+                            : userRole}
+                  </p>
               </div>
             )}
           </div>

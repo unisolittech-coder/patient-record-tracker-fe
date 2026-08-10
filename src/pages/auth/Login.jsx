@@ -62,6 +62,8 @@ export default function Login() {
       if (success) {
         if (values.role === ROLES.DOCTOR) {
           navigate("/doctor/patient-management");
+        } else if (values.role === ROLES.PAYMENT_OFFICER) {
+          navigate("/payment-management");
         } else {
           navigate("/dashboard");
         }
