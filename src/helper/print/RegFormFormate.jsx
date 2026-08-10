@@ -13,7 +13,7 @@ function RegFormFormate({ values }) {
   const mlcType = values?.mlcType || "";
   const address = values?.address || "";
   const operatorName = values?.operatorName || "";
-  const counterNumber = values?.counterNumber || "";
+  const counterNumber = values?.counterNo || "";
   const registrationDate = values?.registrationDate || "";
   const registrationTime = values?.registrationTime || "";
 

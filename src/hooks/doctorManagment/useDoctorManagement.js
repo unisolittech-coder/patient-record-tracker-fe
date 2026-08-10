@@ -332,8 +332,7 @@ import {
     departmentsAtom,
     doctorsListAtom,
     patientLoadingAtom,
-    patientErrorAtom,
-    selectedPatientIdAtom
+    patientErrorAtom
 } from "../../state/doctor/doctorState";
 
 const useDoctorManagement = () => {
@@ -601,7 +600,6 @@ const useDoctorManagement = () => {
         setPatientHistory([]);
         setCurrentTreatment(null);
         setError(null);
-        setSelectedPatientIdAtom(null);
     };
 
     return {

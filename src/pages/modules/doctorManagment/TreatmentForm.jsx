@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import useDropdowns from "../../../hooks/dropdown/useDropdowns";
 
 export default function TreatmentForm({ 
     patient, 
@@ -20,6 +21,31 @@ export default function TreatmentForm({
         department: '',
         doctor: ''
     });
+
+    const { fetchPrescriptionDepartments, fetchPrescriptionDoctors } = useDropdowns();
+    const [prescriptionDepartments, setPrescriptionDepartments] = useState([]);
+    const [prescriptionDoctors, setPrescriptionDoctors] = useState([]);
+
+    useEffect(() => {
+        if (showAssign) {
+            const loadPrescriptionDepartments = async () => {
+                const depts = await fetchPrescriptionDepartments();
+                setPrescriptionDepartments(depts);
+            };
+            loadPrescriptionDepartments();
+        }
+    }, [showAssign, fetchPrescriptionDepartments]);
+
+    useEffect(() => {
+        if (showAssign && assignData.department) {
+            const loadPrescriptionDoctors = async () => {
+                const docs = await fetchPrescriptionDoctors(assignData.department);
+                setPrescriptionDoctors(docs);
+                setAssignData(prev => ({ ...prev, doctor: '' }));
+            };
+            loadPrescriptionDoctors();
+        }
+    }, [showAssign, assignData.department, fetchPrescriptionDoctors]);
 
     // Available lab tests
     const defaultTests = [
@@ -70,7 +96,7 @@ export default function TreatmentForm({
     };
 
     // ✅ Handle form submission - Uses submitPrescription
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         // Validate
@@ -89,23 +115,18 @@ export default function TreatmentForm({
             patientId: patient.patientId || patient.id,
             prescription: formData.prescription.trim(),
             tests: formData.tests,
-            familyHistory: formData.familyHistory.trim() || 'No significant family history recorded'
+            familyHistory: formData.familyHistory.trim() || 'No significant family history recorded',
+            referToDoctor: showAssign && assignData.doctor ? assignData.doctor : undefined,
+            referToDepartment: showAssign && assignData.department ? assignData.department : undefined
         };
 
         console.log('Submitting prescription:', submitData); // Debug log
         
         // ✅ Call submitPrescription from hook
-        const result =  onSubmit(submitData);
+        const result = await onSubmit(submitData);
         
         if (result) {
             toast.success('Prescription saved successfully!');
-            // Optionally clear form
-            setFormData({
-                prescription: '',
-                tests: [],
-                familyHistory: ''
-            });
-            setSelectedTest('');
         }
     };
 
@@ -113,6 +134,10 @@ export default function TreatmentForm({
     const handleAssign = () => {
         if (!assignData.department) {
             toast.error('Please select a department');
+            return;
+        }
+        if (!assignData.doctor) {
+            toast.error('Please select a doctor');
             return;
         }
         onAssign(assignData.department, assignData.doctor);
@@ -296,25 +321,14 @@ Example: Father has a history of hypertension. Mother has no significant medical
                                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                             >
                                 <option value="">Select Department...</option>
-                                {departments.length > 0 ? (
-                                    departments.map((dept) => (
-                                        <option key={dept.id || dept} value={dept.id || dept}>
-                                            {dept.name || dept}
+                                {prescriptionDepartments.length > 0 ? (
+                                    prescriptionDepartments.map((dept) => (
+                                        <option key={dept} value={dept}>
+                                            {dept}
                                         </option>
                                     ))
                                 ) : (
-                                    <>
-                                        <option value="Cardiology">Cardiology</option>
-                                        <option value="Neurology">Neurology</option>
-                                        <option value="Orthopedics">Orthopedics</option>
-                                        <option value="Urology">Urology</option>
-                                        <option value="Dermatology">Dermatology</option>
-                                        <option value="Ophthalmology">Ophthalmology</option>
-                                        <option value="ENT">ENT</option>
-                                        <option value="Gynecology">Gynecology</option>
-                                        <option value="Pediatrics">Pediatrics</option>
-                                        <option value="Psychiatry">Psychiatry</option>
-                                    </>
+                                    <option value="" disabled>No departments available</option>
                                 )}
                             </select>
 
@@ -324,26 +338,24 @@ Example: Father has a history of hypertension. Mother has no significant medical
                                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                             >
                                 <option value="">Select Doctor...</option>
-                                <option value="Dr. Sharma">Dr. Sharma</option>
-                                <option value="Dr. Patel">Dr. Patel</option>
-                                <option value="Dr. Kumar">Dr. Kumar</option>
-                                <option value="Dr. Singh">Dr. Singh</option>
+                                {prescriptionDoctors.length > 0 ? (
+                                    prescriptionDoctors.map((doc) => (
+                                        <option key={doc._id || doc.name} value={doc.name}>
+                                            {doc.name} {doc.designation ? `(${doc.designation})` : ''}
+                                        </option>
+                                    ))
+                                ) : (
+                                    <option value="" disabled>No doctors available</option>
+                                )}
                             </select>
                         </div>
                         <div className="flex gap-3 mt-3">
                             <button
                                 type="button"
-                                onClick={handleAssign}
-                                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
-                            >
-                                Assign Now
-                            </button>
-                            <button
-                                type="button"
                                 onClick={() => setShowAssign(false)}
                                 className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition"
                             >
-                                Cancel
+                                Close
                             </button>
                         </div>
                     </div>

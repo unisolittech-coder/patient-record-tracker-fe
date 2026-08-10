@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import useDoctorManagement from '../../../hooks/doctorManagment/useDoctorManagement';
-import PatientSearch from './PatientSearch';
+import BreadCrumb from '../../../components/common/BreadCrumb';
+import PagePath from '../../../components/common/PagePath';
+import useDebounce from '../../../hooks/debounce/useDebounce';
 import PatientDetailsCard from './PatientDetailsCard';
 import MedicalHistory from './MedicalHistory';
 import TreatmentForm from './TreatmentForm';
@@ -13,10 +15,8 @@ export default function DoctorPatientManagement() {
         loading,
         error,
         patientData,
-        searchResults,
         patientHistory,
         departments,
-        doctorsList,
         searchPatient,
         fetchPatientById,
         fetchPatientHistory,
@@ -27,42 +27,47 @@ export default function DoctorPatientManagement() {
     } = useDoctorManagement();
 
     const [selectedPatient, setSelectedPatient] = useState(null);
-    const [searchKey, setSearchKey] = useState(0);
+    const [search, setSearch] = useState('');
+    const debouncedSearch = useDebounce(search, 500);
+    const [localSearchResults, setLocalSearchResults] = useState([]);
+
+    const breadcrumbPaths = [
+        { label: 'Patient Management' },
+        { label: 'Patient List' }
+    ];
 
     // Load initial data
     useEffect(() => {
         fetchDepartments();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Handle patient search
-    const handlePatientSearch = async (searchTerm) => {
-        if (!searchTerm.trim()) {
-            toast.error('Please enter a search term');
-            return;
-        }
-
-        const result = await searchPatient(searchTerm.trim());
-        if (result) {
-            if (result.data?.length === 1) {
-                const patient = result.data[0];
-                setSelectedPatient(patient);
-                await fetchPatientHistory(patient.patientId || patient.id);
-                toast.success('Patient found!');
-            } else if (result.data?.length > 1) {
-                toast.info(`Found ${result.data.length} patients. Please select one.`);
+    // Handle search
+    useEffect(() => {
+        const performSearch = async () => {
+            if (debouncedSearch.trim()) {
+                const result = await searchPatient(debouncedSearch.trim());
+                if (result) {
+                    const patients = result?.data || [];
+                    setLocalSearchResults(patients);
+                    if (patients.length === 1) {
+                        const patient = patients[0];
+                        setSelectedPatient(patient);
+                        await fetchPatientHistory(patient.patientId || patient.id);
+                        toast.success('Patient found!');
+                    } else if (patients.length > 1) {
+                        toast.info(`Found ${patients.length} patients. Please select one.`);
+                    } else {
+                        toast.error('No patient found');
+                    }
+                }
             } else {
-                toast.error('No patient found');
+                setLocalSearchResults([]);
             }
-        }
-    };
-
-    // Handle patient selection from search results
-    const handleSelectPatient = async (patient) => {
-        console.log('Selected patient:', patient);
-        setSelectedPatient(patient);
-        await fetchPatientById(patient.patientId || patient.id);
-        await fetchPatientHistory(patient.patientId || patient.id);
-    };
+        };
+        performSearch();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debouncedSearch]);
 
     // Handle patient assignment/referral
     const handleAssignPatient = async (departmentId, doctorId) => {
@@ -84,51 +89,85 @@ export default function DoctorPatientManagement() {
         }
     };
 
-    return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
-            <div className="max-w-7xl mx-auto">
-                {/* Page Header */}
-                <div className="flex justify-between items-center mb-6">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-                            Patient Management
-                        </h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">
-                            Search, view, and manage patient prescriptions
-                        </p>
-                    </div>
-                    <div className="flex gap-3">
-                        {/* <button
-                            onClick={() => navigate('/patient-registration')}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
-                        >
-                            <i className="pi pi-user-plus"></i>
-                            New Patient
-                        </button> */}
-                        {selectedPatient && (
-                            <button
-                                onClick={() => {
-                                    clearPatientData();
-                                    setSelectedPatient(null);
-                                    setSearchKey(prev => prev + 1);
-                                }}
-                                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2"
-                            >
-                                <i className="pi pi-times"></i>
-                                Clear
-                            </button>
-                        )}
-                    </div>
-                </div>
+    // Clear all patient data from page
+    const handleClearAll = () => {
+        clearPatientData();
+        setSelectedPatient(null);
+        setSearch('');
+    };
 
-                {/* Search Section */}
-                <PatientSearch 
-                    key={searchKey}
-                    onSearch={handlePatientSearch} 
-                    loading={loading} 
-                    results={searchResults}
-                    onSelectPatient={handleSelectPatient}
-                />
+    // Handle patient selection from search results
+    const handleSelectSearchResult = async (patient) => {
+        setSelectedPatient(patient);
+        await fetchPatientById(patient.patientId || patient.id);
+        await fetchPatientHistory(patient.patientId || patient.id);
+    };
+
+    // Handle prescription submission with full clear on success
+    const handlePrescriptionSubmit = async (prescriptionData) => {
+        const result = await submitPrescription(prescriptionData);
+        if (result) {
+            toast.success('Prescription saved successfully!');
+            handleClearAll();
+        }
+        return result;
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto">
+                <BreadCrumb paths={breadcrumbPaths} />
+
+                <PagePath
+                    title="Patient Management"
+                    showSearchBar={true}
+                    searchValue={search}
+                    searchPlaceholder="Search by Patient ID"
+                    onSearch={setSearch}
+                >
+                    {selectedPatient && (
+                        <button
+                            onClick={handleClearAll}
+                            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2"
+                        >
+                            <i className="pi pi-times"></i>
+                            Clear
+                        </button>
+                    )}
+                </PagePath>
+
+                {/* Search Results */}
+                {localSearchResults.length > 0 && !selectedPatient && (
+                    <div className="mt-4 bg-white rounded-2xl shadow-lg p-4">
+                        <p className="text-sm text-gray-500 mb-3">
+                            Found {localSearchResults.length} patient(s)
+                        </p>
+                        <div className="space-y-2">
+                            {localSearchResults.map((patient) => (
+                                <div
+                                    key={patient.id}
+                                    onClick={() => handleSelectSearchResult(patient)}
+                                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">
+                                            {patient.name?.charAt(0)?.toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <p className="font-medium text-gray-800">
+                                                {patient.name}
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                                {patient.patientId} • {patient.phone}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <i className="pi pi-chevron-right text-gray-400"></i>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {selectedPatient && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
@@ -142,7 +181,7 @@ export default function DoctorPatientManagement() {
                         <div className="lg:col-span-2">
                             <TreatmentForm
                                 patient={selectedPatient}
-                                onSubmit={submitPrescription}
+                                onSubmit={handlePrescriptionSubmit}
                                 onAssign={handleAssignPatient}
                                 departments={departments}
                                 loading={loading}
@@ -154,18 +193,18 @@ export default function DoctorPatientManagement() {
                 {/* No Patient Selected State */}
                 {!selectedPatient && !loading && !error && (
                     <div className="mt-12 text-center">
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 max-w-md mx-auto">
-                            <div className="w-24 h-24 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="bg-white rounded-2xl shadow-lg p-12 max-w-md mx-auto">
+                            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i className="pi pi-search text-4xl text-blue-500"></i>
                             </div>
-                            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-2">
                                 Search for a Patient
                             </h3>
-                            <p className="text-gray-500 dark:text-gray-400">
-                                Enter Patient ID, Phone Number, or Name to get started
+                            <p className="text-gray-500">
+                                Enter Patient ID to get started
                             </p>
                             <div className="mt-6 text-sm text-gray-400">
-                                <p>Example: 2026002 or 8329244185</p>
+                                <p>Example: 2026002</p>
                             </div>
                         </div>
                     </div>
@@ -173,8 +212,8 @@ export default function DoctorPatientManagement() {
 
                 {/* Error State */}
                 {error && (
-                    <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-                        <div className="flex items-center gap-3 text-red-700 dark:text-red-400">
+                    <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                        <div className="flex items-center gap-3 text-red-700">
                             <i className="pi pi-exclamation-circle text-xl"></i>
                             <p>{error}</p>
                             {error.includes('Session expired') && (
