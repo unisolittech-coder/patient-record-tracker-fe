@@ -146,8 +146,8 @@ export default function Sidebar() {
                 {/* Icon with background */}
                 <div
                   className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-all ${isActive
-                      ? "bg-white/20 shadow-inner"
-                      : "bg-white/5 group-hover:bg-white/10"
+                    ? "bg-white/20 shadow-inner"
+                    : "bg-white/5 group-hover:bg-white/10"
                     }`}
                 >
                   <i
@@ -164,8 +164,8 @@ export default function Sidebar() {
                     {/* Hover arrow */}
                     <div
                       className={`ml-auto transition-all duration-300 ${isActive
-                          ? "opacity-100 translate-x-0"
-                          : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
                         }`}
                     >
                       <i className="pi pi-chevron-right text-xs text-blue-300"></i>
@@ -194,19 +194,19 @@ export default function Sidebar() {
                 <p className="text-sm font-medium text-white truncate">
                   {userName}
                 </p>
-                   <p className="text-xs text-gray-400 truncate">
-                     {userRole === "super_admin"
-                       ? "Super Admin"
-                       : userRole === "receptionist"
-                         ? "Receptionist"
-                         : userRole === "doctor"
-                           ? "Doctor"
-                           : userRole === "payment_officer"
-                             ? "Payment Officer"
-                             : userRole === "blood_collection_officer"
-                               ? "Blood Collection Operator"
-                               : userRole}
-                   </p>
+                <p className="text-xs text-gray-400 truncate">
+                  {userRole === "super_admin"
+                    ? "Super Admin"
+                    : userRole === "receptionist"
+                      ? "Receptionist"
+                      : userRole === "doctor"
+                        ? "Doctor"
+                        : userRole === "payment_officer"
+                          ? "Payment Officer"
+                          : userRole === "blood_collection_officer"
+                            ? "Blood Collection Operator"
+                            : userRole}
+                </p>
               </div>
             )}
           </div>
