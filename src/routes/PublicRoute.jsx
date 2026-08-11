@@ -50,6 +50,9 @@ const DoctorPatientManagement = lazy(() => import('../pages/modules/doctorManagm
 // Blood Collection Center
 const BloodCollectionCenter = lazy(() => import('../pages/modules/bloodCollectionCenter/BloodCollectionCenter'));
 
+// IGGMC Blood Collection Center
+const IggmcBloodCollectionCenter = lazy(() => import('../pages/modules/iggmcBloodCollectionCenter/IggmcBloodCollectionCenter'));
+
 const LabOperatorManagment  = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorManagment'));
 
 const LabHeadManagment =lazy(() => import('../pages/modules/labHeadManagment/LabHeadManagment'));
@@ -136,6 +139,17 @@ export default function PublicRoute() {
                   <Route
                     path="/blood-collection-center"
                     element={<BloodCollectionCenter />}
+                  />
+                </Route>
+
+                <Route
+                  element={
+                    <RoleProtectedRoute allowedRoles={[ROLES.BLOOD_COLLECTION_OPERATOR_IGGMC, ROLES.SUPER_ADMIN]} />
+                  }
+                >
+                  <Route
+                    path="/iggmc-blood-collection-center"
+                    element={<IggmcBloodCollectionCenter />}
                   />
                 </Route>
 

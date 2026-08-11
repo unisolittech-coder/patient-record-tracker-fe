@@ -43,6 +43,16 @@ export default function Sidebar() {
       path: "/payment-management",
     },
     {
+      label: "Blood Collection Center",
+      icon: "pi pi-heart",
+      path: "/blood-collection-center",
+    },
+    {
+      label: "IGGMC Blood Collection",
+      icon: "pi pi-heart-fill",
+      path: "/iggmc-blood-collection-center",
+    },
+    {
       label: "Analytics",
       icon: "pi pi-chart-bar",
       path: "/analytics",
@@ -81,6 +91,14 @@ export default function Sidebar() {
     },
   ];
 
+  const bloodCollectionOperatorIggmcMenus = [
+    {
+      label: "IGGMC Blood Collection",
+      icon: "pi pi-heart-fill",
+      path: "/iggmc-blood-collection-center",
+    },
+  ];
+
   const registrationOfficerMenus = [
     {
       label: "Patient Registration",
@@ -114,8 +132,10 @@ export default function Sidebar() {
           ? paymentOfficerMenus
           : userRole === ROLES.BLOOD_COLLECTION_OPERATOR
             ? bloodCollectionOperatorMenus
-            : userRole === ROLES.REGISTRATION_OFFICER
-              ? registrationOfficerMenus
+            : userRole === ROLES.BLOOD_COLLECTION_OPERATOR_IGGMC
+              ? bloodCollectionOperatorIggmcMenus
+              : userRole === ROLES.REGISTRATION_OFFICER
+                ? registrationOfficerMenus
               : userRole === ROLES.LAB_OPERATOR
                 ? labOperatorMenus
                 : userRole === ROLES.LAB_HEAD
