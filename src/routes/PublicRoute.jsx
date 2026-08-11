@@ -47,6 +47,9 @@ const Analytics = lazy(() => import("../pages/modules/analytics/Analytics"));
 //DOctor Patient Management 
 const DoctorPatientManagement = lazy(() => import('../pages/modules/doctorManagment/DoctorPatientManagement'));
 
+// Blood Collection Center
+const BloodCollectionCenter = lazy(() => import('../pages/modules/bloodCollectionCenter/BloodCollectionCenter'));
+
 const LabOperatorManagment  = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorManagment'));
 
 const LabHeadManagment =lazy(() => import('../pages/modules/labHeadManagment/LabHeadManagment'));
@@ -129,6 +132,16 @@ export default function PublicRoute() {
                   path="/payment-management"
                   element={<PaymentManagement />}
                 />
+                <Route
+                  element={
+                    <RoleProtectedRoute allowedRoles={[ROLES.blood_collection_officer, ROLES.SUPER_ADMIN]} />
+                  }
+                >
+                  <Route
+                    path="/blood-collection-center"
+                    element={<BloodCollectionCenter />}
+                  />
+                </Route>
               </Route>
             </Route>
 

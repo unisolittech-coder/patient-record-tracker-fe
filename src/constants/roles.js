@@ -7,4 +7,5 @@ export const ROLES = {
     PAYMENT_OFFICER: "payment_officer",
     LAB_OPERATOR: "lab_operator",
     LAB_HEAD: "lab_head",
+    blood_collection_officer: "blood_collection_officer",
 };

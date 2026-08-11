@@ -15,7 +15,7 @@ const roleDisplayMap = {
   regstraion_officer: 'Registration Officer',
   doctor: 'Doctor',
   Lab_payment: 'Lab Payment',
-  'blood Collection Center': 'Blood Collection Center',
+  blood_collection_officer: 'Blood Collection Center',
   lab_technician: 'Lab Technician',
   lab_Head: 'Lab Head'
 };
@@ -64,6 +64,8 @@ export default function Login() {
           navigate("/doctor/patient-management");
         } else if (values.role === ROLES.PAYMENT_OFFICER) {
           navigate("/payment-management");
+        } else if (values.role === ROLES.blood_collection_officer) {
+          navigate("/blood-collection-center");
         } else {
           navigate("/dashboard");
         }
