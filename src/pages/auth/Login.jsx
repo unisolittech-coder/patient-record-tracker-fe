@@ -10,16 +10,6 @@ import validator from "validator";
 import useDropdowns from '../../hooks/dropdown/useDropdowns';
 import { ROLES } from '../../constants/roles';
 
-const roleDisplayMap = {
-  super_admin: 'Admin',
-  registration_officer: 'Registration Officer',
-  doctor: 'Doctor',
-  Lab_payment: 'Lab Payment',
-  blood_collection_operator: 'Blood Collection Center',
-  lab_technician: 'Lab Technician',
-  lab_Head: 'Lab Head'
-};
-
 export default function Login() {
   const { loading, adminLogin } = useLogin();
   const navigate = useNavigate();

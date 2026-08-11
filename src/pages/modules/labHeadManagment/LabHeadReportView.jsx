@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import BreadCrumb from "../../../components/common/BreadCrumb";
 import PagePath from "../../../components/common/PagePath";
-import useLabHeadManagment from "../../../hooks/lab/labOperator/useLabHeadManagment";
+import useLabHeadManagment from "../../../hooks/lab/labHeadManagment/useLabHeadManagment";
 
 const LabHeadReportView = () => {
   const { uniqueId } = useParams();
