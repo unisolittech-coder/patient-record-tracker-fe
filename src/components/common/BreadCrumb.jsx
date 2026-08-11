@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 export default function BreadCrumb({ paths }) {
   const navigate = useNavigate();
-  const home = { icon: 'pi pi-home', command: () => navigate('/dashboard') };
+  // const home = { icon: 'pi pi-home', command: () => navigate('/dashboard') };
+  const home = { icon: 'pi pi-home' };
   const items = paths.map(path => ({
     label: path.label,
     command: () => {

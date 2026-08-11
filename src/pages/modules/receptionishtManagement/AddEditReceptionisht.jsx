@@ -20,7 +20,7 @@ const mapToSelectOptions = (items) => {
 
 const validationSchema = Yup.object({
   // employeeId: Yup.string().required('Employee ID is required'),
-  name: Yup.string().required('Data Entry Operator name is required'),
+  name: Yup.string().required('user name is required'),
   email: Yup.string()
     .email('Invalid email address')
     .required('Email is required'),
@@ -125,14 +125,16 @@ export default function AddEditReceptionisht() {
         if (selectedSignature) {
           formData.append('sign', selectedSignature);
         }
-
+        let success
         if (id) {
-          await updateReceptionist(id, formData);
+          success = await updateReceptionist(id, formData);
         } else {
-          await addReceptionist(formData);
+          success = await addReceptionist(formData);
         }
 
-        navigate('/receptionist-management');
+        if (success) {
+          navigate('/receptionist-management');
+        }
       } catch (error) {
         console.error(error);
       }
@@ -191,11 +193,11 @@ export default function AddEditReceptionisht() {
 
   const breadcrumbPaths = [
     {
-      label: 'Data Entry Operator Management',
+      label: 'User Management',
       url: '/receptionist-management'
     },
     {
-      label: id ? 'Edit Data Entry Operator' : 'Add Data Entry Operator'
+      label: id ? 'Edit User Entry' : 'Add User Entry'
     }
   ];
 
@@ -204,20 +206,20 @@ export default function AddEditReceptionisht() {
       <BreadCrumb paths={breadcrumbPaths} />
 
       <PagePath
-        title={id ? 'Edit Data Entry Operator' : 'Add Data Entry Operator'}
+        title={id ? 'Edit User Entry' : 'Add User Entry'}
       />
 
       <form onSubmit={formik.handleSubmit}>
         <div className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-200">
           <div className="mb-4 pb-4 border-b border-gray-100">
             <h2 className="text-lg font-bold text-gray-800">
-              Data Entry Operator Details
+              User Entry Details
             </h2>
 
             <p className="text-sm text-gray-500">
               {id
-                ? 'Update data entry operator information.'
-                : 'Enter the credentials to create a new data entry operator account.'}
+                ? 'Update user entry information.'
+                : 'Enter the credentials to create a new user entry account.'}
             </p>
           </div>
 
@@ -314,7 +316,7 @@ export default function AddEditReceptionisht() {
             />
 
             <TextInput
-              label="Data Entry Operator Name"
+              label="User Name"
               name="name"
               value={formik.values.name}
               onChange={formik.handleChange}
@@ -385,7 +387,7 @@ export default function AddEditReceptionisht() {
                   <p className="text-xs text-gray-500 mt-2">
                     {id
                       ? 'Upload a new image if you want to change the existing photo.'
-                      : 'Upload profile photo for the data entry operator.'}
+                      : 'Upload profile photo for the user entry.'}
                   </p>
                 </div>
               </div>
@@ -425,7 +427,7 @@ export default function AddEditReceptionisht() {
                   <p className="text-xs text-gray-500 mt-2">
                     {id
                       ? 'Upload a new signature image if you want to change the existing signature.'
-                      : 'Upload digital signature for the data entry operator.'}
+                      : 'Upload digital signature for the user entry.'}
                   </p>
                 </div>
               </div>
