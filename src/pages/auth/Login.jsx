@@ -28,8 +28,8 @@ export default function Login() {
   const { roles, fetchRoles } = useDropdowns();
 
   const roleOptions = roles.map((role) => ({
-    value: role,
-    label: roleDisplayMap[role] || role
+    value: role.value,
+    label: role.label
   }));
 
   useEffect(() => {
@@ -66,6 +66,10 @@ export default function Login() {
           navigate("/payment-management");
         } else if (values.role === ROLES.blood_collection_officer) {
           navigate("/blood-collection-center");
+        } else if (values.role === ROLES.LAB_OPERATOR) {
+          navigate("/doctor/lab-operator");
+        } else if (values.role === ROLES.LAB_HEAD) {
+          navigate("/doctor/lab-head");
         } else {
           navigate("/dashboard");
         }

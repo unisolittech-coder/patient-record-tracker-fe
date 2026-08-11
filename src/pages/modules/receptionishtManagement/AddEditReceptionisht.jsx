@@ -67,7 +67,7 @@ export default function AddEditReceptionisht() {
 
   const designationOptions = mapToSelectOptions(designations);
   const departmentOptions = mapToSelectOptions(departments);
-  const roleOptions = mapToSelectOptions(roles);
+  const roleOptions = roles || [];
 
   useEffect(() => {
     fetchDesignations();
