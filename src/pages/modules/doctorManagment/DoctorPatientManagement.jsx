@@ -77,13 +77,13 @@ export default function DoctorPatientManagement() {
         }
 
         const patientId = selectedPatient.patientId || selectedPatient.id;
-        
+
         const result = await assignPatient(patientId, {
             department: departmentId,
             doctor: doctorId,
             assignedBy: sessionStorage.getItem('id')
         });
-        
+
         if (result) {
             toast.success(`Patient assigned successfully!`);
         }
@@ -114,120 +114,118 @@ export default function DoctorPatientManagement() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
-                <BreadCrumb paths={breadcrumbPaths} />
+        <div className="max-w-7xl mx-auto">
+            <BreadCrumb paths={breadcrumbPaths} />
 
-                <PagePath
-                    title="Patient Management"
-                    showSearchBar={true}
-                    searchValue={search}
-                    searchPlaceholder="Search by Patient ID"
-                    onSearch={setSearch}
-                >
-                    {selectedPatient && (
-                        <button
-                            onClick={handleClearAll}
-                            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2"
-                        >
-                            <i className="pi pi-times"></i>
-                            Clear
-                        </button>
-                    )}
-                </PagePath>
-
-                {/* Search Results */}
-                {localSearchResults.length > 0 && !selectedPatient && (
-                    <div className="mt-4 bg-white rounded-2xl shadow-lg p-4">
-                        <p className="text-sm text-gray-500 mb-3">
-                            Found {localSearchResults.length} patient(s)
-                        </p>
-                        <div className="space-y-2">
-                            {localSearchResults.map((patient) => (
-                                <div
-                                    key={patient.id}
-                                    onClick={() => handleSelectSearchResult(patient)}
-                                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">
-                                            {patient.name?.charAt(0)?.toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-gray-800">
-                                                {patient.name}
-                                            </p>
-                                            <p className="text-xs text-gray-500">
-                                                {patient.patientId} • {patient.phone}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <i className="pi pi-chevron-right text-gray-400"></i>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
+            <PagePath
+                title="Patient Management"
+                showSearchBar={true}
+                searchValue={search}
+                searchPlaceholder="Search by Patient ID"
+                onSearch={setSearch}
+            >
                 {selectedPatient && (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-                        {/* Left Column - Patient Info & History */}
-                        <div className="lg:col-span-1 space-y-4">
-                            <PatientDetailsCard patient={patientData || selectedPatient} />
-                            <MedicalHistory history={patientHistory} />
-                        </div>
-
-                        {/* Right Column - Treatment Form */}
-                        <div className="lg:col-span-2">
-                            <TreatmentForm
-                                patient={selectedPatient}
-                                onSubmit={handlePrescriptionSubmit}
-                                onAssign={handleAssignPatient}
-                                departments={departments}
-                                loading={loading}
-                            />
-                        </div>
-                    </div>
+                    <button
+                        onClick={handleClearAll}
+                        className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2"
+                    >
+                        <i className="pi pi-times"></i>
+                        Clear
+                    </button>
                 )}
+            </PagePath>
 
-                {/* No Patient Selected State */}
-                {!selectedPatient && !loading && !error && (
-                    <div className="mt-12 text-center">
-                        <div className="bg-white rounded-2xl shadow-lg p-12 max-w-md mx-auto">
-                            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i className="pi pi-search text-4xl text-blue-500"></i>
+            {/* Search Results */}
+            {localSearchResults.length > 0 && !selectedPatient && (
+                <div className="mt-4 bg-white rounded-2xl shadow-lg p-4">
+                    <p className="text-sm text-gray-500 mb-3">
+                        Found {localSearchResults.length} patient(s)
+                    </p>
+                    <div className="space-y-2">
+                        {localSearchResults.map((patient) => (
+                            <div
+                                key={patient.id}
+                                onClick={() => handleSelectSearchResult(patient)}
+                                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">
+                                        {patient.name?.charAt(0)?.toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-gray-800">
+                                            {patient.name}
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                            {patient.patientId} • {patient.phone}
+                                        </p>
+                                    </div>
+                                </div>
+                                <i className="pi pi-chevron-right text-gray-400"></i>
                             </div>
-                            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                                Search for a Patient
-                            </h3>
-                            <p className="text-gray-500">
-                                Enter Patient ID to get started
-                            </p>
-                            <div className="mt-6 text-sm text-gray-400">
-                                <p>Example: 2026002</p>
-                            </div>
-                        </div>
+                        ))}
                     </div>
-                )}
+                </div>
+            )}
 
-                {/* Error State */}
-                {error && (
-                    <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-                        <div className="flex items-center gap-3 text-red-700">
-                            <i className="pi pi-exclamation-circle text-xl"></i>
-                            <p>{error}</p>
-                            {error.includes('Session expired') && (
-                                <button
-                                    onClick={() => navigate('/')}
-                                    className="ml-auto px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-                                >
-                                    Login Again
-                                </button>
-                            )}
+            {selectedPatient && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+                    {/* Left Column - Patient Info & History */}
+                    <div className="lg:col-span-1 space-y-4">
+                        <PatientDetailsCard patient={patientData || selectedPatient} />
+                        <MedicalHistory history={patientHistory} />
+                    </div>
+
+                    {/* Right Column - Treatment Form */}
+                    <div className="lg:col-span-2">
+                        <TreatmentForm
+                            patient={selectedPatient}
+                            onSubmit={handlePrescriptionSubmit}
+                            onAssign={handleAssignPatient}
+                            departments={departments}
+                            loading={loading}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* No Patient Selected State */}
+            {!selectedPatient && !loading && !error && (
+                <div className="mt-12 text-center">
+                    <div className="bg-white rounded-2xl shadow-lg p-12 max-w-md mx-auto">
+                        <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i className="pi pi-search text-4xl text-blue-500"></i>
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            Search for a Patient
+                        </h3>
+                        <p className="text-gray-500">
+                            Enter Patient ID to get started
+                        </p>
+                        <div className="mt-6 text-sm text-gray-400">
+                            <p>Example: 2026002</p>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
+
+            {/* Error State */}
+            {error && (
+                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    <div className="flex items-center gap-3 text-red-700">
+                        <i className="pi pi-exclamation-circle text-xl"></i>
+                        <p>{error}</p>
+                        {error.includes('Session expired') && (
+                            <button
+                                onClick={() => navigate('/')}
+                                className="ml-auto px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                            >
+                                Login Again
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

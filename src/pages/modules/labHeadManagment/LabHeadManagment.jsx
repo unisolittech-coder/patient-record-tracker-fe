@@ -5,7 +5,7 @@ import PagePath from "../../../components/common/PagePath";
 import DataTable from "../../../components/common/DataTable";
 import Pagination from "../../../components/common/Pagination";
 import useDebounce from "../../../hooks/debounce/useDebounce";
-import useLabHeadManagment from "../../../hooks/lab/labOperator/useLabHeadManagment";
+import useLabHeadManagment from "../../../hooks/lab/labHeadManagment/useLabHeadManagment";
 
 const ActionButtons = ({ rowData, onView }) => {
   return (

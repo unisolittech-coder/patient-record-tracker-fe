@@ -51,16 +51,6 @@ export default function Sidebar() {
 
   const receptionistMenus = [
     {
-      label: "Dashboard",
-      icon: "pi pi-home",
-      path: "/dashboard",
-    },
-    {
-      label: "Patient Data",
-      icon: "pi pi-folder",
-      path: "/patient-data",
-    },
-    {
       label: "Patient Registration",
       icon: "pi pi-user-plus",
       path: "/patient-registration",
@@ -91,6 +81,14 @@ export default function Sidebar() {
     },
   ];
 
+  const registrationOfficerMenus = [
+    {
+      label: "Patient Registration",
+      icon: "pi pi-user-plus",
+      path: "/patient-registration",
+    },
+  ];
+
   const labOperatorMenus = [
     {
       label: "Lab Operator Management",
@@ -114,13 +112,15 @@ export default function Sidebar() {
         ? doctorMenus
         : userRole === ROLES.PAYMENT_OFFICER
           ? paymentOfficerMenus
-          : userRole === ROLES.blood_collection_officer
+          : userRole === ROLES.BLOOD_COLLECTION_OPERATOR
             ? bloodCollectionOperatorMenus
-            : userRole === ROLES.LAB_OPERATOR
-            ? labOperatorMenus
-            : userRole === ROLES.LAB_HEAD
-              ? labHeadMenus
-              : receptionistMenus;
+            : userRole === ROLES.REGISTRATION_OFFICER
+              ? registrationOfficerMenus
+              : userRole === ROLES.LAB_OPERATOR
+                ? labOperatorMenus
+                : userRole === ROLES.LAB_HEAD
+                  ? labHeadMenus
+                  : receptionistMenus;
 
   const handleLogout = () => {
     logout();
@@ -217,8 +217,8 @@ export default function Sidebar() {
                 <p className="text-xs text-gray-400 truncate">
                   {userRole === "super_admin"
                     ? "Super Admin"
-                    : userRole === "receptionist"
-                      ? "Receptionist"
+                    : userRole === "registration_officer"
+                      ? "Registration Officer"
                       : userRole === "doctor"
                         ? "Doctor"
                         : userRole === "payment_officer"
