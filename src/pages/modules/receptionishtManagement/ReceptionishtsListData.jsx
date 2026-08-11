@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import BreadCrumb from '../../../components/common/BreadCrumb';
-import PagePath from '../../../components/common/PagePath';
-import DataTable from '../../../components/common/DataTable';
-import Pagination from '../../../components/common/Pagination';
-import useDebounce from '../../../hooks/debounce/useDebounce';
-import useReceptionistMgmt from '../../../hooks/receptionishtManagement/useReceptionistMgmt';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import BreadCrumb from "../../../components/common/BreadCrumb";
+import PagePath from "../../../components/common/PagePath";
+import DataTable from "../../../components/common/DataTable";
+import Pagination from "../../../components/common/Pagination";
+import useDebounce from "../../../hooks/debounce/useDebounce";
+import useReceptionistMgmt from "../../../hooks/receptionishtManagement/useReceptionistMgmt";
 
 const ActionButtons = ({ rowData, onEdit }) => {
   return (
@@ -22,7 +22,8 @@ const ActionButtons = ({ rowData, onEdit }) => {
 };
 
 export default function ReceptionishtsListData() {
-  const { fetchReceptionists, loading, receptionistRes } = useReceptionistMgmt();
+  const { fetchReceptionists, loading, receptionistRes } =
+    useReceptionistMgmt();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -30,8 +31,8 @@ export default function ReceptionishtsListData() {
   const debouncedSearch = useDebounce(search, 500);
 
   const breadcrumbPaths = [
-    { label: 'Data Entry Operator Management' },
-    { label: 'Data Entry Operator List' }
+    { label: "User Management" },
+    { label: "User Management List" },
   ];
 
   useEffect(() => {
@@ -84,43 +85,49 @@ export default function ReceptionishtsListData() {
 
   const columns = [
     {
-      field: 'srNo',
-      header: 'Sr. No.',
+      field: "srNo",
+      header: "Sr. No.",
       sortable: false,
-      minWidth: '80px'
+      minWidth: "80px",
     },
     {
-      field: 'employeeId',
-      header: 'Employee ID',
+      field: "employeeId",
+      header: "Employee ID",
       sortable: true,
-      minWidth: '140px'
+      minWidth: "140px",
     },
     {
-      field: 'name',
-      header: 'Data Entry Operator',
+      field: "name",
+      header: "User Name",
       sortable: true,
       body: nameBodyTemplate,
-      minWidth: '280px'
+      minWidth: "280px",
     },
     {
-      field: 'email',
-      header: 'Email ID',
+      field: "role",
+      header: "Role",
       sortable: true,
-      minWidth: '300px'
+      minWidth: "180px",
     },
     {
-      field: 'password',
-      header: 'Password',
+      field: "email",
+      header: "Email ID",
       sortable: true,
-      minWidth: '200px'
+      minWidth: "300px",
     },
     {
-      field: 'action',
-      header: 'Actions',
+      field: "password",
+      header: "Password",
+      sortable: true,
+      minWidth: "200px",
+    },
+    {
+      field: "action",
+      header: "Actions",
       sortable: false,
       body: actionBodyTemplate,
-      minWidth: '120px'
-    }
+      minWidth: "120px",
+    },
   ];
 
   return (
@@ -128,14 +135,14 @@ export default function ReceptionishtsListData() {
       <BreadCrumb paths={breadcrumbPaths} />
 
       <PagePath
-        title="Data Entry Operator List"
+        title="User Management List"
         showSearchBar={true}
         searchValue={search}
         searchPlaceholder="Search by name or email"
         onSearch={setSearch}
         showAddButton={true}
-        addButtonLabel="Add Data Entry Operator"
-        onAdd={() => navigate('/receptionist-management/add')}
+        addButtonLabel="Add User Entry "
+        onAdd={() => navigate("/receptionist-management/add")}
       />
 
       <DataTable

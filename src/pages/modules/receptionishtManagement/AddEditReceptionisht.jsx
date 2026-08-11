@@ -4,18 +4,38 @@ import BreadCrumb from '../../../components/common/BreadCrumb';
 import PagePath from '../../../components/common/PagePath';
 import Button from '../../../components/common/Button';
 import { TextInput } from '../../../components/common/FormFields';
+import Select from 'react-select';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import useReceptionistMgmt from '../../../hooks/receptionishtManagement/useReceptionistMgmt';
+import useDropdowns from '../../../hooks/dropdown/useDropdowns';
+
+const mapToSelectOptions = (items) => {
+  if (!items || !Array.isArray(items)) return [];
+  return items.map((item) => ({
+    value: item,
+    label: item
+  }));
+};
 
 const validationSchema = Yup.object({
+  // employeeId: Yup.string().required('Employee ID is required'),
   name: Yup.string().required('Data Entry Operator name is required'),
   email: Yup.string()
     .email('Invalid email address')
     .required('Email is required'),
   password: Yup.string()
     .required('Password is required')
-    .min(6, 'Password must be at least 6 characters')
+    .min(6, 'Password must be at least 6 characters'),
+  designation: Yup.object().nullable().required('Designation is required'),
+  department: Yup.object().nullable().required('Department is required'),
+  role: Yup.object().nullable().required('Role is required'),
+  counterNo: Yup.string().when('role', {
+    is: (role) => role?.value === 'payment_officer' || role?.value === 'registration_officer',
+    then: (schema) => schema.required('Counter number is required'),
+    otherwise: (schema) => schema.notRequired()
+  }),
+  sign: Yup.mixed().required('Signature is required')
 });
 
 export default function AddEditReceptionisht() {
@@ -31,8 +51,28 @@ export default function AddEditReceptionisht() {
     loading
   } = useReceptionistMgmt();
 
+  const {
+    departments,
+    designations,
+    roles,
+    fetchDepartments,
+    fetchDesignations,
+    fetchRoles
+  } = useDropdowns();
+
   const [photoPreview, setPhotoPreview] = useState('');
   const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [signaturePreview, setSignaturePreview] = useState('');
+  const [selectedSignature, setSelectedSignature] = useState(null);
+
+  const designationOptions = mapToSelectOptions(designations);
+  const departmentOptions = mapToSelectOptions(departments);
+  const roleOptions = roles || [];
+
+  useEffect(() => {
+    fetchDesignations();
+    fetchRoles();
+  }, [fetchDesignations, fetchRoles]);
 
   useEffect(() => {
     if (id) {
@@ -44,12 +84,6 @@ export default function AddEditReceptionisht() {
     };
   }, [id]);
 
-  useEffect(() => {
-    if (id && receptionistDetails) {
-      setPhotoPreview(receptionistDetails?.photo || '');
-    }
-  }, [id, receptionistDetails]);
-
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -57,7 +91,18 @@ export default function AddEditReceptionisht() {
       name: receptionistDetails?.name || '',
       email: receptionistDetails?.email || '',
       password: receptionistDetails?.password || '',
-      photo: null
+      designation: designationOptions.find(
+        (opt) => opt.value === receptionistDetails?.designation
+      ) || null,
+      department: departmentOptions.find(
+        (opt) => opt.value === receptionistDetails?.department
+      ) || null,
+      role: roleOptions.find(
+        (opt) => opt.value === receptionistDetails?.role
+      ) || null,
+      counterNo: receptionistDetails?.counterNo || '',
+      photo: null,
+      sign: null
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -67,9 +112,18 @@ export default function AddEditReceptionisht() {
         formData.append('name', values.name);
         formData.append('email', values.email);
         formData.append('password', values.password);
+        formData.append('employeeId', values.employeeId || '');
+        formData.append('designation', values.designation?.value || '');
+        formData.append('department', values.department?.value || '');
+        formData.append('role', values.role?.value || '');
+        formData.append('counterNo', values.counterNo || '');
 
         if (selectedPhoto) {
           formData.append('photo', selectedPhoto);
+        }
+
+        if (selectedSignature) {
+          formData.append('sign', selectedSignature);
         }
 
         if (id) {
@@ -85,6 +139,34 @@ export default function AddEditReceptionisht() {
     }
   });
 
+  useEffect(() => {
+    if (id && receptionistDetails) {
+      setPhotoPreview(receptionistDetails?.photo || '');
+      const designationOpt = designationOptions.find(
+        (opt) => opt.value === receptionistDetails?.designation
+      );
+      const departmentOpt = departmentOptions.find(
+        (opt) => opt.value === receptionistDetails?.department
+      );
+      const roleOpt = roleOptions.find(
+        (opt) => opt.value === receptionistDetails?.role
+      );
+      formik.setFieldValue('designation', designationOpt || null);
+      formik.setFieldValue('department', departmentOpt || null);
+      formik.setFieldValue('role', roleOpt || null);
+      formik.setFieldValue('counterNo', receptionistDetails?.counterNo || '');
+      setSignaturePreview(receptionistDetails?.sign || '');
+    }
+  }, [id, receptionistDetails, formik]);
+
+  useEffect(() => {
+    if (formik.values.role?.value) {
+      fetchDepartments(formik.values.role.value);
+    } else {
+      fetchDepartments();
+    }
+  }, [formik.values.role, fetchDepartments]);
+
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -94,6 +176,17 @@ export default function AddEditReceptionisht() {
 
     const previewUrl = URL.createObjectURL(file);
     setPhotoPreview(previewUrl);
+  };
+
+  const handleSignatureChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSelectedSignature(file);
+    formik.setFieldValue('sign', file);
+
+    const previewUrl = URL.createObjectURL(file);
+    setSignaturePreview(previewUrl);
   };
 
   const breadcrumbPaths = [
@@ -129,18 +222,96 @@ export default function AddEditReceptionisht() {
           </div>
 
           <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Designation <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  name="designation"
+                  options={designationOptions}
+                  value={formik.values.designation}
+                  onChange={(option) => formik.setFieldValue('designation', option)}
+                  onBlur={() => formik.setFieldTouched('designation', true)}
+                  placeholder="Select designation"
+                  classNamePrefix="react-select"
+                  isClearable
+                />
+                {formik.touched.designation && formik.errors.designation && (
+                  <p className="text-xs text-red-500 mt-1">{formik.errors.designation}</p>
+                )}
+              </div>
 
-            {/* Employee ID only in Edit mode */}
-            {id && (
-              <TextInput
-                label="Employee ID"
-                name="employeeId"
-                value={formik.values.employeeId}
-                disabled
-                placeholder="Employee ID"
-                icon="pi-id-card"
-              />
-            )}
+                 <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Role <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  name="role"
+                  options={roleOptions}
+                  value={formik.values.role}
+                  onChange={(option) => formik.setFieldValue('role', option)}
+                  onBlur={() => formik.setFieldTouched('role', true)}
+                  placeholder="Select role"
+                  classNamePrefix="react-select"
+                  isClearable
+                />
+                {formik.touched.role && formik.errors.role && (
+                  <p className="text-xs text-red-500 mt-1">{formik.errors.role}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Department <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  name="department"
+                  options={departmentOptions}
+                  value={formik.values.department}
+                  onChange={(option) => formik.setFieldValue('department', option)}
+                  onBlur={() => formik.setFieldTouched('department', true)}
+                  placeholder="Select department"
+                  classNamePrefix="react-select"
+                  isClearable
+                />
+                {formik.touched.department && formik.errors.department && (
+                  <p className="text-xs text-red-500 mt-1">{formik.errors.department}</p>
+                )}
+              </div>
+
+              {(formik.values.role?.value === 'payment_officer' || formik.values.role?.value === 'registration_officer') && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Counter Number <span className="text-red-500">*</span>
+                  </label>
+                  <TextInput
+                    name="counterNo"
+                    value={formik.values.counterNo}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter counter number"
+                    required
+                    icon="pi pi-hashtag"
+                    error={formik.touched.counterNo && formik.errors.counterNo}
+                  />
+                </div>
+              )}
+
+            </div>
+
+            <TextInput
+              label="Employee ID"
+              name="employeeId"
+              value={formik.values.employeeId}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              placeholder="Enter employee ID"
+              required
+              icon="pi-id-card"
+              disabled={id}
+              error={formik.touched.employeeId && formik.errors.employeeId}
+            />
 
             <TextInput
               label="Data Entry Operator Name"
@@ -215,6 +386,46 @@ export default function AddEditReceptionisht() {
                     {id
                       ? 'Upload a new image if you want to change the existing photo.'
                       : 'Upload profile photo for the data entry operator.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Signature Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Signature {!id && <span className="text-red-500">*</span>}
+              </label>
+
+              <div className="flex items-start gap-4 flex-wrap">
+                <div className="w-28 h-28 rounded-xl border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
+                  {signaturePreview ? (
+                    <img
+                      src={signaturePreview}
+                      alt="Signature Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-center text-gray-400 text-xs px-2">
+                      No Signature
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleSignatureChange}
+                    className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4
+                    file:rounded-lg file:border-0 file:text-sm file:font-medium
+                    file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+
+                  <p className="text-xs text-gray-500 mt-2">
+                    {id
+                      ? 'Upload a new signature image if you want to change the existing signature.'
+                      : 'Upload digital signature for the data entry operator.'}
                   </p>
                 </div>
               </div>
