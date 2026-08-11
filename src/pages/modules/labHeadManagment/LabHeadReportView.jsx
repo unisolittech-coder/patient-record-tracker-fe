@@ -12,7 +12,7 @@ const LabHeadReportView = () => {
   const [reportApprovalStatus, setReportApprovalStatus] = useState({});
 
   const breadcrumbPaths = [
-    { label: "Lab Head Management" },
+    { label: "Lab Head Management", url:'/doctor/lab-head' },
     { label: "Lab Report View" },
   ];
 
