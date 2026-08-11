@@ -36,7 +36,7 @@ export default function BloodCollectionCenter() {
 
         const printData = {
             uniqueId: patient.uniqueId || '-',
-            patientName: patient.patientName || '-',
+            // patientName: patient.patientName || '-',
             testName: test.testName || '-',
             dateTime,
         };

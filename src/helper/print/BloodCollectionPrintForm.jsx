@@ -18,10 +18,10 @@ export default function BloodCollectionPrintForm({ printData }) {
       label: 'Unique ID: ',
       value: printData.uniqueId || '-',
     },
-    {
-      label: 'Patient Name: ',
-      value: printData.patientName || '-',
-    },
+    // {
+    //   label: 'Patient Name: ',
+    //   value: printData.patientName || '-',
+    // },
     {
       label: 'Test Name: ',
       value: printData.testName || '-',

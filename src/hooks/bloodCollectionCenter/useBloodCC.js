@@ -3,6 +3,7 @@ import { useRecoilState } from "recoil";
 import conf from "../../config/index";
 import useFetch from "../useFetch";
 import { bloodTestAtom } from "../../state/bloodCC/bloodCCState";
+import { toast } from "react-toastify";
 
 const useBloodCC = () => {
     const [fetchData] = useFetch();
@@ -24,6 +25,7 @@ const useBloodCC = () => {
             }
         } catch (error) {
             console.error("Error fetching blood tests:", error);
+            toast.error(error.response?.data?.message);
         } finally {
             setLoading(false);
         }
