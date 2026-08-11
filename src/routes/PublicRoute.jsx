@@ -121,10 +121,6 @@ export default function PublicRoute() {
                   element={<PatientDataUpdate />}
                 />
                 <Route
-                  path="/patient-registration"
-                  element={<NewPatientRegistration />}
-                />
-                <Route
                   path="/department-management"
                   element={<DepartmentManagement />}
                 />
@@ -134,12 +130,23 @@ export default function PublicRoute() {
                 />
                 <Route
                   element={
-                    <RoleProtectedRoute allowedRoles={[ROLES.blood_collection_officer, ROLES.SUPER_ADMIN]} />
+                    <RoleProtectedRoute allowedRoles={[ROLES.BLOOD_COLLECTION_OPERATOR, ROLES.SUPER_ADMIN]} />
                   }
                 >
                   <Route
                     path="/blood-collection-center"
                     element={<BloodCollectionCenter />}
+                  />
+                </Route>
+
+                <Route
+                  element={
+                    <RoleProtectedRoute allowedRoles={[ROLES.REGISTRATION_OFFICER, ROLES.SUPER_ADMIN]} />
+                  }
+                >
+                  <Route
+                    path="/patient-registration"
+                    element={<NewPatientRegistration />}
                   />
                 </Route>
               </Route>

@@ -12,10 +12,10 @@ import { ROLES } from '../../constants/roles';
 
 const roleDisplayMap = {
   super_admin: 'Admin',
-  regstraion_officer: 'Registration Officer',
+  registration_officer: 'Registration Officer',
   doctor: 'Doctor',
   Lab_payment: 'Lab Payment',
-  blood_collection_officer: 'Blood Collection Center',
+  blood_collection_operator: 'Blood Collection Center',
   lab_technician: 'Lab Technician',
   lab_Head: 'Lab Head'
 };
@@ -64,8 +64,10 @@ export default function Login() {
           navigate("/doctor/patient-management");
         } else if (values.role === ROLES.PAYMENT_OFFICER) {
           navigate("/payment-management");
-        } else if (values.role === ROLES.blood_collection_officer) {
+        } else if (values.role === ROLES.BLOOD_COLLECTION_OPERATOR) {
           navigate("/blood-collection-center");
+        } else if (values.role === ROLES.REGISTRATION_OFFICER) {
+          navigate("/patient-registration");
         } else if (values.role === ROLES.LAB_OPERATOR) {
           navigate("/doctor/lab-operator");
         } else if (values.role === ROLES.LAB_HEAD) {
