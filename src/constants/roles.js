@@ -5,4 +5,6 @@ export const ROLES = {
     RECEPTIONIST: "receptionist",
     DOCTOR: "doctor",
     PAYMENT_OFFICER: "payment_officer",
+    LAB_OPERATOR: "lab_operator",
+    LAB_HEAD: "lab_head",
 };

@@ -47,6 +47,12 @@ const Analytics = lazy(() => import("../pages/modules/analytics/Analytics"));
 //DOctor Patient Management 
 const DoctorPatientManagement = lazy(() => import('../pages/modules/doctorManagment/DoctorPatientManagement'));
 
+const LabOperatorManagment  = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorManagment'));
+
+const LabHeadManagment =lazy(() => import('../pages/modules/labHeadManagment/LabHeadManagment'));
+
+const LabHeadReportView =lazy(() => import('../pages/modules/labHeadManagment/LabHeadReportView'));
+
 // Fallback loader
 const Loader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -91,6 +97,15 @@ export default function PublicRoute() {
                 <Route element={<RoleProtectedRoute allowedRoles={[ROLES.DOCTOR, ROLES.SUPER_ADMIN]} />}>
                   <Route path="/doctor/patient-management" element={<DoctorPatientManagement />} />
                   {/* Other doctor routes */}
+                </Route>
+
+               <Route element={<RoleProtectedRoute allowedRoles={[ROLES.LAB_OPERATOR, ROLES.SUPER_ADMIN]} />}>
+                  <Route path="/doctor/lab-operator" element={<LabOperatorManagment />} />
+               </Route>
+
+                <Route element={<RoleProtectedRoute allowedRoles={[ROLES.LAB_HEAD, ROLES.SUPER_ADMIN]} />}>
+                  <Route path="/doctor/lab-head" element={<LabHeadManagment />} />
+                  <Route path="/doctor/lab-head/view/:uniqueId" element={<LabHeadReportView />} />
                 </Route>
 
                 <Route path="/patient-data" element={<PatientsListData />} />

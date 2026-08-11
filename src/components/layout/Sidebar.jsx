@@ -83,6 +83,22 @@ export default function Sidebar() {
     },
   ];
 
+  const labOperatorMenus = [
+    {
+      label: "Lab Operator Management",
+      icon: "pi pi-building",
+      path: "/doctor/lab-operator",
+    },
+  ];
+
+  const labHeadMenus = [
+    {
+      label: "Lab Head Management",
+      icon: "pi pi-building",
+      path: "/doctor/lab-head",
+    },
+  ];
+
   const menuItems =
     userRole === ROLES.SUPER_ADMIN
       ? superAdminMenus
@@ -90,7 +106,11 @@ export default function Sidebar() {
         ? doctorMenus
         : userRole === ROLES.PAYMENT_OFFICER
           ? paymentOfficerMenus
-          : receptionistMenus;
+          : userRole === ROLES.LAB_OPERATOR
+            ? labOperatorMenus
+            : userRole === ROLES.LAB_HEAD
+              ? labHeadMenus
+              : receptionistMenus;
 
   const handleLogout = () => {
     logout();
@@ -193,7 +213,11 @@ export default function Sidebar() {
                           ? "Doctor"
                           : userRole === "payment_officer"
                             ? "Payment Officer"
-                            : userRole}
+                            : userRole === "lab_operator"
+                              ? "Lab Operator"
+                              : userRole === "lab_head"
+                                ? "Lab Head"
+                                : userRole}
                   </p>
               </div>
             )}
