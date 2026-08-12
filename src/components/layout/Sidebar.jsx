@@ -27,20 +27,30 @@ export default function Sidebar() {
       icon: "pi pi-folder",
       path: "/patient-data",
     },
-    {
-      label: "Patient Registration",
-      icon: "pi pi-user-plus",
-      path: "/patient-registration",
-    },
+    // {
+    //   label: "Patient Registration",
+    //   icon: "pi pi-user-plus",
+    //   path: "/patient-registration",
+    // },
     {
       label: "Department Management",
       icon: "pi pi-building",
       path: "/department-management",
     },
+    // {
+    //   label: "Payment Management",
+    //   icon: "pi pi-money-bill",
+    //   path: "/payment-management",
+    // },
+    // {
+    //   label: "Blood Collection Center",
+    //   icon: "pi pi-heart",
+    //   path: "/blood-collection-center",
+    // },
     {
-      label: "Payment Management",
-      icon: "pi pi-money-bill",
-      path: "/payment-management",
+      label: "IGGMC Blood Collection",
+      icon: "pi pi-heart-fill",
+      path: "/iggmc-blood-collection-center",
     },
     {
       label: "Analytics",
@@ -49,45 +59,53 @@ export default function Sidebar() {
     },
   ];
 
-  const receptionistMenus = [
+  // const receptionistMenus = [
+  //   {
+  //     label: "Patient Registration",
+  //     icon: "pi pi-user-plus",
+  //     path: "/patient-registration",
+  //   },
+  // ];
+
+  // const doctorMenus = [
+  //   {
+  //     label: "Clinical Orders",
+  //     icon: "pi pi-folder",
+  //     path: "/doctor/patient-management",
+  //   },
+  // ]
+
+  // const paymentOfficerMenus = [
+  //   {
+  //     label: "Payment Management",
+  //     icon: "pi pi-money-bill",
+  //     path: "/payment-management",
+  //   },
+  // ];
+
+  // const bloodCollectionOperatorMenus = [
+  //   {
+  //     label: "Blood Collection Center",
+  //     icon: "pi pi-heart",
+  //     path: "/blood-collection-center",
+  //   },
+  // ];
+
+  const bloodCollectionOperatorIggmcMenus = [
     {
-      label: "Patient Registration",
-      icon: "pi pi-user-plus",
-      path: "/patient-registration",
+      label: "IGGMC Blood Collection",
+      icon: "pi pi-heart-fill",
+      path: "/iggmc-blood-collection-center",
     },
   ];
 
-  const doctorMenus = [
-    {
-      label: "Clinical Orders",
-      icon: "pi pi-folder",
-      path: "/doctor/patient-management",
-    },
-  ]
-
-  const paymentOfficerMenus = [
-    {
-      label: "Payment Management",
-      icon: "pi pi-money-bill",
-      path: "/payment-management",
-    },
-  ];
-
-  const bloodCollectionOperatorMenus = [
-    {
-      label: "Blood Collection Center",
-      icon: "pi pi-heart",
-      path: "/blood-collection-center",
-    },
-  ];
-
-  const registrationOfficerMenus = [
-    {
-      label: "Patient Registration",
-      icon: "pi pi-user-plus",
-      path: "/patient-registration",
-    },
-  ];
+  // const registrationOfficerMenus = [
+  //   {
+  //     label: "Patient Registration",
+  //     icon: "pi pi-user-plus",
+  //     path: "/patient-registration",
+  //   },
+  // ];
 
   const labOperatorMenus = [
     {
@@ -108,19 +126,21 @@ export default function Sidebar() {
   const menuItems =
     userRole === ROLES.SUPER_ADMIN
       ? superAdminMenus
-      : userRole === ROLES.DOCTOR
-        ? doctorMenus
-        : userRole === ROLES.PAYMENT_OFFICER
-          ? paymentOfficerMenus
-          : userRole === ROLES.BLOOD_COLLECTION_OPERATOR
-            ? bloodCollectionOperatorMenus
-            : userRole === ROLES.REGISTRATION_OFFICER
-              ? registrationOfficerMenus
-              : userRole === ROLES.LAB_OPERATOR
-                ? labOperatorMenus
-                : userRole === ROLES.LAB_HEAD
-                  ? labHeadMenus
-                  : receptionistMenus;
+      // : userRole === ROLES.DOCTOR
+      //   ? doctorMenus
+      //   : userRole === ROLES.PAYMENT_OFFICER
+      //     ? paymentOfficerMenus
+      //     : userRole === ROLES.BLOOD_COLLECTION_OPERATOR
+      //       ? bloodCollectionOperatorMenus
+      : userRole === ROLES.BLOOD_COLLECTION_OPERATOR_IGGMC
+        ? bloodCollectionOperatorIggmcMenus
+        // : userRole === ROLES.REGISTRATION_OFFICER
+        //   ? registrationOfficerMenus
+        : userRole === ROLES.LAB_OPERATOR
+          ? labOperatorMenus
+          : userRole === ROLES.LAB_HEAD
+            ? labHeadMenus
+            : receptionistMenus;
 
   const handleLogout = () => {
     logout();
@@ -217,19 +237,21 @@ export default function Sidebar() {
                 <p className="text-xs text-gray-400 truncate">
                   {userRole === "super_admin"
                     ? "Super Admin"
-                    : userRole === "registration_officer"
-                      ? "Registration Officer"
-                      : userRole === "doctor"
-                        ? "Doctor"
-                        : userRole === "payment_officer"
-                          ? "Payment Officer"
-                          : userRole === "blood_collection_officer"
-                            ? "Blood Collection Operator"
-                            : userRole === "lab_operator"
-                              ? "Lab Operator"
-                              : userRole === "lab_head"
-                                ? "Lab Head"
-                                : userRole}
+                    // : userRole === "registration_officer"
+                    //   ? "Registration Officer"
+                    //   : userRole === "doctor"
+                    //     ? "Doctor"
+                    //     : userRole === "payment_officer"
+                    //       ? "Payment Officer"
+                    //       : userRole === "blood_collection_officer"
+                    //         ? "Blood Collection Operator"
+                    : userRole === "lab_operator"
+                      ? "Lab Operator"
+                      : userRole === "lab_head"
+                        ? "Lab Head"
+                        : userRole === "blood_collection_officer_iggmc"
+                          ? "Blood Collection Operator IGGMC"
+                          : userRole}
                 </p>
               </div>
             )}

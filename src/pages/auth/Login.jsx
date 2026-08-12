@@ -52,12 +52,14 @@ export default function Login() {
       if (success) {
         if (values.role === ROLES.DOCTOR) {
           navigate("/doctor/patient-management");
-        } else if (values.role === ROLES.PAYMENT_OFFICER) {
-          navigate("/payment-management");
-        } else if (values.role === ROLES.BLOOD_COLLECTION_OPERATOR) {
-          navigate("/blood-collection-center");
-        } else if (values.role === ROLES.REGISTRATION_OFFICER) {
-          navigate("/patient-registration");
+        // } else if (values.role === ROLES.PAYMENT_OFFICER) {
+        //   navigate("/payment-management");
+        // } else if (values.role === ROLES.BLOOD_COLLECTION_OPERATOR) {
+        //   navigate("/blood-collection-center");
+        // } else if (values.role === ROLES.REGISTRATION_OFFICER) {
+        //   navigate("/patient-registration");
+        } else if (values.role === ROLES.BLOOD_COLLECTION_OPERATOR_IGGMC) {
+          navigate("/iggmc-blood-collection-center");
         } else if (values.role === ROLES.LAB_OPERATOR) {
           navigate("/doctor/lab-operator");
         } else if (values.role === ROLES.LAB_HEAD) {
@@ -114,6 +116,18 @@ export default function Login() {
                 classNamePrefix="react-select"
                 isClearable
                 className="w-full"
+                styles={{
+                  menu: (base) => ({
+                    ...base,
+                    zIndex: 100,
+                    borderRadius: '0.5rem',
+                    overflow: 'hidden'
+                  }),
+                  menuList: (base) => ({
+                    ...base,
+                    padding: 0
+                  })
+                }}
               />
 
               {formik.touched.role && formik.errors.role && (
