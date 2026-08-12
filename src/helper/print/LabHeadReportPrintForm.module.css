@@ -1,0 +1,317 @@
+.container {
+  width: 100%;
+  margin: 0 auto;
+  background: #fff;
+  font-family: Arial, sans-serif;
+  padding: 0;
+}
+
+.card {
+  background: #fff;
+  overflow: hidden;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e5e7eb;
+  gap: 16px;
+}
+
+.headerLeft {
+  flex: 1;
+}
+
+.headerTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #111827;
+}
+
+.headerSubtitle {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.headerAddress,
+.headerAddress2 {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #4b5563;
+  line-height: 1.4;
+}
+
+.headerAddress2 {
+  color: #6b7280;
+}
+
+.logoPlaceholder {
+  width: 70px;
+  height: 70px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.logoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.patientInfoBar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #eff6ff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.patientIdLabel,
+.reportIdLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.patientIdValue,
+.reportIdValue {
+  font-weight: 700;
+  color: #111827;
+}
+
+.reportTitleBar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.reportTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  text-transform: uppercase;
+}
+
+.reportDate {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.patientDetailsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 10px 24px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.infoLabel {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.infoValue {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  text-align: right;
+}
+
+.observationsSection {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sectionTitle {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  text-transform: uppercase;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.resultTable {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.resultTable thead {
+  background: #f8fafc;
+}
+
+.resultTable th {
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  font-size: 11px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.resultTable td {
+  padding: 8px 10px;
+  color: #111827;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.evenRow {
+  background: #fff;
+}
+
+.oddRow {
+  background: #f9fafb;
+}
+
+.thParameter {
+  width: 30%;
+}
+
+.thResult,
+.thUnitRef,
+.thRange {
+  text-align: center;
+}
+
+.thResult {
+  width: 20%;
+}
+
+.thUnitRef,
+.thRange {
+  width: 25%;
+}
+
+.tdParameter {
+  font-weight: 600;
+}
+
+.tdResult {
+  text-align: center;
+  font-weight: 700;
+  color: #111827;
+}
+
+.tdUnitRef,
+.tdRange {
+  text-align: center;
+  color: #6b7280;
+}
+
+.footer {
+  padding: 18px;
+  background: #fff;
+}
+
+.footerContent {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.signatureBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signatureLine {
+  width: 180px;
+  border-bottom: 1px solid #111827;
+  margin-bottom: 6px;
+}
+
+.signatureText {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+}
+
+.regardsBlock {
+  text-align: right;
+}
+
+.regardsText {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.approvedText {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  text-transform: uppercase;
+}
+
+.footerNote {
+  text-align: center;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.footerNote p {
+  margin: 0;
+  font-size: 11px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+@media print {
+  @page {
+    margin: 10mm;
+    size: auto;
+  }
+
+  .container {
+    background: #fff;
+    padding: 0;
+  }
+
+  .card {
+    border: none;
+  }
+
+  .footer {
+    background: #fff;
+  }
+}

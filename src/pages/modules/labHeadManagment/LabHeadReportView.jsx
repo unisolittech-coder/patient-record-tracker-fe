@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { createRoot } from "react-dom/client";
 import BreadCrumb from "../../../components/common/BreadCrumb";
 import PagePath from "../../../components/common/PagePath";
 import useLabHeadManagment from "../../../hooks/lab/labHeadManagment/useLabHeadManagment";
+import { toast } from "react-toastify";
+import html2canvas from "html2canvas";
+import LabHeadReportPrintForm from "../../../helper/print/LabHeadReportPrintForm";
 
 const LabHeadReportView = () => {
   const { uniqueId } = useParams();
-  const navigate = useNavigate();
-  const { fetchLabHeadReport, loading } = useLabHeadManagment();
+  const { fetchLabHeadReport, updateLabHeadStatus, loading } = useLabHeadManagment();
   const [reportData, setReportData] = useState(null);
   const [reportApprovalStatus, setReportApprovalStatus] = useState({});
+  const [showPrintForm, setShowPrintForm] = useState(false);
+  const [selectedReport, setSelectedReport] = useState(null);
 
   const breadcrumbPaths = [
     { label: "Lab Head Management", url:'/doctor/lab-head' },
@@ -29,12 +34,84 @@ const LabHeadReportView = () => {
     }
   }, [uniqueId, fetchLabHeadReport]);
 
-  const handleReportApproveReject = (reportIndex, status) => {
+  const handlePrint = (report) => {
+    setSelectedReport(report);
+    setShowPrintForm(true);
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  };
+
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      setShowPrintForm(false);
+      setSelectedReport(null);
+    };
+    window.addEventListener("afterprint", handleAfterPrint);
+    return () => window.removeEventListener("afterprint", handleAfterPrint);
+  }, []);
+
+  const captureReportAsImage = async (report) => {
+    const container = document.createElement("div");
+    container.style.position = "fixed";
+    container.style.left = "-9999px";
+    container.style.top = "0";
+    container.style.zIndex = "-1";
+    container.style.background = "#ffffff";
+    document.body.appendChild(container);
+
+    const root = createRoot(container);
+    root.render(<LabHeadReportPrintForm report={report} />);
+
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const printElement = container.querySelector(".lab-print-form");
+    let file = null;
+    if (printElement) {
+      const canvas = await html2canvas(printElement, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+      if (blob) {
+        file = new File([blob], `report-${report.data?.uniqueId || "image"}.png`, { type: "image/png" });
+      }
+    }
+
+    root.unmount();
+    document.body.removeChild(container);
+
+    return file;
+  };
+
+  const handleReportApproveReject = async (reportIndex, status) => {
     const key = `${reportIndex}`;
-    setReportApprovalStatus((prev) => ({
-      ...prev,
-      [key]: status,
-    }));
+    const report = reportData?.reports?.[reportIndex];
+
+    if (!report) return;
+
+    const formData = new FormData();
+    formData.append("updates", JSON.stringify([{ model: report.model, status }]));
+
+    try {
+      const imageFile = await captureReportAsImage(report);
+      if (imageFile) {
+        formData.append("images", imageFile);
+      }
+
+      const result = await updateLabHeadStatus(uniqueId, formData);
+      if (result) {
+        setReportApprovalStatus((prev) => ({
+          ...prev,
+          [key]: status,
+        }));
+        toast.success(result.message || `Report ${status} successfully`);
+      }
+    } catch (error) {
+      console.error("Error updating report status:", error);
+      toast.error(error.message || "Failed to update report status");
+    }
   };
 
   const getReportStatusBadge = (reportIndex) => {
@@ -124,8 +201,8 @@ const LabHeadReportView = () => {
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
-      ) : reportData?.reports && reportData.reports.length > 0 ? (
-        <div className="space-y-6">
+  ) : reportData?.reports && reportData.reports.length > 0 ? (
+    <div className="space-y-6">
           {reportData.reports.map((report, index) => {
             const reportStatus = reportApprovalStatus[index];
 
@@ -161,6 +238,12 @@ const LabHeadReportView = () => {
                   {!reportStatus && (
                     <div className="flex items-center gap-2">
                       <button
+                        onClick={() => handlePrint(report)}
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                      >
+                        View
+                      </button>
+                      <button
                         onClick={() => handleReportApproveReject(index, "approved")}
                         className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
                       >
@@ -188,6 +271,33 @@ const LabHeadReportView = () => {
           <p className="text-slate-500 font-medium">No reports found for this unique ID.</p>
         </div>
       )}
+      {showPrintForm && <LabHeadReportPrintForm report={selectedReport} />}
+
+      {/* Print Styles */}
+      <style>{`
+          @media print {
+              @page {
+                  margin: 0;
+                  size: auto;
+              }
+              body * {
+                  visibility: hidden;
+              }
+              .lab-print-form, .lab-print-form * {
+                  visibility: visible;
+              }
+              .lab-print-form {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: 100%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  min-height: 100vh;
+              }
+          }
+      `}</style>
     </div>
   );
 };

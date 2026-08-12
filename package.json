@@ -15,6 +15,7 @@
     "chart.js": "^4.5.1",
     "dayjs": "^1.11.21",
     "formik": "^2.4.9",
+    "html2canvas": "^1.4.1",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.8",
     "react": "^18.3.1",

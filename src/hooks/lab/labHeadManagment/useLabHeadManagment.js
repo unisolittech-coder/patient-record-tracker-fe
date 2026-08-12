@@ -165,6 +165,31 @@ const useLabHeadManagment = () => {
         }
     }, [fetchData, setLoading, setError]);
 
+    const updateLabHeadStatus = useCallback(async (uniqueId, data) => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const res = await fetchData({
+                method: "PUT",
+                url: `${conf.apiBaseUrl}lab-head/status/${uniqueId}`,
+                data,
+            });
+
+            if (res) {
+                setLoading(false);
+                toast.success(res.message || "Lab head status updated successfully");
+                return res;
+            }
+        } catch (error) {
+            console.error("Error updating lab head status:", error);
+            setLoading(false);
+            setError(error.message || "Failed to update lab head status");
+            toast.error(error.response?.data?.message || "Failed to update lab head status");
+            return false;
+        }
+    }, [fetchData, setLoading, setError]);
+
     const resetLabHeadDetails = useCallback(() => {
         setLabHeadDetails(null);
         setError(null);
@@ -181,6 +206,7 @@ const useLabHeadManagment = () => {
         addLabHead,
         updateLabHead,
         deleteLabHead,
+        updateLabHeadStatus,
         resetLabHeadDetails
     };
 };
