@@ -95,12 +95,14 @@ export default function LabOperatorManagment() {
 
     return (
       
-            <div className="max-w-4xl mx-auto">
+            <div >
                 <BreadCrumb paths={breadcrumbPaths} />
 
                 <PagePath
                     title="Lab Report Submission"
-                    showSearchBar={false}
+                     showSearchBar={false}
+                    //  showAddButton
+                    //  addButtonLabel="Add Entry mannualy"
                 />
 
                 {error && (
