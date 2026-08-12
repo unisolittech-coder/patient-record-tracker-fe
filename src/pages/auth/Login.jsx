@@ -9,6 +9,7 @@ import { useLogin } from '../../hooks/auth/useLogin';
 import validator from "validator";
 import useDropdowns from '../../hooks/dropdown/useDropdowns';
 import { ROLES } from '../../constants/roles';
+import Loader from "../../components/common/Loader";
 
 export default function Login() {
   const { loading, adminLogin } = useLogin();
@@ -25,6 +26,7 @@ export default function Login() {
   useEffect(() => {
     fetchRoles();
   }, [fetchRoles]);
+  
 
   const validationSchema = Yup.object({
     role: Yup.string().required('Role is required'),
@@ -110,7 +112,7 @@ export default function Login() {
               <Select
                 value={roleOptions.find((opt) => opt.value === formik.values.role) || null}
                 onChange={(option) => formik.setFieldValue('role', option?.value || '')}
-                onBlur={() => formik.setFieldTouched('role', true)}
+                // onBlur={() => formik.setFieldTouched('role', true)}
                 options={roleOptions}
                 placeholder="Select role"
                 classNamePrefix="react-select"
