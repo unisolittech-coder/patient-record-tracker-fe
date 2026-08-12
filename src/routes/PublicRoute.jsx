@@ -28,9 +28,9 @@ const PatientDataUpdate = lazy(
 );
 
 // Patient Registration
-const NewPatientRegistration = lazy(
-  () => import("../pages/modules/patientRegistrations/NewPatientRegistration"),
-);
+// const NewPatientRegistration = lazy(
+//   () => import("../pages/modules/patientRegistrations/NewPatientRegistration"),
+// );
 
 // Receptionist Management
 const ReceptionishtsListData = lazy(
@@ -45,19 +45,19 @@ const AddEditReceptionisht = lazy(
 const Analytics = lazy(() => import("../pages/modules/analytics/Analytics"));
 
 //DOctor Patient Management 
-const DoctorPatientManagement = lazy(() => import('../pages/modules/doctorManagment/DoctorPatientManagement'));
+// const DoctorPatientManagement = lazy(() => import('../pages/modules/doctorManagment/DoctorPatientManagement'));
 
 // Blood Collection Center
-const BloodCollectionCenter = lazy(() => import('../pages/modules/bloodCollectionCenter/BloodCollectionCenter'));
+// const BloodCollectionCenter = lazy(() => import('../pages/modules/bloodCollectionCenter/BloodCollectionCenter'));
 
 // IGGMC Blood Collection Center
 const IggmcBloodCollectionCenter = lazy(() => import('../pages/modules/iggmcBloodCollectionCenter/IggmcBloodCollectionCenter'));
 
-const LabOperatorManagment  = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorManagment'));
+const LabOperatorManagment = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorManagment'));
 
-const LabHeadManagment =lazy(() => import('../pages/modules/labHeadManagment/LabHeadManagment'));
+const LabHeadManagment = lazy(() => import('../pages/modules/labHeadManagment/LabHeadManagment'));
 
-const LabHeadReportView =lazy(() => import('../pages/modules/labHeadManagment/LabHeadReportView'));
+const LabHeadReportView = lazy(() => import('../pages/modules/labHeadManagment/LabHeadReportView'));
 
 // Fallback loader
 const Loader = () => (
@@ -79,7 +79,6 @@ export default function PublicRoute() {
             <Route element={<ProtectedRoute />}>
               <Route element={<Layout />}>
                 <Route path="/dashboard" element={<AdminDashboard />} />{" "}
-                {/* Or logic for ReceptionishtDashboard based on role */}
                 <Route
                   element={
                     <RoleProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]} />
@@ -100,14 +99,9 @@ export default function PublicRoute() {
                   <Route path="/analytics" element={<Analytics />} />
                 </Route>
 
-                <Route element={<RoleProtectedRoute allowedRoles={[ROLES.DOCTOR, ROLES.SUPER_ADMIN]} />}>
-                  <Route path="/doctor/patient-management" element={<DoctorPatientManagement />} />
-                  {/* Other doctor routes */}
-                </Route>
-
-               <Route element={<RoleProtectedRoute allowedRoles={[ROLES.LAB_OPERATOR, ROLES.SUPER_ADMIN]} />}>
+                <Route element={<RoleProtectedRoute allowedRoles={[ROLES.LAB_OPERATOR, ROLES.SUPER_ADMIN]} />}>
                   <Route path="/doctor/lab-operator" element={<LabOperatorManagment />} />
-               </Route>
+                </Route>
 
                 <Route element={<RoleProtectedRoute allowedRoles={[ROLES.LAB_HEAD, ROLES.SUPER_ADMIN]} />}>
                   <Route path="/doctor/lab-head" element={<LabHeadManagment />} />
@@ -131,16 +125,6 @@ export default function PublicRoute() {
                   path="/payment-management"
                   element={<PaymentManagement />}
                 />
-                <Route
-                  element={
-                    <RoleProtectedRoute allowedRoles={[ROLES.BLOOD_COLLECTION_OPERATOR, ROLES.SUPER_ADMIN]} />
-                  }
-                >
-                  <Route
-                    path="/blood-collection-center"
-                    element={<BloodCollectionCenter />}
-                  />
-                </Route>
 
                 <Route
                   element={
@@ -153,7 +137,21 @@ export default function PublicRoute() {
                   />
                 </Route>
 
-                <Route
+                {/* <Route element={<RoleProtectedRoute allowedRoles={[ROLES.DOCTOR, ROLES.SUPER_ADMIN]} />}>
+                  <Route path="/doctor/patient-management" element={<DoctorPatientManagement />} />
+                </Route> */}
+                {/* <Route
+                  element={
+                    <RoleProtectedRoute allowedRoles={[ROLES.BLOOD_COLLECTION_OPERATOR, ROLES.SUPER_ADMIN]} />
+                  }
+                >
+                  <Route
+                    path="/blood-collection-center"
+                    element={<BloodCollectionCenter />}
+                  />
+                </Route> */}
+
+                {/* <Route
                   element={
                     <RoleProtectedRoute allowedRoles={[ROLES.REGISTRATION_OFFICER, ROLES.SUPER_ADMIN]} />
                   }
@@ -162,7 +160,7 @@ export default function PublicRoute() {
                     path="/patient-registration"
                     element={<NewPatientRegistration />}
                   />
-                </Route>
+                </Route> */}
               </Route>
             </Route>
 
