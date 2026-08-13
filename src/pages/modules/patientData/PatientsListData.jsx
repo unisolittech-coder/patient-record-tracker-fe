@@ -145,7 +145,7 @@ export default function PatientsListData() {
       minWidth: '10px'
     },
     {
-      field: 'patientId',
+      field: 'uhid',
       header: 'Patient ID',
       sortable: true,
       body: patientIdBodyTemplate,
@@ -157,14 +157,7 @@ export default function PatientsListData() {
       sortable: true,
       minWidth: '180px'
     },
-    {
-      field: 'gender',
-      header: 'Gender',
-      sortable: true,
-      body: genderBodyTemplate,
-      minWidth: '100px'
-    },
-    {
+       {
       field: 'mobileNumber',
       header: 'Mobile Number',
       sortable: false,
@@ -172,19 +165,25 @@ export default function PatientsListData() {
       minWidth: '120px'
     },
     {
-      field: 'city',
-      header: 'City',
+      field: 'abhaNumber',
+      header: 'ABHA Number',
       sortable: true,
-      body: cityBodyTemplate,
       minWidth: '100px'
     },
-    {
-      field: 'action',
-      header: 'Actions',
-      sortable: false,
-      body: actionBodyTemplate,
-      minWidth: '100px'
-    }
+    // {
+    //   field: 'city',
+    //   header: 'City',
+    //   sortable: true,
+    //   body: cityBodyTemplate,
+    //   minWidth: '100px'
+    // },
+    // {
+    //   field: 'action',
+    //   header: 'Actions',
+    //   sortable: false,
+    //   body: actionBodyTemplate,
+    //   minWidth: '100px'
+    // }
   ];
 
   return (

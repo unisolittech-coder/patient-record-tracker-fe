@@ -16,9 +16,14 @@ export default function IggmcBloodCollectionCenter() {
 
   const validationSchema = Yup.object({
     uhid: Yup.string().required('UHID is required'),
-    mobileNumber: Yup.string().required('Mobile Number is required'),
+    mobileNumber: Yup.string()
+      .required('Mobile Number is required')
+      .matches(/^\d{10}$/, 'Mobile number must be exactly 10 digits'),
     patientName: Yup.string().required('Patient Name is required'),
     abhaNumber: Yup.string()
+      .nullable()
+      .notRequired()
+      // .matches(/^\d{2}-\d{4}-\d{4}-\d{4}$/, 'ABHA number must be in format 12-3456-7890-1234')
   });
 
   const formik = useFormik({
@@ -83,6 +88,8 @@ export default function IggmcBloodCollectionCenter() {
               name="mobileNumber"
               label="Mobile Number"
               required
+              type="tel"
+              maxLength={10}
               value={formik.values.mobileNumber}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -93,6 +100,7 @@ export default function IggmcBloodCollectionCenter() {
             <TextInput
               name="abhaNumber"
               label="ABHA Number"
+              maxLength={17}
               value={formik.values.abhaNumber}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
