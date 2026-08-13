@@ -77,7 +77,7 @@ export default function LabHeadReportPrintForm({ report, images }) {
         </div>
 
         <div className={styles.reportTitleBar}>
-          <h2 className={styles.reportTitle}>{report.model || "Lab Report"}</h2>
+          <h2 className={styles.reportTitle}>{report.reportType || "Lab Report"}</h2>
           <span className={styles.reportDate}>Date: {formatDateTime(data.date)}</span>
         </div>
 
