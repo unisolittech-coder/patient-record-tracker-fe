@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import BreadCrumb from "../../../components/common/BreadCrumb";
 import PagePath from "../../../components/common/PagePath";
@@ -8,6 +9,7 @@ import useLabOperatorManagment from "../../../hooks/lab/labOperatorManagment/use
 
 export default function LabOperatorManagment() {
     const { loading, error, submitLabReports, resetForm, fetchLabPatientSearch, labPatientSearch } = useLabOperatorManagment();
+    const navigate = useNavigate();
     const formRef = useRef(null);
 
     const [uniqueId, setUniqueId] = useState("");
@@ -94,7 +96,7 @@ export default function LabOperatorManagment() {
         }
 
         const payload = new FormData();
-        payload.append("uniqueId", uniqueId);
+        payload.append("uhid", uniqueId);
         payload.append("testNames", JSON.stringify(validTests.map(t => t.testName)));
         validTests.forEach((test) => {
             payload.append("reports", test.report);
@@ -116,21 +118,20 @@ export default function LabOperatorManagment() {
 
             <PagePath
                 title="Lab Report Submission"
-                 showSearchBar={false}
-            //  showAddButton
-            //  addButtonLabel="Add Entry mannualy"
-                    //  showAddButton
-                    //  addButtonLabel="Add Entry mannualy"
+                showSearchBar={false}
+                showAddButton={true}
+                addButtonLabel="Add Entry Manually"
+                onAdd={() => navigate("/doctor/lab-operator/manual-entry")}
             />
 
-            {error && (
+            {/* {error && (
                 <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
                     <div className="flex items-center gap-3 text-red-700">
                         <i className="pi pi-exclamation-circle text-xl"></i>
                         <p>{error}</p>
                     </div>
                 </div>
-            )}
+            )} */}
 
             <form ref={formRef} onSubmit={handleSubmit} className="mt-4 space-y-4">
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
