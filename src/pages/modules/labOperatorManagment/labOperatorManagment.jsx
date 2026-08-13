@@ -118,10 +118,10 @@ export default function LabOperatorManagment() {
 
             <PagePath
                 title="Lab Report Submission"
-                showSearchBar={false}
-                showAddButton={true}
-                addButtonLabel="Add Entry Manually"
-                onAdd={() => navigate("/doctor/lab-operator/manual-entry")}
+                // showSearchBar={false}
+                // showAddButton={true}
+                // addButtonLabel="Add Entry Manually"
+                // onAdd={() => navigate("/doctor/lab-operator/manual-entry")}
             />
 
             {/* {error && (

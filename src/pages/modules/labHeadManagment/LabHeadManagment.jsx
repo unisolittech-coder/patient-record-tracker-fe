@@ -121,10 +121,10 @@ export default function LabHeadManagment() {
 
       <PagePath
         title="Lab Head Management"
-        showSearchBar={true}
-        searchValue={search}
-        searchPlaceholder="Search by patient name or ID"
-        onSearch={setSearch}
+        // showSearchBar={true}
+        // searchValue={search}
+        // searchPlaceholder="Search by patient name or ID"
+        // onSearch={setSearch}
       />
 
       <DataTable
