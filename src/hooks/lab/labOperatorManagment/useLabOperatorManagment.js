@@ -6,7 +6,8 @@ import { toast } from "react-toastify";
 import {
     labOperatorLoadingAtom,
     labOperatorErrorAtom,
-    labOperatorFormAtom
+    labOperatorFormAtom,
+    labPatientSearchAtom
 } from "../../../state/lab/labOperatorState";
 
 const useLabOperatorManagment = () => {
@@ -14,6 +15,7 @@ const useLabOperatorManagment = () => {
     const [loading, setLoading] = useRecoilState(labOperatorLoadingAtom);
     const [error, setError] = useRecoilState(labOperatorErrorAtom);
     const [formData, setFormData] = useRecoilState(labOperatorFormAtom);
+    const [labPatientSearch, setLabPatientSearch] = useRecoilState(labPatientSearchAtom);
 
     const submitLabReports = useCallback(async (payload) => {
         setLoading(true);
@@ -48,13 +50,38 @@ const useLabOperatorManagment = () => {
         setError(null);
     }, [setFormData, setError]);
 
+    const fetchLabPatientSearch = async (id) => {
+        setLoading(true);
+        try {
+            const res = await fetchData({
+                method: "GET",
+                url: `${conf.apiBaseUrl}lab-operators/patient/${id}`,
+            });
+            if (res) {
+                setLabPatientSearch(res.patient);
+                setLoading(false);
+                return true;
+            }
+            setLoading(false);
+            return false;
+        } catch (error) {
+            console.error("Error fetching lab patient search:", error);
+            toast.error(error.response?.data?.message);
+            setLoading(false);
+            setLabPatientSearch(null);
+            return false;
+        }
+    }
+
     return {
         loading,
         error,
         formData,
         setFormData,
         submitLabReports,
-        resetForm
+        resetForm,
+        fetchLabPatientSearch,
+        labPatientSearch
     };
 };
 

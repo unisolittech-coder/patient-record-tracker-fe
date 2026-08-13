@@ -27,12 +27,6 @@ const PatientDataUpdate = lazy(
   () => import("../pages/modules/patientData/PatientDataUpdate"),
 );
 
-// Patient Registration
-// const NewPatientRegistration = lazy(
-//   () => import("../pages/modules/patientRegistrations/NewPatientRegistration"),
-// );
-
-// Receptionist Management
 const ReceptionishtsListData = lazy(
   () =>
     import("../pages/modules/receptionishtManagement/ReceptionishtsListData"),
@@ -41,19 +35,13 @@ const AddEditReceptionisht = lazy(
   () => import("../pages/modules/receptionishtManagement/AddEditReceptionisht"),
 );
 
-// Analytics
 const Analytics = lazy(() => import("../pages/modules/analytics/Analytics"));
 
-//DOctor Patient Management 
-// const DoctorPatientManagement = lazy(() => import('../pages/modules/doctorManagment/DoctorPatientManagement'));
-
-// Blood Collection Center
-// const BloodCollectionCenter = lazy(() => import('../pages/modules/bloodCollectionCenter/BloodCollectionCenter'));
-
-// IGGMC Blood Collection Center
 const IggmcBloodCollectionCenter = lazy(() => import('../pages/modules/iggmcBloodCollectionCenter/IggmcBloodCollectionCenter'));
 
 const LabOperatorManagment = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorManagment'));
+
+const ManualLabEntryForm = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorMannualForm'));
 
 const LabHeadManagment = lazy(() => import('../pages/modules/labHeadManagment/LabHeadManagment'));
 
@@ -101,6 +89,7 @@ export default function PublicRoute() {
 
                 <Route element={<RoleProtectedRoute allowedRoles={[ROLES.LAB_OPERATOR, ROLES.SUPER_ADMIN]} />}>
                   <Route path="/doctor/lab-operator" element={<LabOperatorManagment />} />
+                  <Route path="/doctor/lab-operator/manual-entry" element={<ManualLabEntryForm />} />
                 </Route>
 
                 <Route element={<RoleProtectedRoute allowedRoles={[ROLES.LAB_HEAD, ROLES.SUPER_ADMIN]} />}>
@@ -136,31 +125,6 @@ export default function PublicRoute() {
                     element={<IggmcBloodCollectionCenter />}
                   />
                 </Route>
-
-                {/* <Route element={<RoleProtectedRoute allowedRoles={[ROLES.DOCTOR, ROLES.SUPER_ADMIN]} />}>
-                  <Route path="/doctor/patient-management" element={<DoctorPatientManagement />} />
-                </Route> */}
-                {/* <Route
-                  element={
-                    <RoleProtectedRoute allowedRoles={[ROLES.BLOOD_COLLECTION_OPERATOR, ROLES.SUPER_ADMIN]} />
-                  }
-                >
-                  <Route
-                    path="/blood-collection-center"
-                    element={<BloodCollectionCenter />}
-                  />
-                </Route> */}
-
-                {/* <Route
-                  element={
-                    <RoleProtectedRoute allowedRoles={[ROLES.REGISTRATION_OFFICER, ROLES.SUPER_ADMIN]} />
-                  }
-                >
-                  <Route
-                    path="/patient-registration"
-                    element={<NewPatientRegistration />}
-                  />
-                </Route> */}
               </Route>
             </Route>
 

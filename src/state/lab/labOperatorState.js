@@ -9,3 +9,5 @@ export const labOperatorFormAtom = atom(createPersistedAtom("labOperatorFormAtom
     uniqueId: "",
     tests: [{ testName: "", report: null }]
 }));
+
+export const labPatientSearchAtom = atom(createPersistedAtom("labPatientSearchKey", null));

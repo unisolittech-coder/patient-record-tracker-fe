@@ -49,15 +49,15 @@ export default function LabHeadManagment() {
     return (
       <ActionButtons
         rowData={rowData}
-        onView={(data) => navigate(`/doctor/lab-head/view/${data.uniqueId}`)}
+        onView={(data) => navigate(`/doctor/lab-head/view/${data.uhid}`)}
       />
     );
   };
 
-  const testDateBodyTemplate = (rowData) => {
+  const createdAtBodyTemplate = (rowData) => {
     return (
-      <span className="text-sm text-slate-700">
-        {rowData.testDate ? new Date(rowData.testDate).toLocaleDateString() : "-"}
+      <span className="text-lg text-gray-700">
+        {rowData.createdAt ? new Date(rowData.createdAt).toLocaleDateString() : "-"}
       </span>
     );
   };
@@ -76,17 +76,17 @@ export default function LabHeadManagment() {
       minWidth: "80px",
     },
     {
-      field: "uniqueId",
+      field: "uhid",
       header: "Unique ID",
       sortable: true,
       minWidth: "120px",
     },
-    {
-      field: "patientId",
-      header: "Patient ID",
-      sortable: true,
-      minWidth: "140px",
-    },
+    // {
+    //   field: "patientId",
+    //   header: "Patient ID",
+    //   sortable: true,
+    //   minWidth: "140px",
+    // },
     {
       field: "patientName",
       header: "Patient Name",
@@ -100,10 +100,10 @@ export default function LabHeadManagment() {
       minWidth: "160px",
     },
     {
-      field: "testDate",
+      field: "createdAt",
       header: "Test Date",
       sortable: true,
-      body: testDateBodyTemplate,
+      body: createdAtBodyTemplate,
       minWidth: "140px",
     },
     {
@@ -121,10 +121,10 @@ export default function LabHeadManagment() {
 
       <PagePath
         title="Lab Head Management"
-        showSearchBar={true}
-        searchValue={search}
-        searchPlaceholder="Search by patient name or ID"
-        onSearch={setSearch}
+        // showSearchBar={true}
+        // searchValue={search}
+        // searchPlaceholder="Search by patient name or ID"
+        // onSearch={setSearch}
       />
 
       <DataTable
