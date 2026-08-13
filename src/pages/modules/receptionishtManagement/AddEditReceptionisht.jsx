@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BreadCrumb from '../../../components/common/BreadCrumb';
 import PagePath from '../../../components/common/PagePath';
@@ -67,12 +67,12 @@ export default function AddEditReceptionisht() {
 
   const designationOptions = mapToSelectOptions(designations);
   const departmentOptions = mapToSelectOptions(departments);
-  const roleOptions = roles || [];
+  const roleOptions = useMemo(() => roles || [], [roles]);
 
   useEffect(() => {
     fetchDesignations();
     fetchRoles();
-  }, [fetchDesignations, fetchRoles]);
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -84,26 +84,28 @@ export default function AddEditReceptionisht() {
     };
   }, [id]);
 
+  const initialValues = useMemo(() => ({
+    employeeId: receptionistDetails?.employeeId || '',
+    name: receptionistDetails?.name || '',
+    email: receptionistDetails?.email || '',
+    password: receptionistDetails?.password || '',
+    designation: designationOptions.find(
+      (opt) => opt.value === receptionistDetails?.designation
+    ) || null,
+    department: departmentOptions.find(
+      (opt) => opt.value === receptionistDetails?.department
+    ) || null,
+    role: roleOptions.find(
+      (opt) => opt.value === receptionistDetails?.role
+    ) || null,
+    counterNo: receptionistDetails?.counterNo || '',
+    photo: null,
+    sign: null
+  }), [receptionistDetails, designationOptions, departmentOptions, roleOptions]);
+
   const formik = useFormik({
     enableReinitialize: true,
-    initialValues: {
-      employeeId: receptionistDetails?.employeeId || '',
-      name: receptionistDetails?.name || '',
-      email: receptionistDetails?.email || '',
-      password: receptionistDetails?.password || '',
-      designation: designationOptions.find(
-        (opt) => opt.value === receptionistDetails?.designation
-      ) || null,
-      department: departmentOptions.find(
-        (opt) => opt.value === receptionistDetails?.department
-      ) || null,
-      role: roleOptions.find(
-        (opt) => opt.value === receptionistDetails?.role
-      ) || null,
-      counterNo: receptionistDetails?.counterNo || '',
-      photo: null,
-      sign: null
-    },
+    initialValues,
     validationSchema,
     onSubmit: async (values) => {
       try {
@@ -144,22 +146,9 @@ export default function AddEditReceptionisht() {
   useEffect(() => {
     if (id && receptionistDetails) {
       setPhotoPreview(receptionistDetails?.photo || '');
-      const designationOpt = designationOptions.find(
-        (opt) => opt.value === receptionistDetails?.designation
-      );
-      const departmentOpt = departmentOptions.find(
-        (opt) => opt.value === receptionistDetails?.department
-      );
-      const roleOpt = roleOptions.find(
-        (opt) => opt.value === receptionistDetails?.role
-      );
-      formik.setFieldValue('designation', designationOpt || null);
-      formik.setFieldValue('department', departmentOpt || null);
-      formik.setFieldValue('role', roleOpt || null);
-      formik.setFieldValue('counterNo', receptionistDetails?.counterNo || '');
       setSignaturePreview(receptionistDetails?.sign || '');
     }
-  }, [id, receptionistDetails, formik]);
+  }, [id, receptionistDetails]);
 
   useEffect(() => {
     if (formik.values.role?.value) {
@@ -167,7 +156,7 @@ export default function AddEditReceptionisht() {
     } else {
       fetchDepartments();
     }
-  }, [formik.values.role, fetchDepartments]);
+  }, [formik.values.role]);
 
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];

@@ -333,7 +333,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Age Group Distribution */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <div className="mb-4">
                     <h3 className="text-lg font-bold text-gray-800">Age Group Distribution</h3>
                     <p className="text-sm text-gray-500 mt-1">
@@ -350,7 +350,7 @@ export default function AdminDashboard() {
                         </div>
                     )}
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }
