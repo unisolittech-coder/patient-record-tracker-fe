@@ -7,6 +7,7 @@ import useLabHeadManagment from "../../../hooks/lab/labHeadManagment/useLabHeadM
 import { toast } from "react-toastify";
 import html2canvas from "html2canvas";
 import LabHeadReportPrintForm from "../../../helper/print/LabHeadReportPrintForm";
+import { confirmAlert, confirmRejectAlert} from "../../../utils/alertToast";
 
 const LabHeadReportView = () => {
   const { uniqueId } = useParams();
