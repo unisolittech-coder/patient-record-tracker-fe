@@ -69,15 +69,15 @@ export default function LabHeadReportPrintForm({ report, images }) {
 
         <div className={styles.patientInfoBar}>
           <div className={styles.patientIdLabel}>
-            रुग्ण ओळख क्रमांक (Patient ID): <span className={styles.patientIdValue}>{data.patientId || "-"}</span>
+            रुग्ण ओळख क्रमांक (Patient ID): <span className={styles.patientIdValue}>{data.UHID || "-"}</span>
           </div>
           <div className={styles.reportIdLabel}>
-            Report ID: <span className={styles.reportIdValue}>{data.uniqueId || "-"}</span>
+            Report ID: <span className={styles.reportIdValue}>{data.UHID || "-"}</span>
           </div>
         </div>
 
         <div className={styles.reportTitleBar}>
-          <h2 className={styles.reportTitle}>{report.model || "Lab Report"}</h2>
+          <h2 className={styles.reportTitle}>{report.reportType || "Lab Report"}</h2>
           <span className={styles.reportDate}>Date: {formatDateTime(data.date)}</span>
         </div>
 
@@ -89,13 +89,13 @@ export default function LabHeadReportPrintForm({ report, images }) {
             labelClass={styles.infoLabel}
             valueClass={styles.infoValue}
           />
-          <InfoItem
+          {/* <InfoItem
             label="Age / Gender"
             value={age || gender ? `${age || "-"} / ${gender || "-"}` : "-"}
             wrapperClass={styles.infoItem}
             labelClass={styles.infoLabel}
             valueClass={styles.infoValue}
-          />
+          /> */}
           <InfoItem
             label="Mobile"
             value={mobileNumber ? `+91 ${mobileNumber}` : "-"}
@@ -103,7 +103,7 @@ export default function LabHeadReportPrintForm({ report, images }) {
             labelClass={styles.infoLabel}
             valueClass={styles.infoValue}
           />
-          <InfoItem
+          {/* <InfoItem
             label="Department"
             value={department}
             wrapperClass={styles.infoItem}
@@ -116,7 +116,7 @@ export default function LabHeadReportPrintForm({ report, images }) {
             wrapperClass={styles.infoItem}
             labelClass={styles.infoLabel}
             valueClass={styles.infoValue}
-          />
+          /> */}
         </div>
 
         {observations.length > 0 && (
@@ -133,35 +133,49 @@ export default function LabHeadReportPrintForm({ report, images }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {observations.map((obs, idx) => (
-                    <tr key={idx} className={idx % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                      <td className={styles.tdParameter}>{obs.parameter}</td>
-                      <td className={styles.tdResult}>{obs.result}</td>
-                      <td className={styles.tdUnitRef}>{obs.unitRef}</td>
-                      <td className={styles.tdRange}>{obs.range}</td>
-                    </tr>
-                  ))}
+                  {observations.map((obs, idx) => {
+                    const isManualType = report.reportType === "Manual Type";
+                    const isImageUrl = isManualType && typeof obs.result === "string" && /^https?:\/\//.test(obs.result);
+                    return (
+                      <tr key={idx} className={idx % 2 === 0 ? styles.evenRow : styles.oddRow}>
+                        <td className={styles.tdParameter}>{obs.parameter}</td>
+                        <td className={styles.tdResult}>
+                          {isImageUrl ? (
+                            <img
+                              src={obs.result}
+                              alt={obs.parameter}
+                              className="max-w-full h-auto max-h-40 object-contain border border-gray-200 rounded-lg shadow-sm"
+                            />
+                          ) : (
+                            obs.result
+                          )}
+                        </td>
+                        <td className={styles.tdUnitRef}>{obs.unitRef}</td>
+                        <td className={styles.tdRange}>{obs.range}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </div>
         )}
 
-        {imageUrls.length > 0 && (
-          <div className={styles.observationsSection}>
-            <h3 className={styles.sectionTitle}>Report Images</h3>
-            <div className="flex flex-wrap gap-4 mt-4">
-              {imageUrls.map((url, idx) => (
-                <img
-                  key={idx}
-                  src={url}
-                  alt={`Report image ${idx + 1}`}
-                  className="max-w-full h-auto max-h-64 object-contain border border-gray-200 rounded-lg shadow-sm"
-                />
-              ))}
-            </div>
-          </div>
-        )}
+         {imageUrls.length > 0 && (
+           <div className={styles.observationsSection}>
+             <h3 className={styles.sectionTitle}>Report Images</h3>
+             <div className="flex flex-wrap gap-4 mt-4">
+               {imageUrls.map((url, idx) => (
+                 <img
+                   key={idx}
+                   src={url}
+                   alt={`Report image ${idx + 1}`}
+                   className="max-w-[300px] max-h-[300px] object-contain border border-gray-200 rounded-lg shadow-sm"
+                 />
+               ))}
+             </div>
+           </div>
+         )}
 
         <div className={styles.footer}>
           <div className={styles.footerContent}>

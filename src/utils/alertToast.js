@@ -8,9 +8,9 @@ export const confirmAlert = (message) => {
     text: message || "You won't be able to revert this!",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!",
+    confirmButtonColor: "#0be91d",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, Approve it!",
     cancelButtonText: "Cancel",
   });
 };
