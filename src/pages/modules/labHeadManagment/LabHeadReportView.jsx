@@ -145,7 +145,7 @@ const LabHeadReportView = () => {
           ...prev,
           [key]: status,
         }));
-        toast.success(result.message || `Report ${status} successfully`);
+        // toast.success(result.message || `Report ${status} successfully`);
       }
     } catch (error) {
       console.error("Error updating report status:", error);
@@ -273,7 +273,7 @@ const LabHeadReportView = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-lg font-semibold">
-                        {report.model || `Report ${index + 1}`}
+                        {report.reportType || `Report ${index + 1}`}
                       </h3>
                       <p className="text-sm text-blue-100 mt-1">
                         Patient: {report.data?.patientName} | ID: {report.data?.patientId} | Date:{" "}

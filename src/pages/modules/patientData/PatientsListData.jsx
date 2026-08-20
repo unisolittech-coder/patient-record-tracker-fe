@@ -102,7 +102,7 @@ export default function PatientsListData() {
   const patientIdBodyTemplate = (rowData) => {
     return (
       <div className="flex items-center gap-2">
-        <span className="font-mono text-sm font-semibold text-slate-700">{rowData.patientId}</span>
+        <span className="font-mono text-sm font-semibold text-slate-700">{rowData.uhid}</span>
       </div>
     );
   };
