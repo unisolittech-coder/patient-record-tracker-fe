@@ -88,12 +88,6 @@ const LabHeadReportView = () => {
     return file;
   };
 
-  const fetchImageAsFile = async (url, filename) => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return new File([blob], filename || `report-image-${Date.now()}.png`, { type: blob.type || "image/png" });
-  };
-
   const handleReportApproveReject = async (reportIndex, status) => {
     const key = `${reportIndex}`;
     const report = reportData?.reports?.[reportIndex];
@@ -116,21 +110,14 @@ const LabHeadReportView = () => {
       updatePayload.rejectedReason = alertResult.value;
     }
 
-    formData.append("updates", JSON.stringify([updatePayload]));
-
     try {
       if (report.reportType === "Manual Type") {
-        const imageUrls = (report.data?.observations || [])
+        const observationIds = (report.data?.observations || [])
           .filter((obs) => typeof obs.result === "string" && /^https?:\/\//.test(obs.result))
-          .map((obs) => obs.result);
+          .map((obs) => obs._id);
 
-        for (const url of imageUrls) {
-          try {
-            const imageFile = await fetchImageAsFile(url, `manual-report-${Date.now()}-${Math.random().toString(36).slice(2)}.png`);
-            formData.append("images", imageFile);
-          } catch (err) {
-            console.error("Failed to fetch manual report image:", url, err);
-          }
+        if (observationIds.length > 0) {
+          updatePayload.observationId = observationIds;
         }
       } else {
         const imageFile = await captureReportAsImage(report);
@@ -138,6 +125,8 @@ const LabHeadReportView = () => {
           formData.append("images", imageFile);
         }
       }
+
+      formData.append("updates", JSON.stringify([updatePayload]));
 
       const result = await updateLabHeadStatus(uniqueId, formData);
       if (result) {
@@ -276,13 +265,13 @@ const LabHeadReportView = () => {
                         {report.reportType || `Report ${index + 1}`}
                       </h3>
                       <p className="text-sm text-blue-100 mt-1">
-                        Patient: {report.data?.patientName} | ID: {report.data?.patientId} | Date:{" "}
+                        Patient: {report.data?.patientName} | ID: {report.data?.UHID} | Date:{" "}
                         {report.data?.date ? new Date(report.data.date).toLocaleDateString() : "-"}
                       </p>
                     </div>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 text-white">
+                    {/* <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 text-white">
                       Unique ID: {report.data?.uniqueId}
-                    </span>
+                    </span> */}
                   </div>
                 </div>
                 <div className="p-6">
