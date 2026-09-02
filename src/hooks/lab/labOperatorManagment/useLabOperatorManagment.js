@@ -7,7 +7,10 @@ import {
     labOperatorLoadingAtom,
     labOperatorErrorAtom,
     labOperatorFormAtom,
-    labPatientSearchAtom
+    labPatientSearchAtom,
+    labRejectedReportsAtom,
+    labRejectedReportAtom,
+    labRejectedReportUpdateAtom
 } from "../../../state/lab/labOperatorState";
 
 const useLabOperatorManagment = () => {
@@ -16,6 +19,9 @@ const useLabOperatorManagment = () => {
     const [error, setError] = useRecoilState(labOperatorErrorAtom);
     const [formData, setFormData] = useRecoilState(labOperatorFormAtom);
     const [labPatientSearch, setLabPatientSearch] = useRecoilState(labPatientSearchAtom);
+    const [labRejectedReports, setLabRejectedReports] = useRecoilState(labRejectedReportsAtom);
+    const [labRejectedReport, setLabRejectedReport] = useRecoilState(labRejectedReportAtom);
+    const [labRejectedReportUpdate, setLabRejectedReportUpdate] = useRecoilState(labRejectedReportUpdateAtom);
 
     const submitLabReports = useCallback(async (payload) => {
         setLoading(true);
@@ -68,20 +74,121 @@ const useLabOperatorManagment = () => {
             console.error("Error fetching lab patient search:", error);
             toast.error(error.response?.data?.message);
             setLoading(false);
-            setLabPatientSearch(null);
-            return false;
-        }
-    }
+             setLabPatientSearch(null);
+             return false;
+         }
+     }
 
-    return {
-        loading,
-        error,
-        formData,
-        setFormData,
-        submitLabReports,
-        resetForm,
-        fetchLabPatientSearch,
-        labPatientSearch
+     const fetchLabRejectedReports = useCallback(async () => {
+         setLoading(true);
+         setError(null);
+
+         try {
+             const res = await fetchData({
+                 method: "GET",
+                 url: `${conf.apiBaseUrl}lab-operators/rejected-reports`,
+             });
+
+             if (res) {
+                 setLabRejectedReports(res.reports || []);
+                 setLoading(false);
+                 return res;
+             }
+             setLoading(false);
+             return false;
+         } catch (error) {
+             console.error("Error fetching rejected reports:", error);
+             setLoading(false);
+             setError(error.message || "Failed to fetch rejected reports");
+             toast.error(error.response?.data?.message || "Failed to fetch rejected reports");
+             setLabRejectedReports(null);
+             return false;
+         }
+      }, [fetchData, setLoading, setError, setLabRejectedReports]);
+
+      const fetchLabRejectedReport = useCallback(async (params) => {
+          setLoading(true);
+          setError(null);
+
+          try {
+              const res = await fetchData({
+                  method: "GET",
+                  url: `${conf.apiBaseUrl}lab-operators/rejected-report`,
+                  params,
+              });
+
+              if (res) {
+                  const reportsArray = res.reports || (res.report ? [res.report] : []);
+                  setLabRejectedReport({ ...res, reports: reportsArray });
+                  setLoading(false);
+                  return res;
+              }
+              setLoading(false);
+              return false;
+          } catch (error) {
+              console.error("Error fetching rejected report:", error);
+              setLoading(false);
+              setError(error.message || "Failed to fetch rejected report");
+              toast.error(error.response?.data?.message || "Failed to fetch rejected report");
+              setLabRejectedReport(null);
+              return false;
+          }
+      }, [fetchData, setLoading, setError, setLabRejectedReport]);
+
+      const updateLabRejectedReport = useCallback(async (params, files) => {
+          setLoading(true);
+          setError(null);
+
+          try {
+              const formData = new FormData();
+              formData.append("model", params.model);
+              formData.append("testName", params.testName);
+              formData.append("uhid", params.uhid);
+
+              const filesArray = Array.isArray(files) ? files : Array.from(files || []);
+              filesArray.forEach((file) => {
+                  formData.append("reports", file);
+              });
+
+              const res = await fetchData({
+                  method: "PUT",
+                  url: `${conf.apiBaseUrl}lab-operators/rejected-reports`,
+                  data: formData,
+              });
+
+              if (res) {
+                  setLabRejectedReportUpdate(res);
+                  setLoading(false);
+                  toast.success(res.message || "Rejected report updated successfully");
+                  return res;
+              }
+              setLoading(false);
+              return false;
+          } catch (error) {
+              console.error("Error updating rejected report:", error);
+              setLoading(false);
+              setError(error.message || "Failed to update rejected report");
+              toast.error(error.response?.data?.message || "Failed to update rejected report");
+              setLabRejectedReportUpdate(null);
+              return false;
+          }
+      }, [fetchData, setLoading, setError, setLabRejectedReportUpdate]);
+
+      return {
+         loading,
+         error,
+         formData,
+         setFormData,
+         submitLabReports,
+         resetForm,
+         fetchLabPatientSearch,
+         labPatientSearch,
+         labRejectedReports,
+         fetchLabRejectedReports,
+         labRejectedReport,
+         fetchLabRejectedReport,
+         labRejectedReportUpdate,
+         updateLabRejectedReport
     };
 };
 

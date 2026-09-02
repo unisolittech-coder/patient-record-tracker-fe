@@ -11,3 +11,9 @@ export const labOperatorFormAtom = atom(createPersistedAtom("labOperatorFormAtom
 }));
 
 export const labPatientSearchAtom = atom(createPersistedAtom("labPatientSearchKey", null));
+
+export const labRejectedReportsAtom = atom(createPersistedAtom("labRejectedReportsAtom", null));
+
+export const labRejectedReportAtom = atom(createPersistedAtom("labRejectedReportAtom", null));
+
+export const labRejectedReportUpdateAtom = atom(createPersistedAtom("labRejectedReportUpdateAtom", null));

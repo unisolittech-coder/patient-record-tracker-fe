@@ -41,6 +41,10 @@ const IggmcBloodCollectionCenter = lazy(() => import('../pages/modules/iggmcBloo
 
 const LabOperatorManagment = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorManagment'));
 
+const LabOperatorRejectedReports = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorRejectedReports'));
+
+const LabOperatorRejectedReportView = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorRejectedReportView'));
+
 const ManualLabEntryForm = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorMannualForm'));
 
 const LabHeadManagment = lazy(() => import('../pages/modules/labHeadManagment/LabHeadManagment'));
@@ -89,6 +93,8 @@ export default function PublicRoute() {
 
                 <Route element={<RoleProtectedRoute allowedRoles={[ROLES.LAB_OPERATOR, ROLES.SUPER_ADMIN]} />}>
                   <Route path="/doctor/lab-operator" element={<LabOperatorManagment />} />
+                  <Route path="/doctor/lab-operator/rejected-reports" element={<LabOperatorRejectedReports />} />
+                  <Route path="/doctor/lab-operator/rejected-report/view" element={<LabOperatorRejectedReportView />} />
                   <Route path="/doctor/lab-operator/manual-entry" element={<ManualLabEntryForm />} />
                 </Route>
 
