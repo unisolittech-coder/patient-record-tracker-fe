@@ -8,7 +8,7 @@ import { TextInput } from "../../../components/common/FormFields";
 import useLabOperatorManagment from "../../../hooks/lab/labOperatorManagment/useLabOperatorManagment";
 
 export default function LabOperatorManagment() {
-    const { loading, error, submitLabReports, resetForm, fetchLabPatientSearch, labPatientSearch } = useLabOperatorManagment();
+    const { loading, submitLabReports, resetForm, fetchLabPatientSearch, labPatientSearch } = useLabOperatorManagment();
     const navigate = useNavigate();
     const formRef = useRef(null);
 
@@ -119,9 +119,10 @@ export default function LabOperatorManagment() {
             <PagePath
                 title="Lab Report Submission"
                 // showSearchBar={false}
-                // showAddButton={true}
-                // addButtonLabel="Add Entry Manually"
-                // onAdd={() => navigate("/doctor/lab-operator/manual-entry")}
+                showAddButton={true}
+                addButtonLabel="Rejected Report"
+                 onAdd={() => navigate("/doctor/lab-operator/rejected-reports")}
+                 //we have created mannual entry form too
             />
 
             {/* {error && (

@@ -7,6 +7,8 @@ import useLabHeadManagment from "../../../hooks/lab/labHeadManagment/useLabHeadM
 import { toast } from "react-toastify";
 import html2canvas from "html2canvas";
 import LabHeadReportPrintForm from "../../../helper/print/LabHeadReportPrintForm";
+import { confirmAlert, confirmRejectAlert } from "../../../utils/alertToast";
+import ImageModal from "../../../components/common/ImageModal";
 
 const LabHeadReportView = () => {
   const { uniqueId } = useParams();
@@ -15,6 +17,7 @@ const LabHeadReportView = () => {
   const [reportApprovalStatus, setReportApprovalStatus] = useState({});
   const [showPrintForm, setShowPrintForm] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const breadcrumbPaths = [
     { label: "Lab Head Management", url:'/doctor/lab-head' },
@@ -91,14 +94,39 @@ const LabHeadReportView = () => {
 
     if (!report) return;
 
+    let alertResult;
+    if (status === "approved") {
+      alertResult = await confirmAlert("Are you sure you want to approve this report?");
+      if (!alertResult.isConfirmed) return;
+    } else if (status === "rejected") {
+      alertResult = await confirmRejectAlert("Are you sure you want to reject this report?");
+      if (!alertResult.isConfirmed) return;
+    }
+
     const formData = new FormData();
-    formData.append("updates", JSON.stringify([{ model: report.model, status }]));
+    const updatePayload = { model: report.model, status };
+
+    if (status === "rejected" && alertResult.value) {
+      updatePayload.rejectedReason = alertResult.value;
+    }
 
     try {
-      const imageFile = await captureReportAsImage(report);
-      if (imageFile) {
-        formData.append("images", imageFile);
+      if (report.reportType === "Manual Type") {
+        const observationIds = (report.data?.observations || [])
+          .filter((obs) => typeof obs.result === "string" && /^https?:\/\//.test(obs.result))
+          .map((obs) => obs._id);
+
+        if (observationIds.length > 0) {
+          updatePayload.observationId = observationIds;
+        }
+      } else {
+        const imageFile = await captureReportAsImage(report);
+        if (imageFile) {
+          formData.append("images", imageFile);
+        }
       }
+
+      formData.append("updates", JSON.stringify([updatePayload]));
 
       const result = await updateLabHeadStatus(uniqueId, formData);
       if (result) {
@@ -116,7 +144,7 @@ const LabHeadReportView = () => {
 
   const getReportStatusBadge = (reportIndex) => {
     const key = `${reportIndex}`;
-    const status = reportApprovalStatus[key];
+    const status = reportApprovalStatus[key] || reportData?.reports?.[reportIndex]?.data?.status;
 
     if (status === "approved") {
       return (
@@ -139,12 +167,14 @@ const LabHeadReportView = () => {
     );
   };
 
-  const renderObservationsTable = (observations) => {
+  const renderObservationsTable = (observations, reportType) => {
     if (!observations || observations.length === 0) {
       return (
         <p className="text-gray-500 text-sm py-4">No observations available for this report.</p>
       );
     }
+
+    const isManualType = reportType === "Manual Type";
 
     return (
       <div className="overflow-x-auto">
@@ -166,22 +196,41 @@ const LabHeadReportView = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {observations.map((obs, obsIndex) => (
-              <tr key={obsIndex} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {obs.parameter}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {obs.result}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {obs.unitRef}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {obs.range}
-                </td>
-              </tr>
-            ))}
+            {observations.map((obs, obsIndex) => {
+              const isImageUrl = isManualType && typeof obs.result === "string" && /^https?:\/\//.test(obs.result);
+              return (
+                <tr key={obsIndex} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {obs.parameter}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {isImageUrl ? (
+                      <div
+                        className="relative inline-block cursor-pointer group"
+                        onClick={() => setPreviewImage(obs.result)}
+                      >
+                        <img
+                          src={obs.result}
+                          alt={obs.parameter}
+                          className="max-w-[200px] max-h-[200px] object-contain border border-gray-200 rounded-lg shadow-sm transition-transform duration-200 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg">
+                          <i className="pi pi-search-plus text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md"></i>
+                        </div>
+                      </div>
+                    ) : (
+                      obs.result
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {obs.unitRef}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {obs.range}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -204,8 +253,6 @@ const LabHeadReportView = () => {
   ) : reportData?.reports && reportData.reports.length > 0 ? (
     <div className="space-y-6">
           {reportData.reports.map((report, index) => {
-            const reportStatus = reportApprovalStatus[index];
-
             return (
               <div
                 key={index}
@@ -218,24 +265,24 @@ const LabHeadReportView = () => {
                         {report.reportType || `Report ${index + 1}`}
                       </h3>
                       <p className="text-sm text-blue-100 mt-1">
-                        Patient: {report.data?.patientName} | ID: {report.data?.patientId} | Date:{" "}
+                        Patient: {report.data?.patientName} | ID: {report.data?.UHID} | Date:{" "}
                         {report.data?.date ? new Date(report.data.date).toLocaleDateString() : "-"}
                       </p>
                     </div>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 text-white">
+                    {/* <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 text-white">
                       Unique ID: {report.data?.uniqueId}
-                    </span>
+                    </span> */}
                   </div>
                 </div>
                 <div className="p-6">
-                  {renderObservationsTable(report.data?.observations)}
+                  {renderObservationsTable(report.data?.observations, report.reportType)}
                 </div>
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium text-gray-700">Report Status:</span>
                     {getReportStatusBadge(index)}
                   </div>
-                  {!reportStatus && (
+                  {(reportApprovalStatus[index] || report.data?.status) === "pending" && (
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handlePrint(report)}
@@ -257,9 +304,6 @@ const LabHeadReportView = () => {
                       </button>
                     </div>
                   )}
-                  {reportStatus && (
-                    <span className="text-sm text-gray-500">Action taken</span>
-                  )}
                 </div>
               </div>
             );
@@ -272,6 +316,13 @@ const LabHeadReportView = () => {
         </div>
       )}
       {showPrintForm && <LabHeadReportPrintForm report={selectedReport} />}
+      {previewImage && (
+        <ImageModal
+          src={previewImage}
+          alt="Report Image Preview"
+          onClose={() => setPreviewImage(null)}
+        />
+      )}
 
       {/* Print Styles */}
       <style>{`
