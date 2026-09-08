@@ -122,8 +122,16 @@ export default function LabOperatorManagment() {
                 showAddButton={true}
                 addButtonLabel="Rejected Report"
                  onAdd={() => navigate("/doctor/lab-operator/rejected-reports")}
-                 //we have created mannual entry form too
-            />
+            >
+                <Button
+                    type="button"
+                    label="All Reports"
+                    icon="pi pi-list"
+                    variant="secondary"
+                    onClick={() => navigate("/doctor/lab-operator/all-reports")}
+                    disabled={loading}
+                />
+            </PagePath>
 
             {/* {error && (
                 <div className="p-4 bg-red-50 border border-red-200 rounded-xl">

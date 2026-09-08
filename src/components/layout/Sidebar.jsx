@@ -75,8 +75,12 @@ export default function Sidebar() {
         ? bloodCollectionOperatorIggmcMenus
         : userRole === ROLES.LAB_OPERATOR
           ? labOperatorMenus
-          : userRole === ROLES.LAB_HEAD
+          : userRole === ROLES.LAB_HEAD 
             ? labHeadMenus
+            :userRole === ROLES.SR_LAB_ASSOCIATE
+              ? labHeadMenus
+              :userRole === ROLES.JR_LAB_ASSOCIATE
+                ? labHeadMenus
             : [];
 
   const handleLogout = () => {
@@ -177,7 +181,11 @@ export default function Sidebar() {
                     : userRole === "lab_operator"
                       ? "Lab Operator"
                       : userRole === "lab_head"
-                        ? "Lab Head"
+                        ? "Lab Head" 
+                        : userRole === "sr"
+                          ? "Senior Lab Associate"
+                          : userRole === "jr"
+                            ? "Junior Lab Associate"
                         : userRole === "blood_collection_officer_iggmc"
                           ? "Blood Collection Operator IGGMC"
                           : userRole}
