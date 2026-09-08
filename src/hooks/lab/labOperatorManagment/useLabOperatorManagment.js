@@ -10,7 +10,13 @@ import {
     labPatientSearchAtom,
     labRejectedReportsAtom,
     labRejectedReportAtom,
-    labRejectedReportUpdateAtom
+    labRejectedReportUpdateAtom,
+    labAllReportsLoadingAtom,
+    labAllReportsErrorAtom,
+    labAllReportsAtom,
+    labReportDetailsLoadingAtom,
+    labReportDetailsErrorAtom,
+    labReportDetailsAtom
 } from "../../../state/lab/labOperatorState";
 
 const useLabOperatorManagment = () => {
@@ -22,6 +28,12 @@ const useLabOperatorManagment = () => {
     const [labRejectedReports, setLabRejectedReports] = useRecoilState(labRejectedReportsAtom);
     const [labRejectedReport, setLabRejectedReport] = useRecoilState(labRejectedReportAtom);
     const [labRejectedReportUpdate, setLabRejectedReportUpdate] = useRecoilState(labRejectedReportUpdateAtom);
+    const [labAllReportsLoading, setLabAllReportsLoading] = useRecoilState(labAllReportsLoadingAtom);
+    const [labAllReportsError, setLabAllReportsError] = useRecoilState(labAllReportsErrorAtom);
+    const [labAllReports, setLabAllReports] = useRecoilState(labAllReportsAtom);
+    const [labReportDetailsLoading, setLabReportDetailsLoading] = useRecoilState(labReportDetailsLoadingAtom);
+    const [labReportDetailsError, setLabReportDetailsError] = useRecoilState(labReportDetailsErrorAtom);
+    const [labReportDetails, setLabReportDetails] = useRecoilState(labReportDetailsAtom);
 
     const submitLabReports = useCallback(async (payload) => {
         setLoading(true);
@@ -174,7 +186,62 @@ const useLabOperatorManagment = () => {
           }
       }, [fetchData, setLoading, setError, setLabRejectedReportUpdate]);
 
-      return {
+      const fetchLabAllReports = useCallback(async () => {
+          setLabAllReportsLoading(true);
+          setLabAllReportsError(null);
+
+          try {
+              const res = await fetchData({
+                  method: "GET",
+                  url: `${conf.apiBaseUrl}lab-operators/all-reports`,
+              });
+
+              if (res) {
+                  setLabAllReports(res.reports || []);
+                  setLabAllReportsLoading(false);
+                  return res;
+              }
+              setLabAllReportsLoading(false);
+              return false;
+          } catch (error) {
+              console.error("Error fetching all lab reports:", error);
+              setLabAllReportsLoading(false);
+              setLabAllReportsError(error.message || "Failed to fetch all lab reports");
+              toast.error(error.response?.data?.message || "Failed to fetch all lab reports");
+              setLabAllReports(null);
+              return false;
+          }
+       }, [fetchData, setLabAllReportsLoading, setLabAllReportsError, setLabAllReports]);
+
+       const fetchLabReportDetails = useCallback(async (params) => {
+           setLabReportDetailsLoading(true);
+           setLabReportDetailsError(null);
+
+           try {
+               const res = await fetchData({
+                   method: "GET",
+                   url: `${conf.apiBaseUrl}lab-operators/report-details`,
+                   params,
+               });
+
+               if (res) {
+                   setLabReportDetails(res.report || res);
+                   setLabReportDetailsLoading(false);
+                   return res;
+               }
+               setLabReportDetailsLoading(false);
+               return false;
+           } catch (error) {
+               console.error("Error fetching lab report details:", error);
+               setLabReportDetailsLoading(false);
+               setLabReportDetailsError(error.message || "Failed to fetch lab report details");
+               toast.error(error.response?.data?.message || "Failed to fetch lab report details");
+               setLabReportDetails(null);
+               return false;
+           }
+       }, [fetchData, setLabReportDetailsLoading, setLabReportDetailsError, setLabReportDetails]);
+
+       return {
          loading,
          error,
          formData,
@@ -188,8 +255,16 @@ const useLabOperatorManagment = () => {
          labRejectedReport,
          fetchLabRejectedReport,
          labRejectedReportUpdate,
-         updateLabRejectedReport
-    };
+         updateLabRejectedReport,
+          labAllReports,
+          fetchLabAllReports,
+          labAllReportsLoading,
+          labAllReportsError,
+          labReportDetails,
+          fetchLabReportDetails,
+          labReportDetailsLoading,
+          labReportDetailsError
+      };
 };
 
 export default useLabOperatorManagment;

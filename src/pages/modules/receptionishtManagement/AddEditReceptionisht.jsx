@@ -27,7 +27,7 @@ const validationSchema = Yup.object({
   password: Yup.string()
     .required('Password is required')
     .min(6, 'Password must be at least 6 characters'),
-  designation: Yup.object().nullable().required('Designation is required'),
+  // designation: Yup.object().nullable().required('Designation is required'),
   department: Yup.object().nullable().required('Department is required'),
   role: Yup.object().nullable().required('Role is required'),
   counterNo: Yup.string().when('role', {
@@ -56,7 +56,7 @@ export default function AddEditReceptionisht() {
     designations,
     roles,
     fetchDepartments,
-    fetchDesignations,
+    // fetchDesignations,
     fetchRoles
   } = useDropdowns();
 
@@ -70,7 +70,7 @@ export default function AddEditReceptionisht() {
   const roleOptions = useMemo(() => roles || [], [roles]);
 
   useEffect(() => {
-    fetchDesignations();
+    // fetchDesignations();
     fetchRoles();
   }, []);
 
@@ -89,15 +89,23 @@ export default function AddEditReceptionisht() {
     name: receptionistDetails?.name || '',
     email: receptionistDetails?.email || '',
     password: receptionistDetails?.password || '',
-    designation: designationOptions.find(
-      (opt) => opt.value === receptionistDetails?.designation
-    ) || null,
-    department: departmentOptions.find(
-      (opt) => opt.value === receptionistDetails?.department
-    ) || null,
-    role: roleOptions.find(
-      (opt) => opt.value === receptionistDetails?.role
-    ) || null,
+    // designation: designationOptions.find(
+    //   (opt) => opt.value === receptionistDetails?.designation
+    // ) || null,
+ department: receptionistDetails?.department
+    ? {
+        value: receptionistDetails.department,
+        label: receptionistDetails.department
+      }
+    : null,
+  role: receptionistDetails?.role
+    ? {
+        value: receptionistDetails.role,
+        label: receptionistDetails.role
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, c => c.toUpperCase())
+      }
+    : null,
     counterNo: receptionistDetails?.counterNo || '',
     photo: null,
     sign: null
@@ -213,8 +221,8 @@ export default function AddEditReceptionisht() {
           </div>
 
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Designation <span className="text-red-500">*</span>
                 </label>
@@ -231,7 +239,7 @@ export default function AddEditReceptionisht() {
                 {formik.touched.designation && formik.errors.designation && (
                   <p className="text-xs text-red-500 mt-1">{formik.errors.designation}</p>
                 )}
-              </div>
+              </div> */}
 
                  <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

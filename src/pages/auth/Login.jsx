@@ -26,7 +26,7 @@ export default function Login() {
   useEffect(() => {
     fetchRoles();
   }, [fetchRoles]);
-  
+
 
   const validationSchema = Yup.object({
     role: Yup.string().required('Role is required'),
@@ -54,18 +54,23 @@ export default function Login() {
       if (success) {
         if (values.role === ROLES.DOCTOR) {
           navigate("/doctor/patient-management");
-        // } else if (values.role === ROLES.PAYMENT_OFFICER) {
-        //   navigate("/payment-management");
-        // } else if (values.role === ROLES.BLOOD_COLLECTION_OPERATOR) {
-        //   navigate("/blood-collection-center");
-        // } else if (values.role === ROLES.REGISTRATION_OFFICER) {
-        //   navigate("/patient-registration");
+          // } else if (values.role === ROLES.PAYMENT_OFFICER) {
+          //   navigate("/payment-management");
+          // } else if (values.role === ROLES.BLOOD_COLLECTION_OPERATOR) {
+          //   navigate("/blood-collection-center");
+          // } else if (values.role === ROLES.REGISTRATION_OFFICER) {
+          //   navigate("/patient-registration");
         } else if (values.role === ROLES.BLOOD_COLLECTION_OPERATOR_IGGMC) {
           navigate("/iggmc-blood-collection-center");
         } else if (values.role === ROLES.LAB_OPERATOR) {
           navigate("/doctor/lab-operator");
-        } else if (values.role === ROLES.LAB_HEAD) {
+        } else if (
+          values.role === ROLES.LAB_HEAD ||
+          values.role === ROLES.SR_LAB_ASSOCIATE ||
+          values.role === ROLES.JR_LAB_ASSOCIATE
+        ) {
           navigate("/doctor/lab-head");
+
         } else {
           navigate("/dashboard");
         }

@@ -17,3 +17,15 @@ export const labRejectedReportsAtom = atom(createPersistedAtom("labRejectedRepor
 export const labRejectedReportAtom = atom(createPersistedAtom("labRejectedReportAtom", null));
 
 export const labRejectedReportUpdateAtom = atom(createPersistedAtom("labRejectedReportUpdateAtom", null));
+
+export const labAllReportsLoadingAtom = atom(createPersistedAtom("labAllReportsLoadingAtom", false));
+
+export const labAllReportsErrorAtom = atom(createPersistedAtom("labAllReportsErrorAtom", null));
+
+export const labAllReportsAtom = atom(createPersistedAtom("labAllReportsAtom", null));
+
+export const labReportDetailsLoadingAtom = atom(createPersistedAtom("labReportDetailsLoadingAtom", false));
+
+export const labReportDetailsErrorAtom = atom(createPersistedAtom("labReportDetailsErrorAtom", null));
+
+export const labReportDetailsAtom = atom(createPersistedAtom("labReportDetailsAtom", null));

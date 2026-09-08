@@ -17,7 +17,7 @@ export default function Header() {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-bold text-gray-700">{userName}</span>
-            {userName && <span className="text-xs text-gray-500">{userRole === 'super_admin' ? 'Super Admin' : userRole === 'blood_collection_officer_iggmc' ? 'Blood Collection Operator IGGMC' : userRole === 'lab_operator' ? 'Lab Operator' : userRole === 'lab_head' ? 'Lab Head' : userRole}</span>}
+            {userName && <span className="text-xs text-gray-500">{userRole === 'super_admin' ? 'Super Admin' : userRole === 'blood_collection_officer_iggmc' ? 'Blood Collection Operator IGGMC' : userRole === 'lab_operator' ? 'Lab Operator' : userRole === 'lab_head' ? 'Lab Head' : userRole  === 'sr' ? 'Senior Lab Associate' : userRole === 'jr' ? 'Junior Lab Associate' : userRole}</span>}
           </div>
         </div>
       </div>
