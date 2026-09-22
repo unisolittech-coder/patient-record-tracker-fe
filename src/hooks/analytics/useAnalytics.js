@@ -26,7 +26,7 @@ const useAnalytics = () => {
             });
             if (res) {
                 setLoading(false);
-                setAnalyticsLogs(res?.data)
+                setAnalyticsLogs(res)
             }
         } catch (error) {
             console.error("Error fetching dashboard stats:", error);
@@ -49,7 +49,7 @@ const useAnalytics = () => {
             });
             if (res) {
                 setLoading(false);
-                setAnalyticsReportUpload(res?.data)
+                setAnalyticsReportUpload(res)
             }
         } catch (error) {
             console.error("Error fetching dashboard stats:", error);
@@ -72,7 +72,7 @@ const useAnalytics = () => {
             });
             if (res) {
                 setLoading(false);
-                setAnalyticsReportDownload(res?.data)
+                setAnalyticsReportDownload(res)
             }
         } catch (error) {
             console.error("Error fetching dashboard stats:", error);

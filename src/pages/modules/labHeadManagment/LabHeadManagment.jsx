@@ -30,8 +30,8 @@ export default function LabHeadManagment() {
   const debouncedSearch = useDebounce(search, 500);
 
   const breadcrumbPaths = [
-    { label: "Lab Head Management" },
-    { label: "Lab Head List" },
+    { label: "Patient Reports Management" },
+    { label: "Patient Report List" },
   ];
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export default function LabHeadManagment() {
       <BreadCrumb paths={breadcrumbPaths} />
 
       <PagePath
-        title="Lab Head Management"
+        title="Patient Reports Management"
         // showSearchBar={true}
         // searchValue={search}
         // searchPlaceholder="Search by patient name or ID"

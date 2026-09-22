@@ -20,7 +20,7 @@ const LabHeadReportView = () => {
   const [previewImage, setPreviewImage] = useState(null);
 
   const breadcrumbPaths = [
-    { label: "Lab Head Management", url:'/doctor/lab-head' },
+    { label: "Patient Reports Management", url:'/doctor/lab-head' },
     { label: "Lab Report View" },
   ];
 

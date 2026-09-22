@@ -12,7 +12,7 @@ export default function LabOperatorRejectedReports() {
     const [search, setSearch] = useState("");
 
     const breadcrumbPaths = [
-        { label: "Lab Operator Management" },
+        { label: "Lab Operator Management" , url: "/doctor/lab-operator" },
         { label: "Rejected Reports" },
     ];
 

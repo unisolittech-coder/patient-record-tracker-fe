@@ -30,11 +30,11 @@ const validationSchema = Yup.object({
   // designation: Yup.object().nullable().required('Designation is required'),
   department: Yup.object().nullable().required('Department is required'),
   role: Yup.object().nullable().required('Role is required'),
-  counterNo: Yup.string().when('role', {
-    is: (role) => role?.value === 'payment_officer' || role?.value === 'registration_officer',
-    then: (schema) => schema.required('Counter number is required'),
-    otherwise: (schema) => schema.notRequired()
-  }),
+  // counterNo: Yup.string().when('role', {
+  //   is: (role) => role?.value === 'payment_officer' || role?.value === 'registration_officer',
+  //   then: (schema) => schema.required('Counter number is required'),
+  //   otherwise: (schema) => schema.notRequired()
+  // }),
   sign: Yup.mixed().required('Signature is required')
 });
 
@@ -106,9 +106,9 @@ export default function AddEditReceptionisht() {
           .replace(/\b\w/g, c => c.toUpperCase())
       }
     : null,
-    counterNo: receptionistDetails?.counterNo || '',
-    photo: null,
-    sign: null
+    // counterNo: receptionistDetails?.counterNo || '',
+     photo: receptionistDetails?.photo || '',
+     sign: receptionistDetails?.sign || ''
   }), [receptionistDetails, designationOptions, departmentOptions, roleOptions]);
 
   const formik = useFormik({
@@ -123,10 +123,10 @@ export default function AddEditReceptionisht() {
         formData.append('email', values.email);
         formData.append('password', values.password);
         formData.append('employeeId', values.employeeId || '');
-        formData.append('designation', values.designation?.value || '');
+        // formData.append('designation', values.designation?.value || '');
         formData.append('department', values.department?.value || '');
         formData.append('role', values.role?.value || '');
-        formData.append('counterNo', values.counterNo || '');
+        // formData.append('counterNo', values.counterNo || '');
 
         if (selectedPhoto) {
           formData.append('photo', selectedPhoto);
@@ -279,7 +279,7 @@ export default function AddEditReceptionisht() {
                 )}
               </div>
 
-              {(formik.values.role?.value === 'payment_officer' || formik.values.role?.value === 'registration_officer') && (
+              {/* {(formik.values.role?.value === 'payment_officer' || formik.values.role?.value === 'registration_officer') && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Counter Number <span className="text-red-500">*</span>
@@ -295,7 +295,7 @@ export default function AddEditReceptionisht() {
                     error={formik.touched.counterNo && formik.errors.counterNo}
                   />
                 </div>
-              )}
+              )} */}
 
             </div>
 
