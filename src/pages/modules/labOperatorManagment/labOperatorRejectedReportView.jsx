@@ -17,6 +17,7 @@ export default function LabOperatorRejectedReportView() {
     const model = searchParams.get("model") || "";
     const testName = searchParams.get("testName") || "";
     const uhid = searchParams.get("uhid") || "";
+    const date = searchParams.get("date") || "";
 
     const breadcrumbPaths = [
         { label: "Lab Operator Management", url: "/doctor/lab-operator" },
@@ -26,15 +27,15 @@ export default function LabOperatorRejectedReportView() {
 
     useEffect(() => {
         const loadReport = async () => {
-            if (model && testName && uhid) {
-                const res = await fetchLabRejectedReport({ model, testName, uhid });
+            if (model && testName && uhid && date) {
+                const res = await fetchLabRejectedReport({ model, testName, uhid , date});
                 if (res) {
                     setReportData(res);
                 }
             }
         };
         loadReport();
-    }, [model, testName, uhid, fetchLabRejectedReport]);
+    }, [model, testName, uhid, date, fetchLabRejectedReport]);
 
     const getReportStatusBadge = (status) => {
         if (status === "approved") {
@@ -231,7 +232,7 @@ export default function LabOperatorRejectedReportView() {
 
         if (fileResult.isConfirmed && fileResult.value && fileResult.value.length > 0) {
             const result = await updateLabRejectedReport(
-                { model: report.model, testName: data.testName || testName, uhid: data.UHID || uhid },
+                { model: report.model, testName: data.testName || testName, uhid: data.UHID || uhid , date: data.date || date },
                 fileResult.value
             );
 

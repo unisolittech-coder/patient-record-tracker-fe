@@ -62,7 +62,7 @@ export default function Sidebar() {
 
   const labHeadMenus = [
     {
-      label: "Lab Head Management",
+      label: "Patient Reports Management",
       icon: "pi pi-building",
       path: "/doctor/lab-head",
     },

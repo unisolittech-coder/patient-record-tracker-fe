@@ -105,33 +105,40 @@ export default function Analytics() {
     // Get paginated data
     const getLogs = () => {
         if (!analyticsLogs) return [];
-        return Array.isArray(analyticsLogs) ? analyticsLogs : analyticsLogs.logs || [];
+        return Array.isArray(analyticsLogs) ? analyticsLogs : analyticsLogs?.data || [];
     };
 
     const getUploads = () => {
         if (!analyticsReportUpload) return [];
-        return Array.isArray(analyticsReportUpload) ? analyticsReportUpload : analyticsReportUpload.reports || [];
+        return Array.isArray(analyticsReportUpload) ? analyticsReportUpload : analyticsReportUpload?.data || [];
     };
 
     const getDownloads = () => {
         if (!analyticsReportDownload) return [];
-        return Array.isArray(analyticsReportDownload) ? analyticsReportDownload : analyticsReportDownload.reports || [];
+        return Array.isArray(analyticsReportDownload) ? analyticsReportDownload : analyticsReportDownload?.data || [];
     };
 
     const logs = getLogs();
     const uploads = getUploads();
     const downloads = getDownloads();
 
-    // Get total counts
+    // Get total counts from pagination metadata
     const getTotal = (data) => {
         if (!data) return 0;
         if (Array.isArray(data)) return data.length;
-        return data.total || data.length || 0;
+        return data?.pagination?.total || data?.data?.length || data?.length || 0;
     };
 
     const totalLogs = getTotal(analyticsLogs);
     const totalUploads = getTotal(analyticsReportUpload);
     const totalDownloads = getTotal(analyticsReportDownload);
+
+    // Get total pages from pagination metadata
+    const getTotalPages = (data) => {
+        if (!data) return 1;
+        if (Array.isArray(data)) return Math.ceil(data.length / limit) || 1;
+        return data?.pagination?.totalPages || Math.ceil(getTotal(data) / limit) || 1;
+    };
 
     // Logs Columns
     const logsColumns = [
@@ -233,24 +240,24 @@ export default function Analytics() {
             },
             minWidth: '150px'
         },
-        {
-            field: 'userId',
-            header: 'Uploaded By',
-            body: (rowData) => {
-                const user = rowData.userId || rowData;
-                return (
-                    <div>
-                        <div className="text-sm text-gray-700">
-                            {user?.name || 'Unknown'}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                            {user?.email || ''}
-                        </div>
-                    </div>
-                );
-            },
-            minWidth: '150px'
-        },
+        // {
+        //     field: 'userId',
+        //     header: 'Uploaded By',
+        //     body: (rowData) => {
+        //         const user = rowData.userId || rowData;
+        //         return (
+        //             <div>
+        //                 <div className="text-sm text-gray-700">
+        //                     {user?.name || 'Unknown'}
+        //                 </div>
+        //                 <div className="text-xs text-gray-500">
+        //                     {user?.email || ''}
+        //                 </div>
+        //             </div>
+        //         );
+        //     },
+        //     minWidth: '150px'
+        // },
         {
             field: 'dateOfUpload',
             header: 'Date',
@@ -370,6 +377,16 @@ export default function Analytics() {
         }
     };
 
+    // Get current total pages based on active tab
+    const getCurrentTotalPages = () => {
+        switch(activeTab) {
+            case 'logs': return getTotalPages(analyticsLogs);
+            case 'uploads': return getTotalPages(analyticsReportUpload);
+            case 'downloads': return getTotalPages(analyticsReportDownload);
+            default: return 1;
+        }
+    };
+
     if (loading) {
         return (
             <div className="max-w-7xl mx-auto pb-12">
@@ -479,7 +496,7 @@ export default function Analytics() {
                     {/* Pagination */}
                     <Pagination
                         currentPage={page}
-                        totalPages={Math.ceil(getCurrentTotal() / limit) || 1}
+                        totalPages={getCurrentTotalPages()}
                         totalItems={getCurrentTotal()}
                         itemsPerPage={limit}
                         onPageChange={setPage}

@@ -91,32 +91,33 @@ const useLabOperatorManagment = () => {
          }
      }
 
-     const fetchLabRejectedReports = useCallback(async () => {
-         setLoading(true);
-         setError(null);
+const fetchLabRejectedReports = useCallback(async (params = {}) => {
+          setLoading(true);
+          setError(null);
 
-         try {
-             const res = await fetchData({
-                 method: "GET",
-                 url: `${conf.apiBaseUrl}lab-operators/rejected-reports`,
-             });
+          try {
+              const res = await fetchData({
+                  method: "GET",
+                  url: `${conf.apiBaseUrl}lab-operators/rejected-reports`,
+                  params,
+              });
 
-             if (res) {
-                 setLabRejectedReports(res.reports || []);
-                 setLoading(false);
-                 return res;
-             }
-             setLoading(false);
-             return false;
-         } catch (error) {
-             console.error("Error fetching rejected reports:", error);
-             setLoading(false);
-             setError(error.message || "Failed to fetch rejected reports");
-             toast.error(error.response?.data?.message || "Failed to fetch rejected reports");
-             setLabRejectedReports(null);
-             return false;
-         }
-      }, [fetchData, setLoading, setError, setLabRejectedReports]);
+              if (res) {
+                  setLabRejectedReports(res || []);
+                  setLoading(false);
+                  return res;
+              }
+              setLoading(false);
+              return false;
+          } catch (error) {
+              console.error("Error fetching rejected reports:", error);
+              setLoading(false);
+              setError(error.message || "Failed to fetch rejected reports");
+              toast.error(error.response?.data?.message || "Failed to fetch rejected reports");
+              setLabRejectedReports(null);
+              return false;
+          }
+       }, [fetchData, setLoading, setError, setLabRejectedReports]);
 
       const fetchLabRejectedReport = useCallback(async (params) => {
           setLoading(true);
@@ -156,6 +157,7 @@ const useLabOperatorManagment = () => {
               formData.append("model", params.model);
               formData.append("testName", params.testName);
               formData.append("uhid", params.uhid);
+              formData.append("date", params.date);
 
               const filesArray = Array.isArray(files) ? files : Array.from(files || []);
               filesArray.forEach((file) => {

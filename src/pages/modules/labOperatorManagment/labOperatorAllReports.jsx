@@ -27,13 +27,13 @@ export default function LabOperatorAllReports() {
         return {
             srNo: index + 1,
             uhid: data.UHID || "N/A",
-            patientName: data.employeeName || data.patientName || "N/A",
+            patientName:  data.patientName || "N/A",
             testName: data.testName || report.reportType || "-",
-            reportType: report.reportType || "-",
+            // reportType: report.reportType || "-",
             model: report.model || "-",
             date: data.date ? new Date(data.date).toLocaleDateString() : "-",
             status: data.status || "pending",
-            images: data.images || [],
+            // images: data.images || [],
             rejectedReason: data.rejectedReason || "",
             report,
         };
@@ -129,12 +129,12 @@ export default function LabOperatorAllReports() {
             sortable: true,
             minWidth: "140px",
         },
-        {
-            field: "reportType",
-            header: "Report Type",
-            sortable: true,
-            minWidth: "130px",
-        },
+        // {
+        //     field: "reportType",
+        //     header: "Report Type",
+        //     sortable: true,
+        //     minWidth: "130px",
+        // },
         {
             field: "model",
             header: "Model",
@@ -154,13 +154,13 @@ export default function LabOperatorAllReports() {
             body: statusBodyTemplate,
             minWidth: "110px",
         },
-        {
-            field: "images",
-            header: "Image",
-            sortable: false,
-            body: imagesBodyTemplate,
-            minWidth: "100px",
-        },
+        // {
+        //     field: "images",
+        //     header: "Image",
+        //     sortable: false,
+        //     body: imagesBodyTemplate,
+        //     minWidth: "100px",
+        // },
         {
             field: "action",
             header: "Actions",
