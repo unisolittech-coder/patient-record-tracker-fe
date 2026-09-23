@@ -165,14 +165,14 @@ const useLabHeadManagment = () => {
         }
     }, [fetchData, setLoading, setError]);
 
-    const updateLabHeadStatus = useCallback(async (uniqueId, data) => {
+    const updateLabHeadStatus = useCallback(async (uniqueId,ReportDate,data) => {
         setLoading(true);
         setError(null);
 
         try {
             const res = await fetchData({
                 method: "PUT",
-                url: `${conf.apiBaseUrl}lab-head/status/${uniqueId}`,
+                url: `${conf.apiBaseUrl}lab-head/status/${uniqueId}/${ReportDate}`,
                 data,
             });
 

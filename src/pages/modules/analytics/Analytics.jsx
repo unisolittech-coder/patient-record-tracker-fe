@@ -240,24 +240,24 @@ export default function Analytics() {
             },
             minWidth: '150px'
         },
-        {
-            field: 'userId',
-            header: 'Uploaded By',
-            body: (rowData) => {
-                const user = rowData.userId || rowData;
-                return (
-                    <div>
-                        <div className="text-sm text-gray-700">
-                            {user?.name || 'Unknown'}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                            {user?.email || ''}
-                        </div>
-                    </div>
-                );
-            },
-            minWidth: '150px'
-        },
+        // {
+        //     field: 'userId',
+        //     header: 'Uploaded By',
+        //     body: (rowData) => {
+        //         const user = rowData.userId || rowData;
+        //         return (
+        //             <div>
+        //                 <div className="text-sm text-gray-700">
+        //                     {user?.name || 'Unknown'}
+        //                 </div>
+        //                 <div className="text-xs text-gray-500">
+        //                     {user?.email || ''}
+        //                 </div>
+        //             </div>
+        //         );
+        //     },
+        //     minWidth: '150px'
+        // },
         {
             field: 'dateOfUpload',
             header: 'Date',

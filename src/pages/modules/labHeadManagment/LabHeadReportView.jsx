@@ -128,7 +128,8 @@ const LabHeadReportView = () => {
 
       formData.append("updates", JSON.stringify([updatePayload]));
 
-      const result = await updateLabHeadStatus(uniqueId, formData);
+     const ReportDate = report.data?.date;
+      const result = await updateLabHeadStatus(uniqueId, ReportDate, formData);
       if (result) {
         setReportApprovalStatus((prev) => ({
           ...prev,
