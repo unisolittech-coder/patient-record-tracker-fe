@@ -4,18 +4,29 @@ import { toast } from "react-toastify";
 import BreadCrumb from "../../../components/common/BreadCrumb";
 import PagePath from "../../../components/common/PagePath";
 import Button from "../../../components/common/Button";
-import { TextInput } from "../../../components/common/FormFields";
+import { TextInput, SelectInput } from "../../../components/common/FormFields";
 import useLabOperatorManagment from "../../../hooks/lab/labOperatorManagment/useLabOperatorManagment";
+import useDropdowns from "../../../hooks/dropdown/useDropdowns";
 
 export default function LabOperatorManagment() {
     const { loading, submitLabReports, resetForm, fetchLabPatientSearch, labPatientSearch } = useLabOperatorManagment();
+    const { fetchLabOperatorDepartments } = useDropdowns();
     const navigate = useNavigate();
     const formRef = useRef(null);
 
     const [uniqueId, setUniqueId] = useState("");
-    const [tests, setTests] = useState([{ testName: "", report: null }]);
+    const [tests, setTests] = useState([{ testName: "", department: "", report: null }]);
     const [fileNames, setFileNames] = useState([""]);
     const [searched, setSearched] = useState(false);
+    const [departments, setDepartments] = useState([]);
+
+    useEffect(() => {
+        const loadDepartments = async () => {
+            const depts = await fetchLabOperatorDepartments();
+            setDepartments(depts);
+        };
+        loadDepartments();
+    }, [fetchLabOperatorDepartments]);
 
     useEffect(() => {
         if (!uniqueId.trim()) {
@@ -44,6 +55,12 @@ export default function LabOperatorManagment() {
         setTests(newTests);
     };
 
+    const handleDepartmentChange = (index, value) => {
+        const newTests = [...tests];
+        newTests[index].department = value?.value || "";
+        setTests(newTests);
+    };
+
     const handleReportChange = (index, file) => {
         const newTests = [...tests];
         newTests[index].report = file;
@@ -55,7 +72,7 @@ export default function LabOperatorManagment() {
     };
 
     const addTest = () => {
-        setTests([...tests, { testName: "", report: null }]);
+        setTests([...tests, { testName: "", department: "", report: null }]);
         setFileNames([...fileNames, ""]);
     };
 
@@ -72,7 +89,7 @@ export default function LabOperatorManagment() {
 
     const clearForm = () => {
         setUniqueId("");
-        setTests([{ testName: "", report: null }]);
+        setTests([{ testName: "", department: "", report: null }]);
         setFileNames([""]);
         setSearched(false);
         resetForm();
@@ -98,6 +115,7 @@ export default function LabOperatorManagment() {
         const payload = new FormData();
         payload.append("uhid", uniqueId);
         payload.append("testNames", JSON.stringify(validTests.map(t => t.testName)));
+        payload.append("departments", JSON.stringify(validTests.map(t => t.department)));
         validTests.forEach((test) => {
             payload.append("reports", test.report);
         });
@@ -199,7 +217,7 @@ export default function LabOperatorManagment() {
                                 className="border border-gray-200 rounded-xl p-4 relative"
                             >
                                 <div className="flex items-start gap-4">
-                                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <TextInput
                                             id={`testName-${index}`}
                                             label="Test Name"
@@ -207,6 +225,16 @@ export default function LabOperatorManagment() {
                                             value={test.testName}
                                             onChange={(e) => handleTestNameChange(index, e.target.value)}
                                             placeholder="Enter test name"
+                                            disabled={loading}
+                                        />
+                                        <SelectInput
+                                            id={`department-${index}`}
+                                            label="Department"
+                                            required
+                                            options={departments.map(d => ({ value: d, label: d }))}
+                                            value={test.department ? { value: test.department, label: test.department } : null}
+                                            onChange={(value) => handleDepartmentChange(index, value)}
+                                            placeholder="Select department"
                                             disabled={loading}
                                         />
                                         <div className="flex flex-col gap-1.5">

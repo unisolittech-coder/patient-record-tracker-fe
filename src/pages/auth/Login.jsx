@@ -16,7 +16,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const { roles, fetchRoles } = useDropdowns();
+  const { roles, fetchLoginRoles } = useDropdowns();
 
   const roleOptions = roles.map((role) => ({
     value: role.value,
@@ -24,8 +24,8 @@ export default function Login() {
   }));
 
   useEffect(() => {
-    fetchRoles();
-  }, [fetchRoles]);
+    fetchLoginRoles();
+  }, [fetchLoginRoles]);
 
 
   const validationSchema = Yup.object({

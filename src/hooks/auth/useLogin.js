@@ -27,6 +27,7 @@ export const useLogin = () => {
                 sessionStorage.setItem("token", res?.token);
                 sessionStorage.setItem("role", res?.user?.role);
                 sessionStorage.setItem("name", res?.user?.name);
+                sessionStorage.setItem("signedInUser", res?.user?.sign);
                 return true;
             }
         } catch (error) {
