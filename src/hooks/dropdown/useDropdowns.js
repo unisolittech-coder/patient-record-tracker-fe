@@ -74,6 +74,25 @@ const useDropdowns = () => {
         }
     }, [setLoading, setRoles]);
 
+    const fetchLoginRoles = useCallback(async () => {
+        setLoading(true);
+        try {
+            const result = await axios.get(`${conf.apiBaseUrl}users/login-roles`);
+            const res = result.data;
+            if (res) {
+                setLoading(false);
+                const rolesArray = Array.isArray(res?.roles) ? res.roles : [];
+                setRoles(rolesArray);
+                return rolesArray;
+            }
+        } catch (error) {
+            console.error("Error fetching login roles:", error);
+            setLoading(false);
+            toast.error(error.response?.data?.message);
+            return [];
+        }
+    }, [setLoading, setRoles]);
+
     // Fetch departments specifically for prescription/treatment form
     const fetchPrescriptionDepartments = useCallback(async () => {
         setLoading(true);
@@ -112,6 +131,24 @@ const useDropdowns = () => {
         }
     }, [fetchData]);
 
+    const fetchLabOperatorDepartments = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await fetchData({
+                method: "GET",
+                url: `${conf.apiBaseUrl}lab-operators/departments`,
+            });
+            if (res) {
+                setLoading(false);
+                return Array.isArray(res?.departments) ? res.departments : [];
+            }
+        } catch (error) {
+            console.error("Error fetching lab operator departments:", error);
+            setLoading(false);
+            return [];
+        }
+    }, [fetchData]);
+
     return {
         loading,
         departments,
@@ -120,8 +157,10 @@ const useDropdowns = () => {
         fetchDepartments,
         fetchDesignations,
         fetchRoles,
+        fetchLoginRoles,
         fetchPrescriptionDepartments,
-        fetchPrescriptionDoctors
+        fetchPrescriptionDoctors,
+        fetchLabOperatorDepartments
     };
 };
 

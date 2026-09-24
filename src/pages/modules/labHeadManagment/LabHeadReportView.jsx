@@ -12,7 +12,8 @@ import ImageModal from "../../../components/common/ImageModal";
 
 const LabHeadReportView = () => {
   const { uniqueId } = useParams();
-  const { fetchLabHeadReport, updateLabHeadStatus, loading } = useLabHeadManagment();
+  const { fetchLabHeadReport, updateLabHeadStatus, loading } =
+    useLabHeadManagment();
   const [reportData, setReportData] = useState(null);
   const [reportApprovalStatus, setReportApprovalStatus] = useState({});
   const [showPrintForm, setShowPrintForm] = useState(false);
@@ -20,7 +21,7 @@ const LabHeadReportView = () => {
   const [previewImage, setPreviewImage] = useState(null);
 
   const breadcrumbPaths = [
-    { label: "Patient Reports Management", url:'/doctor/lab-head' },
+    { label: "Patient Reports Management", url: "/doctor/lab-head" },
     { label: "Lab Report View" },
   ];
 
@@ -37,12 +38,16 @@ const LabHeadReportView = () => {
     }
   }, [uniqueId, fetchLabHeadReport]);
 
+  console.log(sessionStorage.getItem("signedInUser"));
+
+  /* ------------------------- Print ------------------------- */
   const handlePrint = (report) => {
     setSelectedReport(report);
     setShowPrintForm(true);
+    // give the print form time to render + load images (logo / signature)
     setTimeout(() => {
       window.print();
-    }, 100);
+    }, 500);
   };
 
   useEffect(() => {
@@ -54,6 +59,7 @@ const LabHeadReportView = () => {
     return () => window.removeEventListener("afterprint", handleAfterPrint);
   }, []);
 
+  /* -------------------- Image capture (pdf/img) -------------------- */
   const captureReportAsImage = async (report) => {
     const container = document.createElement("div");
     container.style.position = "fixed";
@@ -66,7 +72,9 @@ const LabHeadReportView = () => {
     const root = createRoot(container);
     root.render(<LabHeadReportPrintForm report={report} />);
 
-    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve))
+    );
 
     const printElement = container.querySelector(".lab-print-form");
     let file = null;
@@ -76,9 +84,15 @@ const LabHeadReportView = () => {
         useCORS: true,
         backgroundColor: "#ffffff",
       });
-      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+      const blob = await new Promise((resolve) =>
+        canvas.toBlob(resolve, "image/png")
+      );
       if (blob) {
-        file = new File([blob], `report-${report.data?.uniqueId || "image"}.png`, { type: "image/png" });
+        file = new File(
+          [blob],
+          `report-${report.data?.uniqueId || "image"}.png`,
+          { type: "image/png" }
+        );
       }
     }
 
@@ -88,6 +102,7 @@ const LabHeadReportView = () => {
     return file;
   };
 
+  /* -------------------- Approve / Reject -------------------- */
   const handleReportApproveReject = async (reportIndex, status) => {
     const key = `${reportIndex}`;
     const report = reportData?.reports?.[reportIndex];
@@ -96,10 +111,14 @@ const LabHeadReportView = () => {
 
     let alertResult;
     if (status === "approved") {
-      alertResult = await confirmAlert("Are you sure you want to approve this report?");
+      alertResult = await confirmAlert(
+        "Are you sure you want to approve this report?"
+      );
       if (!alertResult.isConfirmed) return;
     } else if (status === "rejected") {
-      alertResult = await confirmRejectAlert("Are you sure you want to reject this report?");
+      alertResult = await confirmRejectAlert(
+        "Are you sure you want to reject this report?"
+      );
       if (!alertResult.isConfirmed) return;
     }
 
@@ -113,7 +132,10 @@ const LabHeadReportView = () => {
     try {
       if (report.reportType === "Manual Type") {
         const observationIds = (report.data?.observations || [])
-          .filter((obs) => typeof obs.result === "string" && /^https?:\/\//.test(obs.result))
+          .filter(
+            (obs) =>
+              typeof obs.result === "string" && /^https?:\/\//.test(obs.result)
+          )
           .map((obs) => obs._id);
 
         if (observationIds.length > 0) {
@@ -128,7 +150,7 @@ const LabHeadReportView = () => {
 
       formData.append("updates", JSON.stringify([updatePayload]));
 
-     const ReportDate = report.data?.date;
+      const ReportDate = report.data?.date;
       const result = await updateLabHeadStatus(uniqueId, ReportDate, formData);
       if (result) {
         setReportApprovalStatus((prev) => ({
@@ -145,7 +167,9 @@ const LabHeadReportView = () => {
 
   const getReportStatusBadge = (reportIndex) => {
     const key = `${reportIndex}`;
-    const status = reportApprovalStatus[key] || reportData?.reports?.[reportIndex]?.data?.status;
+    const status =
+      reportApprovalStatus[key] ||
+      reportData?.reports?.[reportIndex]?.data?.status;
 
     if (status === "approved") {
       return (
@@ -171,7 +195,9 @@ const LabHeadReportView = () => {
   const renderObservationsTable = (observations, reportType) => {
     if (!observations || observations.length === 0) {
       return (
-        <p className="text-gray-500 text-sm py-4">No observations available for this report.</p>
+        <p className="text-gray-500 text-sm py-4">
+          No observations available for this report.
+        </p>
       );
     }
 
@@ -198,7 +224,10 @@ const LabHeadReportView = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {observations.map((obs, obsIndex) => {
-              const isImageUrl = isManualType && typeof obs.result === "string" && /^https?:\/\//.test(obs.result);
+              const isImageUrl =
+                isManualType &&
+                typeof obs.result === "string" &&
+                /^https?:\/\//.test(obs.result);
               return (
                 <tr key={obsIndex} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -242,17 +271,14 @@ const LabHeadReportView = () => {
     <div className="max-w-7xl mx-auto pb-12">
       <BreadCrumb paths={breadcrumbPaths} />
 
-      <PagePath
-        title="Lab Report View"
-        showSearchBar={false}
-      />
+      <PagePath title="Lab Report View" showSearchBar={false} />
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
-  ) : reportData?.reports && reportData.reports.length > 0 ? (
-    <div className="space-y-6">
+      ) : reportData?.reports && reportData.reports.length > 0 ? (
+        <div className="space-y-6">
           {reportData.reports.map((report, index) => {
             return (
               <div
@@ -266,8 +292,11 @@ const LabHeadReportView = () => {
                         {report.reportType || `Report ${index + 1}`}
                       </h3>
                       <p className="text-sm text-blue-100 mt-1">
-                        Patient: {report.data?.patientName} | ID: {report.data?.UHID} | Date:{" "}
-                        {report.data?.date ? new Date(report.data.date).toLocaleDateString() : "-"}
+                        Patient: {report.data?.patientName} | ID:{" "}
+                        {report.data?.UHID} | Date:{" "}
+                        {report.data?.date
+                          ? new Date(report.data.date).toLocaleDateString()
+                          : "-"}
                       </p>
                     </div>
                     {/* <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 text-white">
@@ -276,14 +305,20 @@ const LabHeadReportView = () => {
                   </div>
                 </div>
                 <div className="p-6">
-                  {renderObservationsTable(report.data?.observations, report.reportType)}
+                  {renderObservationsTable(
+                    report.data?.observations,
+                    report.reportType
+                  )}
                 </div>
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-700">Report Status:</span>
+                    <span className="text-sm font-medium text-gray-700">
+                      Report Status:
+                    </span>
                     {getReportStatusBadge(index)}
                   </div>
-                  {(reportApprovalStatus[index] || report.data?.status) === "pending" && (
+                  {(reportApprovalStatus[index] || report.data?.status) ===
+                    "pending" && (
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handlePrint(report)}
@@ -292,13 +327,17 @@ const LabHeadReportView = () => {
                         View
                       </button>
                       <button
-                        onClick={() => handleReportApproveReject(index, "approved")}
+                        onClick={() =>
+                          handleReportApproveReject(index, "approved")
+                        }
                         className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
                       >
                         Approve
                       </button>
                       <button
-                        onClick={() => handleReportApproveReject(index, "rejected")}
+                        onClick={() =>
+                          handleReportApproveReject(index, "rejected")
+                        }
                         className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
                       >
                         Reject
@@ -313,10 +352,14 @@ const LabHeadReportView = () => {
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
           <i className="pi pi-inbox text-5xl text-slate-300 mb-3 block" />
-          <p className="text-slate-500 font-medium">No reports found for this unique ID.</p>
+          <p className="text-slate-500 font-medium">
+            No reports found for this unique ID.
+          </p>
         </div>
       )}
+
       {showPrintForm && <LabHeadReportPrintForm report={selectedReport} />}
+
       {previewImage && (
         <ImageModal
           src={previewImage}
@@ -325,30 +368,47 @@ const LabHeadReportView = () => {
         />
       )}
 
-      {/* Print Styles */}
+      {/* ======================= PRINT STYLES ======================= */}
       <style>{`
-          @media print {
-              @page {
-                  margin: 0;
-                  size: auto;
-              }
-              body * {
-                  visibility: hidden;
-              }
-              .lab-print-form, .lab-print-form * {
-                  visibility: visible;
-              }
-              .lab-print-form {
-                  position: absolute;
-                  left: 0;
-                  top: 0;
-                  width: 100%;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  min-height: 100vh;
-              }
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 10mm 10mm 12mm 10mm;
           }
+
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
+          /* Hide everything except the print form */
+          body * {
+            visibility: hidden !important;
+          }
+          .lab-print-form,
+          .lab-print-form * {
+            visibility: visible !important;
+          }
+
+          /* Pull the print form out of the layout so its own pagination works */
+          .lab-print-form {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            overflow: visible !important;
+            display: block !important;
+          }
+        }
       `}</style>
     </div>
   );
