@@ -54,14 +54,6 @@ export default function LabHeadManagment() {
     );
   };
 
-  const createdAtBodyTemplate = (rowData) => {
-    return (
-      <span className="text-lg text-gray-700">
-        {rowData.createdAt ? new Date(rowData.createdAt).toLocaleDateString() : "-"}
-      </span>
-    );
-  };
-
   const tableData =
     labHeadRes?.data?.map((item, index) => ({
       ...item,
@@ -98,13 +90,6 @@ export default function LabHeadManagment() {
       header: "Mobile Number",
       sortable: true,
       minWidth: "160px",
-    },
-    {
-      field: "createdAt",
-      header: "Test Date",
-      sortable: true,
-      body: createdAtBodyTemplate,
-      minWidth: "140px",
     },
     {
       field: "action",

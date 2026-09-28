@@ -215,11 +215,12 @@ export default function IggmcBloodCollectionCenter() {
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <div className="mb-4 pb-4 border-b border-gray-100">
-              <h2 className="text-lg font-bold text-gray-800">Test</h2>
+              <h2 className="text-lg font-bold text-gray-800">Tests</h2>
+              <p className="mt-1 text-sm text-gray-500">Select one or more test names.</p>
             </div>
             <SelectInput
               name="testNames"
-              label="Test Name"
+              label="Test Names"
               options={testNameOptions}
               value={testNameOptions.filter(option => formik.values.testNames.includes(option.value))}
               onChange={options => formik.setFieldValue('testNames', options ? options.map(option => option.value) : [])}
