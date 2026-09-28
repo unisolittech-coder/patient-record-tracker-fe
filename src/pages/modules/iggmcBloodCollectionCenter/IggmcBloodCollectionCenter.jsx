@@ -1,25 +1,31 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Button from '../../../components/common/Button';
-import { TextInput } from '../../../components/common/FormFields';
+import { SelectInput, TextInput } from '../../../components/common/FormFields';
 import BreadCrumb from "../../../components/common/BreadCrumb";
 import PagePath from "../../../components/common/PagePath";
 import { useIggmcPatient } from '../../../hooks/iggmcPatient/useIggmcPatient';
 import { toast } from "react-toastify";
 
 export default function IggmcBloodCollectionCenter() {
-  const { loading, patient, createPatient, fetchPatientByUhid } = useIggmcPatient();
+  const { loading, patient, createPatient, fetchPatientByUhid, fetchTestNames } = useIggmcPatient();
   const [uniqueId, setUniqueId] = useState("");
   const [searched, setSearched] = useState(false);
   const [isPatientFound, setIsPatientFound] = useState(false);
+  const [testNameOptions, setTestNameOptions] = useState([]);
 
   useEffect(() => {
-    if (!uniqueId.trim()) {
-      setSearched(false);
-      setIsPatientFound(false);
-    }
-  }, [uniqueId]);
+    let isMounted = true;
+    fetchTestNames().then((names) => {
+      if (isMounted) {
+        setTestNameOptions(names.map(name => ({ value: name, label: name })));
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchTestNames]);
 
   const handleSearch = async () => {
     if (!uniqueId.trim()) {
@@ -34,7 +40,8 @@ export default function IggmcBloodCollectionCenter() {
         uhid: success.uhid || '',
         mobileNumber: success.mobileNumber || '',
         patientName: success.patientName || '',
-        abhaNumber: success.abhaNumber || ''
+        abhaNumber: success.abhaNumber || '',
+        testNames: []
       });
       setIsPatientFound(true);
     } else {
@@ -42,7 +49,8 @@ export default function IggmcBloodCollectionCenter() {
         uhid: '',
         mobileNumber: '',
         patientName: '',
-        abhaNumber: ''
+        abhaNumber: '',
+        testNames: []
       });
       setIsPatientFound(false);
     }
@@ -62,7 +70,8 @@ export default function IggmcBloodCollectionCenter() {
     patientName: Yup.string().required('Patient Name is required'),
     abhaNumber: Yup.string()
       .nullable()
-      .notRequired()
+      .notRequired(),
+    testNames: Yup.array().of(Yup.string())
   });
 
   const formik = useFormik({
@@ -70,11 +79,20 @@ export default function IggmcBloodCollectionCenter() {
       uhid: '',
       mobileNumber: '',
       patientName: '',
-      abhaNumber: ''
+      abhaNumber: '',
+      testNames: []
     },
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
-      const success = await createPatient(values);
+      const data = {
+        uhid: values.uhid,
+        mobileNumber: values.mobileNumber,
+        patientName: values.patientName,
+        abhaNumber: values.abhaNumber
+      };
+      if (values.testNames.length > 0) data.testNames = values.testNames;
+
+      const success = await createPatient(data);
       if (success) {
         resetForm();
         setSearched(false);
@@ -103,7 +121,11 @@ export default function IggmcBloodCollectionCenter() {
                 label="UHID"
                 required
                 value={uniqueId}
-                onChange={(e) => setUniqueId(e.target.value)}
+                onChange={(e) => {
+                  setUniqueId(e.target.value);
+                  setSearched(false);
+                  setIsPatientFound(false);
+                }}
                 placeholder="Enter patient UHID"
                 disabled={loading}
               />
@@ -189,6 +211,24 @@ export default function IggmcBloodCollectionCenter() {
                 placeholder="Enter ABHA Number"
               />
             </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <div className="mb-4 pb-4 border-b border-gray-100">
+              <h2 className="text-lg font-bold text-gray-800">Test</h2>
+            </div>
+            <SelectInput
+              name="testNames"
+              label="Test Name"
+              options={testNameOptions}
+              value={testNameOptions.filter(option => formik.values.testNames.includes(option.value))}
+              onChange={options => formik.setFieldValue('testNames', options ? options.map(option => option.value) : [])}
+              onBlur={() => formik.setFieldTouched('testNames', true)}
+              placeholder={testNameOptions.length ? 'Select test names' : 'No test names available'}
+              isMulti
+              isClearable
+              isDisabled={testNameOptions.length === 0}
+            />
           </div>
 
           <div className="border-t border-gray-100 pt-6 flex justify-end gap-3">

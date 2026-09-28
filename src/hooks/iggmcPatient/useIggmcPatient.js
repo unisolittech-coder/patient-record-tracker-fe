@@ -55,6 +55,19 @@ export const useIggmcPatient = () => {
         }
     }, [fetchData, setPatient, setPatientRes]);
 
+    const fetchTestNames = useCallback(async () => {
+        try {
+            const res = await fetchData({
+                method: "GET",
+                url: `${conf.apiBaseUrl}iggmc-patients/test-names`,
+            });
+            return Array.isArray(res?.testNames) ? res.testNames : [];
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to fetch test names");
+            return [];
+        }
+    }, [fetchData]);
+
     const resetPatientDetails = useCallback(() => {
         setPatient(null);
         setPatientRes(null);
@@ -66,6 +79,7 @@ export const useIggmcPatient = () => {
         patientRes,
         createPatient,
         fetchPatientByUhid,
+        fetchTestNames,
         resetPatientDetails
     };
 };
