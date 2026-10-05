@@ -10,7 +10,7 @@ import validator from "validator";
 import useDropdowns from '../../hooks/dropdown/useDropdowns';
 import { ROLES } from '../../constants/roles';
 import Loader from "../../components/common/Loader";
-import IggmcLogo from "../../assets/logo/IggmcLogo.webp";
+import IggmcLogo from "../../assets/logo/Iggmc-Logo-PNG-400-X-400.webp";
 
 export default function Login() {
   const { loading, adminLogin } = useLogin();
