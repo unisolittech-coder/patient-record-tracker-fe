@@ -10,6 +10,7 @@ import validator from "validator";
 import useDropdowns from '../../hooks/dropdown/useDropdowns';
 import { ROLES } from '../../constants/roles';
 import Loader from "../../components/common/Loader";
+import IggmcLogo from "../../assets/logo/IggmcLogo.webp";
 
 export default function Login() {
   const { loading, adminLogin } = useLogin();
@@ -94,6 +95,14 @@ export default function Login() {
 
           {/* Header */}
           <div className="text-center mb-8">
+            <div className="w-20 h-20 mx-auto mb-4">
+              <img
+                src={IggmcLogo}
+                alt="IGGMC Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+
             <h1 className="text-3xl font-bold text-gray-800 mb-2">
               Welcome Back!
             </h1>
