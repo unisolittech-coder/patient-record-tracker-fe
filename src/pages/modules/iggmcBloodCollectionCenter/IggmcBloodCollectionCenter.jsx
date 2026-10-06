@@ -87,9 +87,10 @@ export default function IggmcBloodCollectionCenter() {
       const data = {
         uhid: values.uhid,
         mobileNumber: values.mobileNumber,
-        patientName: values.patientName,
-        abhaNumber: values.abhaNumber
+        patientName: values.patientName
       };
+      const abhaNumber = values.abhaNumber.trim();
+      if (abhaNumber) data.abhaNumber = abhaNumber;
       if (values.testNames.length > 0) data.testNames = values.testNames;
 
       const success = await createPatient(data);
