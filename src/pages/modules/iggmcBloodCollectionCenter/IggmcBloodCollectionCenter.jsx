@@ -46,7 +46,7 @@ export default function IggmcBloodCollectionCenter() {
       setIsPatientFound(true);
     } else {
       formik.setValues({
-        uhid: '',
+        uhid: uniqueId.trim(),
         mobileNumber: '',
         patientName: '',
         abhaNumber: '',
@@ -126,6 +126,12 @@ export default function IggmcBloodCollectionCenter() {
                   setUniqueId(e.target.value);
                   setSearched(false);
                   setIsPatientFound(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSearch();
+                  }
                 }}
                 placeholder="Enter patient UHID"
                 disabled={loading}
