@@ -40,7 +40,7 @@ export default function IggmcBloodCollectionCenter() {
         uhid: success.uhid || '',
         mobileNumber: success.mobileNumber || '',
         patientName: success.patientName || '',
-        abhaNumber: success.abhaNumber || '',
+        abhaNumber: success.abhaNumber,
         testNames: []
       });
       setIsPatientFound(true);
