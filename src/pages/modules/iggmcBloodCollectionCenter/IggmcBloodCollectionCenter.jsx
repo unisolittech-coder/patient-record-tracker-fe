@@ -40,6 +40,8 @@ export default function IggmcBloodCollectionCenter() {
         uhid: success.uhid || '',
         mobileNumber: success.mobileNumber || '',
         patientName: success.patientName || '',
+        gender: success.gender || '',
+        age: success.age ?? '',
         abhaNumber: success.abhaNumber,
         testNames: []
       });
@@ -49,6 +51,8 @@ export default function IggmcBloodCollectionCenter() {
         uhid: uniqueId.trim(),
         mobileNumber: '',
         patientName: '',
+        gender: '',
+        age: '',
         abhaNumber: '',
         testNames: []
       });
@@ -68,6 +72,15 @@ export default function IggmcBloodCollectionCenter() {
       .required('Mobile Number is required')
       .matches(/^\d{10}$/, 'Mobile number must be exactly 10 digits'),
     patientName: Yup.string().required('Patient Name is required'),
+    gender: Yup.string()
+      .required('Gender is required')
+      .oneOf(['Male', 'Female', 'Other'], 'Please select a valid gender'),
+    age: Yup.number()
+      .typeError('Age is required')
+      .integer('Age must be a whole number')
+      .min(0, 'Age cannot be less than 0')
+      .max(150, 'Age cannot be greater than 150')
+      .required('Age is required'),
     abhaNumber: Yup.string()
       .nullable()
       .notRequired(),
@@ -79,6 +92,8 @@ export default function IggmcBloodCollectionCenter() {
       uhid: '',
       mobileNumber: '',
       patientName: '',
+      gender: '',
+      age: '',
       abhaNumber: '',
       testNames: []
     },
@@ -87,7 +102,9 @@ export default function IggmcBloodCollectionCenter() {
       const data = {
         uhid: values.uhid,
         mobileNumber: values.mobileNumber,
-        patientName: values.patientName
+        patientName: values.patientName,
+        gender: values.gender,
+        age: Number(values.age)
       };
       const abhaNumber = values.abhaNumber.trim();
       if (abhaNumber) data.abhaNumber = abhaNumber;
@@ -147,10 +164,24 @@ export default function IggmcBloodCollectionCenter() {
             />
           </div>
           {searched && patient?.patientName && (
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-semibold text-gray-700">Patient Name</label>
-              <div className="w-full p-2.5 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-800 min-h-[42px]">
-                {patient.patientName}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Patient Name</label>
+                <div className="w-full p-2.5 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-800 min-h-[42px]">
+                  {patient.patientName}
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Gender</label>
+                <div className="w-full p-2.5 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-800 min-h-[42px]">
+                  {patient.gender || 'Not recorded'}
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Age</label>
+                <div className="w-full p-2.5 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-800 min-h-[42px]">
+                  {patient.age ?? 'Not recorded'}
+                </div>
               </div>
             </div>
           )}
@@ -194,6 +225,41 @@ export default function IggmcBloodCollectionCenter() {
                 disabled={isPatientFound}
               />
 
+              <SelectInput
+                name="gender"
+                label="Gender"
+                required
+                options={[
+                  { value: 'Male', label: 'Male' },
+                  { value: 'Female', label: 'Female' },
+                  { value: 'Other', label: 'Other' }
+                ]}
+                value={
+                  formik.values.gender
+                    ? { value: formik.values.gender, label: formik.values.gender }
+                    : null
+                }
+                onChange={option => formik.setFieldValue('gender', option?.value || '')}
+                onBlur={() => formik.setFieldTouched('gender', true)}
+                placeholder="Select gender"
+                error={formik.touched.gender && formik.errors.gender}
+              />
+
+              <TextInput
+                name="age"
+                label="Age"
+                required
+                type="number"
+                min={0}
+                max={150}
+                step={1}
+                value={formik.values.age}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                placeholder="Enter age in years"
+                error={formik.touched.age && formik.errors.age}
+              />
+
               <TextInput
                 name="mobileNumber"
                 label="Mobile Number"
@@ -234,6 +300,7 @@ export default function IggmcBloodCollectionCenter() {
               onBlur={() => formik.setFieldTouched('testNames', true)}
               placeholder={testNameOptions.length ? 'Select test names' : 'No test names available'}
               isMulti
+              backspaceRemovesValue={false}
               isClearable
               isDisabled={testNameOptions.length === 0}
             />

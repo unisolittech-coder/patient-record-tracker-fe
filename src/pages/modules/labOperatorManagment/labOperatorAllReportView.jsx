@@ -9,7 +9,12 @@ import useLabOperatorManagment from "../../../hooks/lab/labOperatorManagment/use
 export default function LabOperatorAllReportView() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const { fetchLabReportDetails, labReportDetailsLoading, labReportDetailsError } = useLabOperatorManagment();
+    const {
+        fetchLabReportDetails,
+        fetchIggmcPatientDetails,
+        labReportDetailsLoading,
+        labReportDetailsError
+    } = useLabOperatorManagment();
     const [reportData, setReportData] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
 
@@ -26,13 +31,25 @@ export default function LabOperatorAllReportView() {
     useEffect(() => {
         const loadReport = async () => {
             if (!model || !testName || !uhid) return;
-            const res = await fetchLabReportDetails({ model, testName, uhid });
+            const [res, patient] = await Promise.all([
+                fetchLabReportDetails({ model, testName, uhid }),
+                fetchIggmcPatientDetails(uhid)
+            ]);
             if (res) {
-                setReportData(res.report || res);
+                const report = res.report || res.reports?.[0] || res;
+                setReportData({
+                    ...report,
+                    data: {
+                        ...report.data,
+                        patientName: patient?.patientName || report.data?.patientName,
+                        age: patient?.age ?? report.data?.age,
+                        gender: patient?.gender ?? report.data?.gender
+                    }
+                });
             }
         };
         loadReport();
-    }, [model, testName, uhid, fetchLabReportDetails]);
+    }, [model, testName, uhid, fetchLabReportDetails, fetchIggmcPatientDetails]);
 
     const getReportStatusBadge = (status) => {
         const statusClasses = {
@@ -213,7 +230,7 @@ export default function LabOperatorAllReportView() {
                                         {report.reportType || "Report"}
                                     </h3>
                                     <p className="text-sm text-blue-100 mt-1">
-                                        Patient: {report.patientName || "N/A"} | UHID: {report.UHID || "-"} | Date:{" "}
+                                        Patient: {report.patientName || "N/A"} | Age: {report.age ?? "N/A"} | Gender: {report.gender || "N/A"} | UHID: {report.UHID || "-"} | Date:{" "}
                                         {report.date ? new Date(report.date).toLocaleDateString() : "-"}
                                     </p>
                                 </div>
@@ -227,7 +244,7 @@ export default function LabOperatorAllReportView() {
                         </div>
 
                         <div className="p-6">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
                                 <div className="bg-gray-50 rounded-xl p-4">
                                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                                         Patient Name
@@ -242,6 +259,22 @@ export default function LabOperatorAllReportView() {
                                     </p>
                                     <p className="text-sm font-medium text-gray-800">
                                         {report.UHID || "N/A"}
+                                    </p>
+                                </div>
+                                <div className="bg-gray-50 rounded-xl p-4">
+                                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                                        Age
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800">
+                                        {report.age ?? "N/A"}
+                                    </p>
+                                </div>
+                                <div className="bg-gray-50 rounded-xl p-4">
+                                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                                        Gender
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800">
+                                        {report.gender || "N/A"}
                                     </p>
                                 </div>
                                 <div className="bg-gray-50 rounded-xl p-4">

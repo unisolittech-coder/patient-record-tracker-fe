@@ -118,7 +118,7 @@ function Detail({ label, value }) {
   return (
     <div className={styles.detailRow}>
       <span className={styles.detailLabel}>{label}</span>
-      <span className={styles.detailValue}>{value || "—"}</span>
+      <span className={styles.detailValue}>{value === 0 ? 0 : value || "—"}</span>
     </div>
   );
 }
@@ -233,7 +233,7 @@ export default function LabHeadReportPrintForm({ report, images }) {
                     />
                     <Detail
                       label="Age"
-                      value={data.age || data.patientAge || ""}
+                      value={data.age ?? data.patientAge ?? ""}
                     />
                     <Detail label="Gender" value={data.gender} />
                     <Detail

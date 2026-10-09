@@ -292,7 +292,9 @@ const LabHeadReportView = () => {
                         {report.reportType || `Report ${index + 1}`}
                       </h3>
                       <p className="text-sm text-blue-100 mt-1">
-                        Patient: {report.data?.patientName} | ID:{" "}
+                        Patient: {report.data?.patientName} | Age:{" "}
+                        {report.data?.age ?? "N/A"} | Gender:{" "}
+                        {report.data?.gender || "N/A"} | ID:{" "}
                         {report.data?.UHID} | Date:{" "}
                         {report.data?.date
                           ? new Date(report.data.date).toLocaleDateString()

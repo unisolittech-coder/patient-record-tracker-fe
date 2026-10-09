@@ -86,6 +86,18 @@ export default function LabHeadManagment() {
       minWidth: "200px",
     },
     {
+      field: "gender",
+      header: "Gender",
+      sortable: true,
+      minWidth: "110px",
+    },
+    {
+      field: "age",
+      header: "Age",
+      sortable: true,
+      minWidth: "80px",
+    },
+    {
       field: "mobileNumber",
       header: "Mobile Number",
       sortable: true,

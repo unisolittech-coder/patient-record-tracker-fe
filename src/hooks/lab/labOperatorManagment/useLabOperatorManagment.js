@@ -243,6 +243,19 @@ const fetchLabRejectedReports = useCallback(async (params = {}) => {
            }
        }, [fetchData, setLabReportDetailsLoading, setLabReportDetailsError, setLabReportDetails]);
 
+       const fetchIggmcPatientDetails = useCallback(async (uhid) => {
+           try {
+               const res = await fetchData({
+                   method: "GET",
+                   url: `${conf.apiBaseUrl}iggmc-patients/${encodeURIComponent(uhid)}`,
+               });
+               return res?.patient || null;
+           } catch (error) {
+               toast.error(error.response?.data?.message || "Failed to fetch patient details");
+               return null;
+           }
+       }, [fetchData]);
+
        return {
          loading,
          error,
@@ -264,6 +277,7 @@ const fetchLabRejectedReports = useCallback(async (params = {}) => {
           labAllReportsError,
           labReportDetails,
           fetchLabReportDetails,
+          fetchIggmcPatientDetails,
           labReportDetailsLoading,
           labReportDetailsError
       };
