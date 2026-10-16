@@ -4,14 +4,12 @@ import BreadCrumb from "../../../components/common/BreadCrumb";
 import PagePath from "../../../components/common/PagePath";
 import DataTable from "../../../components/common/DataTable";
 import Button from "../../../components/common/Button";
-import ImageModal from "../../../components/common/ImageModal";
 import useLabOperatorManagment from "../../../hooks/lab/labOperatorManagment/useLabOperatorManagment";
 
 export default function LabOperatorAllReports() {
     const { loading, labAllReports, fetchLabAllReports, labAllReportsError } = useLabOperatorManagment();
     const navigate = useNavigate();
     const [search, setSearch] = useState("");
-    const [previewImage, setPreviewImage] = useState(null);
 
     const breadcrumbPaths = [
         { label: "Lab Operator Management", url: "/doctor/lab-operator" },
@@ -20,7 +18,7 @@ export default function LabOperatorAllReports() {
 
     useEffect(() => {
         fetchLabAllReports();
-    }, []);
+    }, [fetchLabAllReports]);
 
     const flatReports = (labAllReports || []).map((report, index) => {
         const data = report.data || {};
@@ -28,7 +26,7 @@ export default function LabOperatorAllReports() {
             srNo: index + 1,
             uhid: data.UHID || "N/A",
             patientName:  data.patientName || "N/A",
-            testName: data.testName || report.reportType || "-",
+            testName: data.testName || "-",
             // reportType: report.reportType || "-",
             model: report.model || "-",
             date: data.date ? new Date(data.date).toLocaleDateString() : "-",
@@ -66,21 +64,6 @@ export default function LabOperatorAllReports() {
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClasses[status] || "bg-gray-100 text-gray-800"}`}>
                 {status}
             </span>
-        );
-    };
-
-    const imagesBodyTemplate = (rowData) => {
-        if (!rowData.images || rowData.images.length === 0) {
-            return <span className="text-slate-400 text-sm">No images</span>;
-        }
-        return (
-            <button
-                onClick={() => setPreviewImage(rowData.images[0])}
-                className="h-6 w-8 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200 flex items-center justify-center"
-                title="View Image"
-            >
-                <i className="pi pi-image text-xs" />
-            </button>
         );
     };
 
@@ -175,23 +158,17 @@ export default function LabOperatorAllReports() {
             <BreadCrumb paths={breadcrumbPaths} />
 
             <PagePath
-                title="All Lab Reports"
+                title="Reports"
                 showSearchBar={true}
                 searchValue={search}
                 searchPlaceholder="Search by UHID, patient name, test, model or status"
                 onSearch={setSearch}
             >
                 <Button
-                    label="Back"
-                    icon="pi pi-arrow-left"
-                    variant="secondary"
-                    onClick={() => navigate("/doctor/lab-operator")}
-                />
-                <Button
-                    label="Refresh"
-                    icon="pi pi-refresh"
-                    variant="secondary"
-                    onClick={() => fetchLabAllReports()}
+                    label="Rejected Reports"
+                    icon="pi pi-plus"
+                    variant="primary"
+                    onClick={() => navigate("/doctor/lab-operator/rejected-reports")}
                     disabled={loading}
                 />
             </PagePath>
@@ -212,13 +189,6 @@ export default function LabOperatorAllReports() {
                 emptyMessage="No lab reports found."
             />
 
-            {previewImage && (
-                <ImageModal
-                    src={previewImage}
-                    alt="Report Image Preview"
-                    onClose={() => setPreviewImage(null)}
-                />
-            )}
         </div>
     );
 }

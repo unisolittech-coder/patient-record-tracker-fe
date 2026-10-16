@@ -11,6 +11,7 @@ export default function LabOperatorAllReportView() {
     const [searchParams] = useSearchParams();
     const {
         fetchLabReportDetails,
+        sendReportForApproval,
         fetchIggmcPatientDetails,
         labReportDetailsLoading,
         labReportDetailsError
@@ -54,6 +55,7 @@ export default function LabOperatorAllReportView() {
     const getReportStatusBadge = (status) => {
         const statusClasses = {
             pending: "bg-yellow-100 text-yellow-800",
+            for_approval: "bg-blue-100 text-blue-800",
             approved: "bg-green-100 text-green-800",
             rejected: "bg-red-100 text-red-800",
         };
@@ -177,6 +179,23 @@ export default function LabOperatorAllReportView() {
     const report = reportData?.data || reportData;
     const observations = report?.observations || [];
     const images = report?.images || [];
+    const reportStatus = report?.status || "pending";
+
+    const handleSendForApproval = async () => {
+        const result = await sendReportForApproval({
+            model: reportData?.model || model,
+            testName,
+            uhid: report?.UHID || uhid,
+        });
+
+        if (result) {
+            setReportData((current) => current
+                ? current.data
+                    ? { ...current, data: { ...current.data, status: "for_approval" } }
+                    : { ...current, status: "for_approval" }
+                : current);
+        }
+    };
 
     return (
         <div className="max-w-7xl mx-auto pb-12">
@@ -199,6 +218,14 @@ export default function LabOperatorAllReportView() {
                     onClick={() => fetchLabReportDetails({ model, testName, uhid })}
                     disabled={labReportDetailsLoading}
                 />
+                {reportStatus === "pending" && (
+                    <Button
+                        label="Send for Approval"
+                        icon="pi pi-send"
+                        onClick={handleSendForApproval}
+                        disabled={labReportDetailsLoading || !model || !testName || !uhid}
+                    />
+                )}
             </PagePath>
 
             {labReportDetailsError && (
@@ -227,7 +254,7 @@ export default function LabOperatorAllReportView() {
                                 <div>
                                     <h3 className="text-xl font-bold flex items-center gap-2">
                                         <i className="pi pi-file-o text-xl"></i>
-                                        {report.reportType || "Report"}
+                                        {report.testName || testName || "Report"}
                                     </h3>
                                     <p className="text-sm text-blue-100 mt-1">
                                         Patient: {report.patientName || "N/A"} | Age: {report.age ?? "N/A"} | Gender: {report.gender || "N/A"} | UHID: {report.UHID || "-"} | Date:{" "}

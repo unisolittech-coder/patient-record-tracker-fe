@@ -78,9 +78,10 @@ const useLabOperatorManagment = () => {
             if (res) {
                 setLabPatientSearch(res.patient);
                 setLoading(false);
-                return true;
+                return Boolean(res.patient);
             }
             setLoading(false);
+            setLabPatientSearch(null);
             return false;
         } catch (error) {
             console.error("Error fetching lab patient search:", error);
@@ -243,6 +244,32 @@ const fetchLabRejectedReports = useCallback(async (params = {}) => {
            }
        }, [fetchData, setLabReportDetailsLoading, setLabReportDetailsError, setLabReportDetails]);
 
+      const sendReportForApproval = useCallback(async (payload) => {
+          setLabReportDetailsLoading(true);
+          setLabReportDetailsError(null);
+
+          try {
+              const res = await fetchData({
+                  method: "PUT",
+                  url: `${conf.apiBaseUrl}lab-operators/send-for-approval`,
+                  data: payload,
+              });
+
+              if (res) {
+                  toast.success(res.message || "Report sent for approval");
+                  return res;
+              }
+              return false;
+          } catch (error) {
+              console.error("Error sending report for approval:", error);
+              setLabReportDetailsError(error.message || "Failed to send report for approval");
+              toast.error(error.response?.data?.message || "Failed to send report for approval");
+              return false;
+          } finally {
+              setLabReportDetailsLoading(false);
+          }
+      }, [fetchData, setLabReportDetailsLoading, setLabReportDetailsError]);
+
        const fetchIggmcPatientDetails = useCallback(async (uhid) => {
            try {
                const res = await fetchData({
@@ -277,6 +304,7 @@ const fetchLabRejectedReports = useCallback(async (params = {}) => {
           labAllReportsError,
           labReportDetails,
           fetchLabReportDetails,
+          sendReportForApproval,
           fetchIggmcPatientDetails,
           labReportDetailsLoading,
           labReportDetailsError

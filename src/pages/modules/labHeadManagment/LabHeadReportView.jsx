@@ -130,17 +130,10 @@ const LabHeadReportView = () => {
     }
 
     try {
-      if (report.reportType === "Manual Type") {
-        const observationIds = (report.data?.observations || [])
-          .filter(
-            (obs) =>
-              typeof obs.result === "string" && /^https?:\/\//.test(obs.result)
-          )
-          .map((obs) => obs._id);
-
-        if (observationIds.length > 0) {
-          updatePayload.observationId = observationIds;
-        }
+      if (report.model === "LabReport") {
+        updatePayload.observationId = (report.data?.observations || [])
+          .map((obs) => obs._id)
+          .filter(Boolean);
       } else {
         const imageFile = await captureReportAsImage(report);
         if (imageFile) {
@@ -182,6 +175,13 @@ const LabHeadReportView = () => {
       return (
         <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
           Rejected
+        </span>
+      );
+    }
+    if (status === "for_approval") {
+      return (
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+          For Approval
         </span>
       );
     }
@@ -320,7 +320,7 @@ const LabHeadReportView = () => {
                     {getReportStatusBadge(index)}
                   </div>
                   {(reportApprovalStatus[index] || report.data?.status) ===
-                    "pending" && (
+                    "for_approval" && (
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handlePrint(report)}

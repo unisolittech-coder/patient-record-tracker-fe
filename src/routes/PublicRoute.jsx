@@ -39,7 +39,7 @@ const Analytics = lazy(() => import("../pages/modules/analytics/Analytics"));
 
 const IggmcBloodCollectionCenter = lazy(() => import('../pages/modules/iggmcBloodCollectionCenter/IggmcBloodCollectionCenter'));
 
-const LabOperatorManagment = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorManagment'));
+const LabOperatorReports = lazy(() => import('../pages/modules/labOperatorManagment/LabOperatorReports'));
 
 const LabOperatorRejectedReports = lazy(() => import('../pages/modules/labOperatorManagment/labOperatorRejectedReports'));
 
@@ -96,7 +96,7 @@ export default function PublicRoute() {
                 </Route>
 
                 <Route element={<RoleProtectedRoute allowedRoles={[ROLES.LAB_OPERATOR, ROLES.SUPER_ADMIN]} />}>
-                  <Route path="/doctor/lab-operator" element={<LabOperatorManagment />} />
+                  <Route path="/doctor/lab-operator" element={<LabOperatorReports />} />
                   <Route path="/doctor/lab-operator/rejected-reports" element={<LabOperatorRejectedReports />} />
                   <Route path="/doctor/lab-operator/rejected-report/view" element={<LabOperatorRejectedReportView />} />
                   <Route path="/doctor/lab-operator/all-reports" element={<LabOperatorAllReports />} />

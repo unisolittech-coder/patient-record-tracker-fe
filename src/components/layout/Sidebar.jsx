@@ -54,9 +54,14 @@ export default function Sidebar() {
 
   const labOperatorMenus = [
     {
-      label: "Lab Operator Management",
+      label: "Report Submission",
       icon: "pi pi-building",
       path: "/doctor/lab-operator",
+    },
+    {
+      label: "Reports",
+      icon: "pi pi-file",
+      path: "/doctor/lab-operator/all-reports",
     },
   ];
 
@@ -110,6 +115,7 @@ export default function Sidebar() {
           <NavLink
             key={item.path}
             to={item.path}
+            end={item.path === "/doctor/lab-operator"}
             className={({ isActive }) =>
               `relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive
                 ? "bg-gradient-to-r from-blue-600/90 to-purple-600/90 text-white shadow-lg shadow-blue-500/20 scale-[1.02]"
