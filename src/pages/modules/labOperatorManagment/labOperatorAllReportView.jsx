@@ -20,8 +20,8 @@ export default function LabOperatorAllReportView() {
     const [previewImage, setPreviewImage] = useState(null);
 
     const model = searchParams.get("model") || "";
-    const testName = searchParams.get("testName") || "";
     const uhid = searchParams.get("uhid") || "";
+    const date = searchParams.get("date") || "";
 
     const breadcrumbPaths = [
         { label: "Lab Operator Management", url: "/doctor/lab-operator" },
@@ -31,9 +31,13 @@ export default function LabOperatorAllReportView() {
 
     useEffect(() => {
         const loadReport = async () => {
-            if (!model || !testName || !uhid) return;
+            if (!model || !date || !uhid) return;
             const [res, patient] = await Promise.all([
-                fetchLabReportDetails({ model, testName, uhid }),
+                fetchLabReportDetails({
+                    model,
+                    date,
+                    uhid,
+                }),
                 fetchIggmcPatientDetails(uhid)
             ]);
             if (res) {
@@ -50,7 +54,7 @@ export default function LabOperatorAllReportView() {
             }
         };
         loadReport();
-    }, [model, testName, uhid, fetchLabReportDetails, fetchIggmcPatientDetails]);
+    }, [model, uhid, date, fetchLabReportDetails, fetchIggmcPatientDetails]);
 
     const getReportStatusBadge = (status) => {
         const statusClasses = {
@@ -180,11 +184,12 @@ export default function LabOperatorAllReportView() {
     const observations = report?.observations || [];
     const images = report?.images || [];
     const reportStatus = report?.status || "pending";
+    const reportTestName = report?.testName || "";
 
     const handleSendForApproval = async () => {
         const result = await sendReportForApproval({
             model: reportData?.model || model,
-            testName,
+            testName: reportTestName,
             uhid: report?.UHID || uhid,
         });
 
@@ -215,7 +220,11 @@ export default function LabOperatorAllReportView() {
                     label="Refresh"
                     icon="pi pi-refresh"
                     variant="secondary"
-                    onClick={() => fetchLabReportDetails({ model, testName, uhid })}
+                    onClick={() => fetchLabReportDetails({
+                        model,
+                        date,
+                        uhid,
+                    })}
                     disabled={labReportDetailsLoading}
                 />
                 {reportStatus === "pending" && (
@@ -223,7 +232,7 @@ export default function LabOperatorAllReportView() {
                         label="Send for Approval"
                         icon="pi pi-send"
                         onClick={handleSendForApproval}
-                        disabled={labReportDetailsLoading || !model || !testName || !uhid}
+                        disabled={labReportDetailsLoading || !model || !reportTestName || reportTestName === "Multiple Tests" || !uhid}
                     />
                 )}
             </PagePath>
@@ -254,7 +263,7 @@ export default function LabOperatorAllReportView() {
                                 <div>
                                     <h3 className="text-xl font-bold flex items-center gap-2">
                                         <i className="pi pi-file-o text-xl"></i>
-                                        {report.testName || testName || "Report"}
+                                        {report.testName || "Report"}
                                     </h3>
                                     <p className="text-sm text-blue-100 mt-1">
                                         Patient: {report.patientName || "N/A"} | Age: {report.age ?? "N/A"} | Gender: {report.gender || "N/A"} | UHID: {report.UHID || "-"} | Date:{" "}

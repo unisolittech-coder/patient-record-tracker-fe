@@ -29,7 +29,8 @@ export default function LabOperatorAllReports() {
             testName: data.testName || "-",
             // reportType: report.reportType || "-",
             model: report.model || "-",
-            date: data.date ? new Date(data.date).toLocaleDateString() : "-",
+            date: data.date || "",
+            displayDate: data.date ? new Date(data.date).toLocaleDateString() : "-",
             status: data.status || "pending",
             // images: data.images || [],
             rejectedReason: data.rejectedReason || "",
@@ -70,8 +71,8 @@ export default function LabOperatorAllReports() {
     const actionBodyTemplate = (rowData) => {
         const queryParams = new URLSearchParams({
             model: rowData.model || "",
-            testName: rowData.testName || "",
             uhid: rowData.uhid || "",
+            date: rowData.date || "",
         }).toString();
 
         return (
@@ -125,7 +126,7 @@ export default function LabOperatorAllReports() {
             minWidth: "120px",
         },
         {
-            field: "date",
+            field: "displayDate",
             header: "Date",
             sortable: true,
             minWidth: "130px",
