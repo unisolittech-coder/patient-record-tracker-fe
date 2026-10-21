@@ -15,6 +15,7 @@ export default function LabOperatorReports() {
         submitLabReports,
         resetForm,
         fetchLabPatientSearch,
+        fetchPatientsWithTestNames,
         labPatientSearch,
     } = useLabOperatorManagment();
     const { fetchLabOperatorDepartments } = useDropdowns();
@@ -22,6 +23,7 @@ export default function LabOperatorReports() {
     const formRef = useRef(null);
     const [uniqueId, setUniqueId] = useState(() => searchParams.get("uhid") || "");
     const [tests, setTests] = useState([{ testName: "", department: "", report: null }]);
+    const [patientTestNames, setPatientTestNames] = useState([]);
     const [fileNames, setFileNames] = useState([""]);
     const [searched, setSearched] = useState(false);
     const [departments, setDepartments] = useState([]);
@@ -41,8 +43,20 @@ export default function LabOperatorReports() {
         }
 
         setSearched(false);
+        setPatientTestNames([]);
         const success = await fetchLabPatientSearch(uniqueId);
-        setSearched(success);
+        if (!success) return;
+
+        const patientsWithTestNames = await fetchPatientsWithTestNames({
+            page: 1,
+            limit: 100,
+            search: uniqueId.trim(),
+        });
+        const selectedPatient = Array.isArray(patientsWithTestNames)
+            ? patientsWithTestNames.find(patient => patient.uhid === uniqueId.trim())
+            : null;
+        setPatientTestNames(selectedPatient?.testNames || []);
+        setSearched(true);
     };
 
     const handleTestNameChange = (index, value) => {
@@ -83,6 +97,7 @@ export default function LabOperatorReports() {
 
     const clearForm = () => {
         setUniqueId("");
+        setPatientTestNames([]);
         setTests([{ testName: "", department: "", report: null }]);
         setFileNames([""]);
         setSearched(false);
@@ -172,6 +187,7 @@ export default function LabOperatorReports() {
                 {searched && labPatientSearch && (
                     <LabOperatorTestsReports
                         tests={tests}
+                        testNames={patientTestNames}
                         fileNames={fileNames}
                         departments={departments}
                         loading={loading}

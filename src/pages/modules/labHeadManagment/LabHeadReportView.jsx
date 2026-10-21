@@ -178,6 +178,13 @@ const LabHeadReportView = () => {
         </span>
       );
     }
+    if (status === "cancelled") {
+      return (
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-200 text-gray-700">
+          Cancelled
+        </span>
+      );
+    }
     if (status === "for_approval") {
       return (
         <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
@@ -310,6 +317,14 @@ const LabHeadReportView = () => {
                   {renderObservationsTable(
                     report.data?.observations,
                     report.reportType
+                  )}
+                  {report.data?.cancellationRemark && (
+                    <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                      <p className="text-sm font-semibold text-amber-900">Cancellation remark</p>
+                      <p className="mt-1 whitespace-pre-wrap text-sm text-amber-800">
+                        {report.data.cancellationRemark}
+                      </p>
+                    </div>
                   )}
                 </div>
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">

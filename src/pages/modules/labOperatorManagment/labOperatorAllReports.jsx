@@ -4,86 +4,49 @@ import BreadCrumb from "../../../components/common/BreadCrumb";
 import PagePath from "../../../components/common/PagePath";
 import DataTable from "../../../components/common/DataTable";
 import Button from "../../../components/common/Button";
+import Pagination from "../../../components/common/Pagination";
 import useLabOperatorManagment from "../../../hooks/lab/labOperatorManagment/useLabOperatorManagment";
+import useDebounce from "../../../hooks/debounce/useDebounce";
 
 export default function LabOperatorAllReports() {
-    const { loading, labAllReports, fetchLabAllReports, labAllReportsError } = useLabOperatorManagment();
+    const {
+        labAllReportsLoading: loading,
+        labAllReports,
+        fetchLabAllReports,
+        labAllReportsError,
+    } = useLabOperatorManagment();
     const navigate = useNavigate();
     const [search, setSearch] = useState("");
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(10);
+    const debouncedSearch = useDebounce(search, 500);
 
     const breadcrumbPaths = [
         { label: "Lab Operator Management", url: "/doctor/lab-operator" },
-        { label: "All Reports" },
+        { label: "Patient Test Names" },
     ];
 
     useEffect(() => {
-        fetchLabAllReports();
-    }, [fetchLabAllReports]);
+        fetchLabAllReports({ page, limit, search: debouncedSearch });
+    }, [fetchLabAllReports, page, limit, debouncedSearch]);
 
-    const flatReports = (labAllReports || []).map((report, index) => {
-        const data = report.data || {};
-        return {
-            srNo: index + 1,
-            uhid: data.UHID || "N/A",
-            patientName:  data.patientName || "N/A",
-            testName: data.testName || "-",
-            // reportType: report.reportType || "-",
-            model: report.model || "-",
-            date: data.date || "",
-            displayDate: data.date ? new Date(data.date).toLocaleDateString() : "-",
-            status: data.status || "pending",
-            // images: data.images || [],
-            rejectedReason: data.rejectedReason || "",
-            report,
-        };
-    }) || [];
-
-    const filteredData = flatReports
-        .filter((item) => {
-            const q = search.toLowerCase();
-            return (
-                (item.uhid || "").toLowerCase().includes(q) ||
-                (item.patientName || "").toLowerCase().includes(q) ||
-                (item.testName || "").toLowerCase().includes(q) ||
-                (item.model || "").toLowerCase().includes(q) ||
-                (item.status || "").toLowerCase().includes(q)
-            );
-        })
+    const currentPatients = Array.isArray(labAllReports)
+        ? labAllReports
+        : labAllReports?.patients || [];
+    const tableData = currentPatients
         .map((item, index) => ({
             ...item,
-            srNo: index + 1,
+            srNo: (page - 1) * limit + index + 1,
         }));
 
-    const statusBodyTemplate = (rowData) => {
-        const status = rowData.status || "pending";
-        const statusClasses = {
-            pending: "bg-yellow-100 text-yellow-800",
-            approved: "bg-green-100 text-green-800",
-            rejected: "bg-red-100 text-red-800",
-        };
+    const testNamesBodyTemplate = (rowData) => {
         return (
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClasses[status] || "bg-gray-100 text-gray-800"}`}>
-                {status}
-            </span>
-        );
-    };
-
-    const actionBodyTemplate = (rowData) => {
-        const queryParams = new URLSearchParams({
-            model: rowData.model || "",
-            uhid: rowData.uhid || "",
-            date: rowData.date || "",
-        }).toString();
-
-        return (
-            <div className="flex items-center justify-center gap-2">
-                <button
-                    onClick={() => navigate(`/doctor/lab-operator/all-report/view?${queryParams}`)}
-                    className="h-6 w-8 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200 flex items-center justify-center"
-                    title="View Report"
-                >
-                    <i className="pi pi-eye text-xs" />
-                </button>
+            <div className="flex flex-wrap gap-2">
+                {rowData.testNames.map(testName => (
+                    <span key={testName} className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {testName}
+                    </span>
+                ))}
             </div>
         );
     };
@@ -108,49 +71,49 @@ export default function LabOperatorAllReports() {
             minWidth: "180px",
         },
         {
-            field: "testName",
-            header: "Test Name",
+            field: "gender",
+            header: "Gender",
             sortable: true,
-            minWidth: "140px",
-        },
-        // {
-        //     field: "reportType",
-        //     header: "Report Type",
-        //     sortable: true,
-        //     minWidth: "130px",
-        // },
-        {
-            field: "model",
-            header: "Model",
-            sortable: true,
-            minWidth: "120px",
+            minWidth: "100px",
         },
         {
-            field: "displayDate",
-            header: "Date",
+            field: "age",
+            header: "Age",
             sortable: true,
+            minWidth: "80px",
+        },
+        {
+            field: "date",
+            header: "Test Date",
+            sortable: true,
+            body: rowData => rowData.date
+                ? new Date(`${rowData.date}T00:00:00`).toLocaleDateString()
+                : "-",
             minWidth: "130px",
         },
         {
-            field: "status",
-            header: "Status",
+            field: "testNames",
+            header: "Test Names",
             sortable: true,
-            body: statusBodyTemplate,
-            minWidth: "110px",
+            body: testNamesBodyTemplate,
+            minWidth: "260px",
         },
-        // {
-        //     field: "images",
-        //     header: "Image",
-        //     sortable: false,
-        //     body: imagesBodyTemplate,
-        //     minWidth: "100px",
-        // },
         {
-            field: "action",
-            header: "Actions",
+            field: "actions",
+            header: "Reports",
             sortable: false,
-            body: actionBodyTemplate,
-            minWidth: "100px",
+            body: rowData => (
+                <button
+                    type="button"
+                    onClick={() => navigate(`/doctor/lab-operator/all-report/view?uhid=${encodeURIComponent(rowData.uhid)}&date=${encodeURIComponent(rowData.date || "")}`)}
+                    className="h-8 w-9 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors flex items-center justify-center"
+                    title="View patient reports"
+                    aria-label={`View reports for ${rowData.patientName}`}
+                >
+                    <i className="pi pi-eye" />
+                </button>
+            ),
+            minWidth: "90px",
         },
     ];
 
@@ -159,11 +122,14 @@ export default function LabOperatorAllReports() {
             <BreadCrumb paths={breadcrumbPaths} />
 
             <PagePath
-                title="Reports"
+                title="Patient Test Names"
                 showSearchBar={true}
                 searchValue={search}
-                searchPlaceholder="Search by UHID, patient name, test, model or status"
-                onSearch={setSearch}
+                searchPlaceholder="Search by UHID, patient name, date or test name"
+                onSearch={value => {
+                    setSearch(value);
+                    setPage(1);
+                }}
             >
                 <Button
                     label="Rejected Reports"
@@ -184,12 +150,24 @@ export default function LabOperatorAllReports() {
             )}
 
             <DataTable
-                data={filteredData}
+                data={tableData}
                 columns={columns}
                 loading={loading}
-                emptyMessage="No lab reports found."
+                emptyMessage="No patient test names found for available test dates."
             />
 
+            <Pagination
+                currentPage={labAllReports?.pagination?.page}
+                totalPages={labAllReports?.pagination?.totalPages}
+                totalItems={labAllReports?.pagination?.total}
+                itemsPerPage={labAllReports?.pagination?.limit}
+                showRowPerPage={true}
+                onPageChange={setPage}
+                onItemsPerPageChange={newLimit => {
+                    setLimit(newLimit);
+                    setPage(1);
+                }}
+            />
         </div>
     );
 }

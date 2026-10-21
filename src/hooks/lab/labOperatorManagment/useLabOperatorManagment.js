@@ -35,6 +35,21 @@ const useLabOperatorManagment = () => {
     const [labReportDetailsError, setLabReportDetailsError] = useRecoilState(labReportDetailsErrorAtom);
     const [labReportDetails, setLabReportDetails] = useRecoilState(labReportDetailsAtom);
 
+    const fetchPatientsWithTestNames = useCallback(async (params = {}) => {
+        try {
+            const res = await fetchData({
+                method: "GET",
+                url: `${conf.apiBaseUrl}lab-operators/patients-with-test-names`,
+                params,
+            });
+            return res?.patients || [];
+        } catch (error) {
+            console.error("Error fetching patients with test names:", error);
+            toast.error(error.response?.data?.message || "Failed to fetch patients with test names");
+            return false;
+        }
+    }, [fetchData]);
+
     const submitLabReports = useCallback(async (payload) => {
         setLoading(true);
         setError(null);
@@ -189,18 +204,19 @@ const fetchLabRejectedReports = useCallback(async (params = {}) => {
           }
       }, [fetchData, setLoading, setError, setLabRejectedReportUpdate]);
 
-      const fetchLabAllReports = useCallback(async () => {
+      const fetchLabAllReports = useCallback(async (params = {}) => {
           setLabAllReportsLoading(true);
           setLabAllReportsError(null);
 
           try {
               const res = await fetchData({
                   method: "GET",
-                  url: `${conf.apiBaseUrl}lab-operators/all-reports`,
+                  url: `${conf.apiBaseUrl}lab-operators/patients-with-test-names`,
+                  params,
               });
 
               if (res) {
-                  setLabAllReports(res.reports || []);
+                  setLabAllReports(res);
                   setLabAllReportsLoading(false);
                   return res;
               }
@@ -244,6 +260,21 @@ const fetchLabRejectedReports = useCallback(async (params = {}) => {
            }
        }, [fetchData, setLabReportDetailsLoading, setLabReportDetailsError, setLabReportDetails]);
 
+       const fetchLabReportsForPatient = useCallback(async (uhid, date) => {
+           try {
+               const res = await fetchData({
+                   method: "GET",
+                   url: `${conf.apiBaseUrl}lab-operators/all-reports`,
+                   params: { date, uhid },
+               });
+               return res?.reports || [];
+           } catch (error) {
+               console.error("Error fetching patient lab reports:", error);
+               toast.error(error.response?.data?.message || "Failed to fetch patient lab reports");
+               return false;
+           }
+       }, [fetchData]);
+
       const sendReportForApproval = useCallback(async (payload) => {
           setLabReportDetailsLoading(true);
           setLabReportDetailsError(null);
@@ -270,6 +301,47 @@ const fetchLabRejectedReports = useCallback(async (params = {}) => {
           }
       }, [fetchData, setLabReportDetailsLoading, setLabReportDetailsError]);
 
+      const sendReportsForApproval = useCallback(async (reports) => {
+          try {
+              const res = await fetchData({
+                  method: "PUT",
+                  url: `${conf.apiBaseUrl}lab-operators/send-all-for-approval`,
+                  data: { reports },
+              });
+              if (!res) return false;
+
+              if (res.failed?.length) {
+                  toast.error(`${res.sent?.length || 0} reports sent; ${res.failed.length} could not be sent.`);
+              } else {
+                  toast.success(res.message || "All reports sent for approval");
+              }
+              return res;
+          } catch (error) {
+              console.error("Error sending reports for approval:", error);
+              toast.error(error.response?.data?.message || "Failed to send reports for approval");
+              return false;
+          }
+      }, [fetchData]);
+
+      const cancelLabOperatorReport = useCallback(async (payload) => {
+          try {
+              const res = await fetchData({
+                  method: "PUT",
+                  url: `${conf.apiBaseUrl}lab-operators/cancel-report`,
+                  data: payload,
+              });
+              if (res) {
+                  toast.success(res.message || "Report cancelled");
+                  return res;
+              }
+              return false;
+          } catch (error) {
+              console.error("Error cancelling report:", error);
+              toast.error(error.response?.data?.message || "Failed to cancel report");
+              return false;
+          }
+      }, [fetchData]);
+
        const fetchIggmcPatientDetails = useCallback(async (uhid) => {
            try {
                const res = await fetchData({
@@ -291,6 +363,7 @@ const fetchLabRejectedReports = useCallback(async (params = {}) => {
          submitLabReports,
          resetForm,
          fetchLabPatientSearch,
+         fetchPatientsWithTestNames,
          labPatientSearch,
          labRejectedReports,
          fetchLabRejectedReports,
@@ -304,7 +377,10 @@ const fetchLabRejectedReports = useCallback(async (params = {}) => {
           labAllReportsError,
           labReportDetails,
           fetchLabReportDetails,
+          fetchLabReportsForPatient,
           sendReportForApproval,
+          sendReportsForApproval,
+          cancelLabOperatorReport,
           fetchIggmcPatientDetails,
           labReportDetailsLoading,
           labReportDetailsError

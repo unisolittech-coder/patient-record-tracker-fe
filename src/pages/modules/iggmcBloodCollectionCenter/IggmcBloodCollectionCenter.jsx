@@ -41,7 +41,7 @@ export default function IggmcBloodCollectionCenter() {
         mobileNumber: success.mobileNumber || '',
         patientName: success.patientName || '',
         gender: success.gender || '',
-        age: success.age ?? '',
+        age: success.age === 0 ? '' : success.age ?? '',
         abhaNumber: success.abhaNumber,
         testNames: []
       });
@@ -249,12 +249,18 @@ export default function IggmcBloodCollectionCenter() {
                 name="age"
                 label="Age"
                 required
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 min={0}
                 max={150}
-                step={1}
                 value={formik.values.age}
-                onChange={formik.handleChange}
+                onChange={event => {
+                  const age = event.target.value;
+                  if (/^\d*$/.test(age)) {
+                    formik.setFieldValue('age', age);
+                  }
+                }}
                 onBlur={formik.handleBlur}
                 placeholder="Enter age in years"
                 error={formik.touched.age && formik.errors.age}
