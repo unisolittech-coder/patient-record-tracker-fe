@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { createRoot } from "react-dom/client";
 import BreadCrumb from "../../../components/common/BreadCrumb";
 import PagePath from "../../../components/common/PagePath";
@@ -12,9 +12,23 @@ import ImageModal from "../../../components/common/ImageModal";
 
 const LabHeadReportView = () => {
   const { uniqueId } = useParams();
-  const { fetchLabHeadReport, updateLabHeadStatus, loading } =
+  const [searchParams] = useSearchParams();
+  const selectedDate = searchParams.get("date") || "";
+  const {
+    fetchLabHeadReport,
+    fetchPatientTests,
+    updatePatientTestStatus,
+    updateLabHeadStatus,
+    loading,
+  } =
     useLabHeadManagment();
   const [reportData, setReportData] = useState(null);
+  const [patientTestsState, setPatientTestsState] = useState({
+    uhid: uniqueId,
+    loading: true,
+    groups: [],
+  });
+  const [updatingTestKeys, setUpdatingTestKeys] = useState({});
   const [reportApprovalStatus, setReportApprovalStatus] = useState({});
   const [showPrintForm, setShowPrintForm] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
@@ -37,6 +51,66 @@ const LabHeadReportView = () => {
       loadReport();
     }
   }, [uniqueId, fetchLabHeadReport]);
+
+  useEffect(() => {
+    let isActive = true;
+    fetchPatientTests(uniqueId).then(result => {
+      if (isActive) {
+        setPatientTestsState({
+          uhid: uniqueId,
+          loading: false,
+          groups: result?.tests || [],
+        });
+      }
+    });
+
+    return () => {
+      isActive = false;
+    };
+  }, [uniqueId, fetchPatientTests]);
+
+  const patientTestsLoading = patientTestsState.uhid !== uniqueId || patientTestsState.loading;
+  const patientTestGroups = patientTestsState.uhid === uniqueId ? patientTestsState.groups : [];
+  const viewedReportDates = new Set(selectedDate
+    ? [selectedDate]
+    : (reportData?.reports || [])
+        .map(report => report.data?.date)
+        .filter(Boolean)
+  );
+  const viewedReportDateLabels = [...viewedReportDates]
+    .sort((first, second) => first.localeCompare(second))
+    .map(date => new Date(`${date}T00:00:00`).toLocaleDateString());
+  const visiblePatientTestGroups = patientTestGroups.filter(group =>
+    viewedReportDates.has(group.date)
+  );
+
+  const handleReceivedTestChange = async (date, test, isReceived) => {
+    const key = `${date}:${test.testName}`;
+    setUpdatingTestKeys(current => ({ ...current, [key]: true }));
+
+    const result = await updatePatientTestStatus(uniqueId, date, {
+      testName: test.testName,
+      status: isReceived ? "test_done" : "pending",
+    });
+
+    if (result) {
+      setPatientTestsState(current => ({
+        ...current,
+        groups: current.groups.map(group => group.date !== date
+          ? group
+          : {
+              ...group,
+              testNames: group.testNames.map(item => item.testName !== test.testName
+                ? item
+                : { ...item, status: isReceived ? "test_done" : "pending" }
+              ),
+            }
+        ),
+      }));
+    }
+
+    setUpdatingTestKeys(current => ({ ...current, [key]: false }));
+  };
 
   console.log(sessionStorage.getItem("signedInUser"));
 
@@ -279,6 +353,52 @@ const LabHeadReportView = () => {
       <BreadCrumb paths={breadcrumbPaths} />
 
       <PagePath title="Lab Report View" showSearchBar={false} />
+
+      <section className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="text-lg font-semibold text-gray-900">Tick which tests are received</h2>
+        {viewedReportDateLabels.length > 0 && (
+          <p className="mt-1 text-sm text-gray-600">
+            Visiting date{viewedReportDateLabels.length > 1 ? "s" : ""}: {viewedReportDateLabels.join(", ")}
+          </p>
+        )}
+        {patientTestsLoading ? (
+          <p className="mt-3 text-sm text-gray-500">Loading registered tests...</p>
+        ) : visiblePatientTestGroups.length === 0 ? (
+          <p className="mt-3 text-sm text-gray-500">No registered tests found for this MRID.</p>
+        ) : (
+          <div className="mt-4 space-y-5">
+            {visiblePatientTestGroups.map(group => (
+              <div key={group.date} className="border-t border-gray-100 pt-4 first:border-0 first:pt-0">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">
+                  {group.date ? new Date(`${group.date}T00:00:00`).toLocaleDateString() : "Undated"}
+                </h3>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {group.testNames.map(test => {
+                    const key = `${group.date}:${test.testName}`;
+                    const isReceived = test.status === "test_done";
+
+                    return (
+                      <label key={key} className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 p-3 hover:bg-gray-50">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 accent-blue-600"
+                          checked={isReceived}
+                          disabled={patientTestsLoading || Boolean(updatingTestKeys[key])}
+                          onChange={event => handleReceivedTestChange(group.date, test, event.target.checked)}
+                        />
+                        <span className="min-w-0 flex-1 text-sm font-medium text-gray-800">{test.testName}</span>
+                        <span className={`rounded-full px-2 py-1 text-xs font-medium ${isReceived ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}>
+                          {isReceived ? "Received" : "Pending"}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
       {loading ? (
         <div className="flex items-center justify-center py-12">

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { useRecoilState } from "recoil";
 import conf from "../../../config/index";
 import useFetch from "../../useFetch";
@@ -165,6 +165,33 @@ const useLabHeadManagment = () => {
         }
     }, [fetchData, setLoading, setError]);
 
+    const fetchPatientTests = useCallback(async (uniqueId) => {
+        try {
+            return await fetchData({
+                method: "GET",
+                url: `${conf.apiBaseUrl}lab-head/patient-tests/${encodeURIComponent(uniqueId)}`,
+            });
+        } catch (error) {
+            console.error("Error fetching patient tests:", error);
+            toast.error(error.response?.data?.message || "Failed to fetch patient tests");
+            return false;
+        }
+    }, [fetchData]);
+
+    const updatePatientTestStatus = useCallback(async (uniqueId, date, data) => {
+        try {
+            return await fetchData({
+                method: "PUT",
+                url: `${conf.apiBaseUrl}lab-head/patient-tests/${encodeURIComponent(uniqueId)}/${encodeURIComponent(date)}`,
+                data,
+            });
+        } catch (error) {
+            console.error("Error updating patient test status:", error);
+            toast.error(error.response?.data?.message || "Failed to update test status");
+            return false;
+        }
+    }, [fetchData]);
+
     const updateLabHeadStatus = useCallback(async (uniqueId,ReportDate,data) => {
         setLoading(true);
         setError(null);
@@ -203,6 +230,8 @@ const useLabHeadManagment = () => {
         fetchLabHeads,
         fetchLabHeadDetails,
         fetchLabHeadReport,
+        fetchPatientTests,
+        updatePatientTestStatus,
         addLabHead,
         updateLabHead,
         deleteLabHead,

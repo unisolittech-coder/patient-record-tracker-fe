@@ -45,7 +45,9 @@ export default function LabHeadManagment() {
     return (
       <ActionButtons
         rowData={rowData}
-        onView={(data) => navigate(`/doctor/lab-head/view/${data.uhid}`)}
+        onView={(data) => navigate(
+          `/doctor/lab-head/view/${data.uhid}?date=${encodeURIComponent(data.date)}`
+        )}
       />
     );
   };
