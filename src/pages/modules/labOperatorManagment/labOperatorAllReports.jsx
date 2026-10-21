@@ -60,7 +60,7 @@ export default function LabOperatorAllReports() {
         },
         {
             field: "uhid",
-            header: "UHID",
+            header: "MRID",
             sortable: true,
             minWidth: "120px",
         },
@@ -125,7 +125,7 @@ export default function LabOperatorAllReports() {
                 title="Patient Test Names"
                 showSearchBar={true}
                 searchValue={search}
-                searchPlaceholder="Search by UHID, patient name, date or test name"
+                searchPlaceholder="Search by MRID, patient name, date or test name"
                 onSearch={value => {
                     setSearch(value);
                     setPage(1);

@@ -291,7 +291,7 @@ export default function LabOperatorRejectedReportView() {
                                                 {report.reportType || `Report ${index + 1}`}
                                             </h3>
                                             <p className="text-sm text-red-100 mt-1">
-                                                Patient: {patientName} | UHID: {data.UHID || "-"} | Date:{" "}
+                                                Patient: {patientName} | MRID: {data.UHID || "-"} | Date:{" "}
                                                 {data.date ? new Date(data.date).toLocaleDateString() : "-"}
                                             </p>
                                         </div>
@@ -316,7 +316,7 @@ export default function LabOperatorRejectedReportView() {
                                         </div>
                                         <div className="bg-gray-50 rounded-xl p-4">
                                             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                                                UHID
+                                                MRID
                                             </p>
                                             <p className="text-sm font-medium text-gray-800">
                                                 {data.UHID || "N/A"}

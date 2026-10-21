@@ -172,7 +172,7 @@ const PatientDataView = () => {
                             <p className="text-lg font-medium text-gray-800">{patientDetails.aadhaarNumber || 'N/A'}</p>
                         </div>
                         <div className="bg-gray-50 p-4 rounded-lg">
-                            <label className="text-xs text-gray-500 uppercase font-semibold">UHID</label>
+                            <label className="text-xs text-gray-500 uppercase font-semibold">MRID</label>
                             <p className="text-lg font-medium text-gray-800">{patientDetails.uhid || 'N/A'}</p>
                         </div>
                         {patientDetails.dateOfBirth && (

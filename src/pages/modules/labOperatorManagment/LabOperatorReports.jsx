@@ -38,7 +38,7 @@ export default function LabOperatorReports() {
 
     const handleSearch = async () => {
         if (!uniqueId.trim()) {
-            toast.error("Please enter a Unique ID");
+            toast.error("Please enter an MRID");
             return;
         }
 
@@ -109,7 +109,7 @@ export default function LabOperatorReports() {
         event.preventDefault();
 
         if (!uniqueId.trim()) {
-            toast.error("Unique ID is required");
+            toast.error("MRID is required");
             return;
         }
 
@@ -147,7 +147,7 @@ export default function LabOperatorReports() {
                                 <TextInput
                                     id="uniqueId"
                                     name="uniqueId"
-                                    label="Unique ID"
+                                    label="MRID"
                                     required
                                     value={uniqueId}
                                     onChange={event => {
@@ -160,7 +160,7 @@ export default function LabOperatorReports() {
                                             handleSearch();
                                         }
                                     }}
-                                    placeholder="Enter patient unique ID"
+                                    placeholder="Enter patient MRID"
                                     disabled={loading}
                                 />
                             </div>

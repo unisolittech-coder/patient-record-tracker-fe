@@ -194,7 +194,7 @@ export default function LabHeadReportPrintForm({ report, images }) {
                 <div className={styles.idBar}>
                   <div className={styles.idItem}>
                     <span className={styles.idLabel}>
-                      Patient ID / रुग्ण ओळख क्रमांक
+                      MRID / रुग्ण ओळख क्रमांक
                     </span>
                     <span className={styles.idValue}>{data.UHID || "—"}</span>
                   </div>

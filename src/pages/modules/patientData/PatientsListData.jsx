@@ -146,7 +146,7 @@ export default function PatientsListData() {
     },
     {
       field: 'uhid',
-      header: 'Patient ID',
+      header: 'MRID',
       sortable: true,
       body: patientIdBodyTemplate,
       minWidth: '100px'

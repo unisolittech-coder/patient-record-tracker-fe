@@ -540,7 +540,7 @@ export default function LabOperatorRejectedReports() {
         },
         {
             field: "uhid",
-            header: "UHID",
+            header: "MRID",
             sortable: true,
             minWidth: "120px",
         },
@@ -606,7 +606,7 @@ export default function LabOperatorRejectedReports() {
                 title="Rejected Reports"
                 showSearchBar={true}
                 searchValue={search}
-                searchPlaceholder="Search by UHID, patient name, test or parameter"
+                searchPlaceholder="Search by MRID, patient name, test or parameter"
                 onSearch={setSearch}
             >
                 <Button

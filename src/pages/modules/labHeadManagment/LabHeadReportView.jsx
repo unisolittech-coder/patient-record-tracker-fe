@@ -301,7 +301,7 @@ const LabHeadReportView = () => {
                       <p className="text-sm text-blue-100 mt-1">
                         Patient: {report.data?.patientName} | Age:{" "}
                         {report.data?.age ?? "N/A"} | Gender:{" "}
-                        {report.data?.gender || "N/A"} | ID:{" "}
+                        {report.data?.gender || "N/A"} | MRID:{" "}
                         {report.data?.UHID} | Date:{" "}
                         {report.data?.date
                           ? new Date(report.data.date).toLocaleDateString()
@@ -370,7 +370,7 @@ const LabHeadReportView = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
           <i className="pi pi-inbox text-5xl text-slate-300 mb-3 block" />
           <p className="text-slate-500 font-medium">
-            No reports found for this unique ID.
+            No reports found for this MRID.
           </p>
         </div>
       )}

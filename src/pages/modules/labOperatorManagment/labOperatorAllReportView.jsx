@@ -261,7 +261,7 @@ export default function LabOperatorAllReportView() {
             <div className="my-4 rounded-xl border border-slate-200 bg-white p-4">
                 <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-4">
                     <p><span className="font-semibold text-gray-500">Patient:</span> {patient?.patientName || reports[0]?.data?.patientName || "N/A"}</p>
-                    <p><span className="font-semibold text-gray-500">UHID:</span> {uhid || "N/A"}</p>
+                    <p><span className="font-semibold text-gray-500">MRID:</span> {uhid || "N/A"}</p>
                     <p><span className="font-semibold text-gray-500">Age:</span> {patient?.age ?? reports[0]?.data?.age ?? "N/A"}</p>
                     <p><span className="font-semibold text-gray-500">Gender:</span> {patient?.gender || reports[0]?.data?.gender || "N/A"}</p>
                 </div>

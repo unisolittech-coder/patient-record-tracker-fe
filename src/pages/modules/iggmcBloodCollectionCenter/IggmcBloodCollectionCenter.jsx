@@ -29,7 +29,7 @@ export default function IggmcBloodCollectionCenter() {
 
   const handleSearch = async () => {
     if (!uniqueId.trim()) {
-      toast.error("Please enter a UHID");
+      toast.error("Please enter an MRID");
       return;
     }
     setSearched(false);
@@ -67,7 +67,7 @@ export default function IggmcBloodCollectionCenter() {
   ];
 
   const validationSchema = Yup.object({
-    uhid: Yup.string().required('UHID is required'),
+    uhid: Yup.string().required('MRID is required'),
     mobileNumber: Yup.string()
       .required('Mobile Number is required')
       .matches(/^\d{10}$/, 'Mobile number must be exactly 10 digits'),
@@ -136,7 +136,7 @@ export default function IggmcBloodCollectionCenter() {
               <TextInput
                 id="uniqueId"
                 name="uniqueId"
-                label="UHID"
+                label="MRID"
                 required
                 value={uniqueId}
                 onChange={(e) => {
@@ -150,7 +150,7 @@ export default function IggmcBloodCollectionCenter() {
                     handleSearch();
                   }
                 }}
-                placeholder="Enter patient UHID"
+                placeholder="Enter patient MRID"
                 disabled={loading}
               />
             </div>
@@ -203,12 +203,12 @@ export default function IggmcBloodCollectionCenter() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <TextInput
                 name="uhid"
-                label="UHID"
+                label="MRID"
                 required
                 value={formik.values.uhid}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                placeholder="Enter UHID"
+                placeholder="Enter MRID"
                 error={formik.touched.uhid && formik.errors.uhid}
                 disabled={isPatientFound}
               />

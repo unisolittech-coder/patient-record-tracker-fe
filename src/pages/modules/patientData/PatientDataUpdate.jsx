@@ -478,7 +478,7 @@ export default function PatientDataUpdate() {
                                     <p className="text-sm font-medium text-gray-800">{item.opdIpdNumber || 'N/A'}</p>
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-500 uppercase font-semibold">UHID</label>
+                                    <label className="text-xs text-gray-500 uppercase font-semibold">MRID</label>
                                     <p className="text-sm font-medium text-gray-800">{item.uhid || 'N/A'}</p>
                                 </div>
                                 <div>
@@ -661,8 +661,8 @@ export default function PatientDataUpdate() {
                             <div>
                                 <TextInput
                                     name="uhid"
-                                    label="UHID"
-                                    placeholder="Enter UHID"
+                                    label="MRID"
+                                    placeholder="Enter MRID"
                                     value={formik.values.uhid}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}

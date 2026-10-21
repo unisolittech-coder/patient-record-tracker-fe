@@ -69,7 +69,7 @@ export default function LabHeadManagment() {
     },
     {
       field: "uhid",
-      header: "Unique ID",
+      header: "MRID",
       sortable: true,
       minWidth: "120px",
     },
