@@ -12,7 +12,6 @@ export default function LabOperatorTestsReports({
     onTestNameChange,
     onDepartmentChange,
     onReportChange,
-    onReset,
 }) {
     return (
         <>
@@ -100,24 +99,6 @@ export default function LabOperatorTestsReports({
                 </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3">
-                <Button
-                    type="button"
-                    label="Reset"
-                    icon="pi pi-refresh"
-                    variant="secondary"
-                    onClick={onReset}
-                    disabled={loading}
-                />
-                <Button
-                    type="submit"
-                    label="Submit Reports"
-                    icon="pi pi-send"
-                    variant="primary"
-                    loading={loading}
-                    disabled={loading}
-                />
-            </div>
         </>
     );
 }

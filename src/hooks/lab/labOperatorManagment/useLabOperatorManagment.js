@@ -64,7 +64,7 @@ const useLabOperatorManagment = () => {
         }
     }, [fetchData]);
 
-    const submitLabReports = useCallback(async (payload) => {
+    const submitLabReports = useCallback(async (payload, { showSuccessToast = true } = {}) => {
         setLoading(true);
         setError(null);
 
@@ -77,7 +77,9 @@ const useLabOperatorManagment = () => {
 
             if (res) {
                 setLoading(false);
-                toast.success(res.message || "Lab reports submitted successfully");
+                if (showSuccessToast) {
+                    toast.success(res.message || "Lab reports submitted successfully");
+                }
                 return res;
             }
         } catch (error) {
@@ -107,7 +109,7 @@ const useLabOperatorManagment = () => {
             if (res) {
                 setLabPatientSearch(res.patient);
                 setLoading(false);
-                return Boolean(res.patient);
+                return res.patient || null;
             }
             setLoading(false);
             setLabPatientSearch(null);
