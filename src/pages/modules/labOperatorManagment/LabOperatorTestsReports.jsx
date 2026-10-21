@@ -1,5 +1,5 @@
 import Button from "../../../components/common/Button";
-import { TextInput, SelectInput } from "../../../components/common/FormFields";
+import { SelectInput } from "../../../components/common/FormFields";
 
 export default function LabOperatorTestsReports({
     tests,
@@ -34,33 +34,21 @@ export default function LabOperatorTestsReports({
                         <div key={index} className="border border-gray-200 rounded-xl p-4 relative">
                             <div className="flex items-start gap-4">
                                 <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {testNames.length > 0 ? (
-                                        <SelectInput
-                                            id={`testName-${index}`}
-                                            label="Test Name"
-                                            required
-                                            options={testNames.map(testName => ({
-                                                value: testName,
-                                                label: testName,
-                                            }))}
-                                            value={test.testName
-                                                ? { value: test.testName, label: test.testName }
-                                                : null}
-                                            onChange={value => onTestNameChange(index, value?.value || "")}
-                                            placeholder="Select test name"
-                                            isDisabled={loading}
-                                        />
-                                    ) : (
-                                        <TextInput
-                                            id={`testName-${index}`}
-                                            label="Test Name"
-                                            required
-                                            value={test.testName}
-                                            onChange={event => onTestNameChange(index, event.target.value)}
-                                            placeholder="Enter test name"
-                                            disabled={loading}
-                                        />
-                                    )}
+                                    <SelectInput
+                                        id={`testName-${index}`}
+                                        label="Test Name"
+                                        required
+                                        options={testNames.map(testName => ({
+                                            value: testName,
+                                            label: testName,
+                                        }))}
+                                        value={test.testName
+                                            ? { value: test.testName, label: test.testName }
+                                            : null}
+                                        onChange={value => onTestNameChange(index, value?.value || "")}
+                                        placeholder="Select test name"
+                                        isDisabled={loading}
+                                    />
                                     <SelectInput
                                         id={`department-${index}`}
                                         label="Department"

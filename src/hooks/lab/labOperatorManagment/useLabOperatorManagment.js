@@ -50,6 +50,20 @@ const useLabOperatorManagment = () => {
         }
     }, [fetchData]);
 
+    const fetchLabOperatorTestNames = useCallback(async () => {
+        try {
+            const res = await fetchData({
+                method: "GET",
+                url: `${conf.apiBaseUrl}lab-operators/test-names`,
+            });
+            return Array.isArray(res?.testNames) ? res.testNames : [];
+        } catch (error) {
+            console.error("Error fetching lab operator test names:", error);
+            toast.error(error.response?.data?.message || "Failed to fetch test names");
+            return [];
+        }
+    }, [fetchData]);
+
     const submitLabReports = useCallback(async (payload) => {
         setLoading(true);
         setError(null);
@@ -364,6 +378,7 @@ const fetchLabRejectedReports = useCallback(async (params = {}) => {
          resetForm,
          fetchLabPatientSearch,
          fetchPatientsWithTestNames,
+         fetchLabOperatorTestNames,
          labPatientSearch,
          labRejectedReports,
          fetchLabRejectedReports,

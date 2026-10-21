@@ -16,6 +16,7 @@ export default function LabOperatorReports() {
         resetForm,
         fetchLabPatientSearch,
         fetchPatientsWithTestNames,
+        fetchLabOperatorTestNames,
         labPatientSearch,
     } = useLabOperatorManagment();
     const { fetchLabOperatorDepartments } = useDropdowns();
@@ -24,6 +25,7 @@ export default function LabOperatorReports() {
     const [uniqueId, setUniqueId] = useState(() => searchParams.get("uhid") || "");
     const [tests, setTests] = useState([{ testName: "", department: "", report: null }]);
     const [patientTestNames, setPatientTestNames] = useState([]);
+    const [availableTestNames, setAvailableTestNames] = useState([]);
     const [fileNames, setFileNames] = useState([""]);
     const [searched, setSearched] = useState(false);
     const [departments, setDepartments] = useState([]);
@@ -35,6 +37,10 @@ export default function LabOperatorReports() {
         };
         loadDepartments();
     }, [fetchLabOperatorDepartments]);
+
+    useEffect(() => {
+        fetchLabOperatorTestNames().then(setAvailableTestNames);
+    }, [fetchLabOperatorTestNames]);
 
     const handleSearch = async () => {
         if (!uniqueId.trim()) {
@@ -79,6 +85,8 @@ export default function LabOperatorReports() {
             fileIndex === index ? file?.name || "" : name
         ));
     };
+
+    const testNameOptions = [...new Set([...availableTestNames, ...patientTestNames])];
 
     const addTest = () => {
         setTests(current => [...current, { testName: "", department: "", report: null }]);
@@ -187,7 +195,7 @@ export default function LabOperatorReports() {
                 {searched && labPatientSearch && (
                     <LabOperatorTestsReports
                         tests={tests}
-                        testNames={patientTestNames}
+                        testNames={testNameOptions}
                         fileNames={fileNames}
                         departments={departments}
                         loading={loading}
