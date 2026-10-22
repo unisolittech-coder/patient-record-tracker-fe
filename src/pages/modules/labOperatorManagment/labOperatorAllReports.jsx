@@ -32,21 +32,35 @@ export default function LabOperatorAllReports() {
 
     const currentPatients = Array.isArray(labAllReports)
         ? labAllReports
-        : labAllReports?.patients || [];
+        : Array.isArray(labAllReports?.patients)
+            ? labAllReports.patients
+            : Array.isArray(labAllReports?.data?.patients)
+                ? labAllReports.data.patients
+                : [];
     const tableData = currentPatients
+        .filter(item => item && typeof item === "object")
         .map((item, index) => ({
             ...item,
             srNo: (page - 1) * limit + index + 1,
         }));
 
     const testNamesBodyTemplate = (rowData) => {
+        const testNames = Array.isArray(rowData?.testNames) ? rowData.testNames : [];
+
         return (
             <div className="flex flex-wrap gap-2">
-                {rowData.testNames.map(testName => (
-                    <span key={testName} className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {testName}
-                    </span>
-                ))}
+                {testNames.map((test, index) => {
+                    const testName = typeof test === "string"
+                        ? test
+                        : String(test?.testName || "").trim();
+                    if (!testName) return null;
+
+                    return (
+                        <span key={`${testName}-${index}`} className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {testName}
+                        </span>
+                    );
+                })}
             </div>
         );
     };
@@ -94,7 +108,7 @@ export default function LabOperatorAllReports() {
         {
             field: "testNames",
             header: "Test Names",
-            sortable: true,
+            sortable: false,
             body: testNamesBodyTemplate,
             minWidth: "260px",
         },
