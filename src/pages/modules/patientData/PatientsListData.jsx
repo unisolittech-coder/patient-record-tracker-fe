@@ -1,5 +1,5 @@
 // src/pages/modules/patientData/PatientsListData.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BreadCrumb from '../../../components/common/BreadCrumb';
 import PagePath from '../../../components/common/PagePath';
@@ -8,7 +8,7 @@ import Pagination from '../../../components/common/Pagination';
 import usePatientMgmt from '../../../hooks/patientMgmt/usePatientMgmt';
 import useDebounce from '../../../hooks/debounce/useDebounce';
 
-const ActionButtons = ({ rowData, onView, onEdit }) => {
+const ActionButtons = ({ rowData, onView }) => {
   return (
     <div className="flex items-center gap-3">
       <button
@@ -16,13 +16,6 @@ const ActionButtons = ({ rowData, onView, onEdit }) => {
         className="h-6 w-10 rounded-xl bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200 flex items-center justify-center"
       >
         <i className="pi pi-eye" />
-      </button>
-
-      <button
-        onClick={() => onEdit(rowData)}
-        className="h-6 w-10 rounded-xl bg-green-100 text-green-600 hover:bg-green-600 hover:text-white transition-all duration-200 flex items-center justify-center"
-      >
-        <i className="pi pi-user-edit" />
       </button>
     </div>
   );
@@ -43,7 +36,7 @@ export default function PatientsListData() {
 
   useEffect(() => {
     fetchPatients(page, limit, debouncedSearch);
-  }, [page, limit, debouncedSearch]);
+  }, [fetchPatients, page, limit, debouncedSearch]);
 
   console.log("patientRes", patientRes);
 
@@ -52,25 +45,6 @@ export default function PatientsListData() {
   const handleItemsPerPageChange = (newLimit) => {
     setLimit(newLimit);
     setPage(1);
-  };
-
-  const genderBodyTemplate = (rowData) => {
-    const gender = rowData.gender || 'Male';
-    const config = {
-      Male: { icon: 'pi pi-mars', color: 'text-blue-500', bg: 'bg-blue-50' },
-      Female: { icon: 'pi pi-venus', color: 'text-pink-500', bg: 'bg-pink-50' },
-      Other: { icon: 'pi pi-user', color: 'text-purple-500', bg: 'bg-purple-50' }
-    };
-    const { icon, color, bg } = config[gender] || config.Male;
-
-    return (
-      <div className="flex items-center gap-2">
-        <div className={`w-8 h-6 rounded-full ${bg} flex items-center justify-center transition-colors duration-200`}>
-          <i className={`${icon} ${color} text-sm`} />
-        </div>
-        <span className="text-sm font-medium text-slate-700">{gender}</span>
-      </div>
-    );
   };
 
   // Enhanced Mobile Template
@@ -86,18 +60,6 @@ export default function PatientsListData() {
     );
   };
 
-  // Enhanced City Template
-  const cityBodyTemplate = (rowData) => {
-    return (
-      <div className="flex items-center gap-2.5">
-        <div className="w-8 h-6 rounded-full bg-cyan-50 flex items-center justify-center transition-colors duration-200">
-          <i className="pi pi-map-marker text-cyan-500 text-sm" />
-        </div>
-        <span className="text-sm font-medium text-slate-700">{rowData.city}</span>
-      </div>
-    );
-  };
-
   // Enhanced Patient ID Template
   const patientIdBodyTemplate = (rowData) => {
     return (
@@ -109,24 +71,10 @@ export default function PatientsListData() {
 
   // Enhanced Action Template
   const actionBodyTemplate = (rowData) => {
-    const handleView = (data) => {
-      navigate(`/patient-data/view/${data._id}`);
-    };
-    const handleEdit = (data) => {
-      navigate(`/patient-data/edit/${data._id}`);
-    };
-    const handleDelete = (data) => {
-      if (window.confirm(`Are you sure you want to delete ${data.patientName}?`)) {
-        console.log('Delete patient:', data);
-      }
-    };
-
     return (
       <ActionButtons
         rowData={rowData}
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onView={data => navigate(`/patient-data/view/${encodeURIComponent(data.uhid)}`)}
       />
     );
   };
@@ -170,20 +118,13 @@ export default function PatientsListData() {
       sortable: true,
       minWidth: '100px'
     },
-    // {
-    //   field: 'city',
-    //   header: 'City',
-    //   sortable: true,
-    //   body: cityBodyTemplate,
-    //   minWidth: '100px'
-    // },
-    // {
-    //   field: 'action',
-    //   header: 'Actions',
-    //   sortable: false,
-    //   body: actionBodyTemplate,
-    //   minWidth: '100px'
-    // }
+    {
+      field: 'action',
+      header: 'Actions',
+      sortable: false,
+      body: actionBodyTemplate,
+      minWidth: '90px'
+    },
   ];
 
   return (
@@ -194,7 +135,7 @@ export default function PatientsListData() {
         title="Patients List"
         showSearchBar={true}
         searchValue={search}
-        searchPlaceholder="Search by patient ID, ..."
+        searchPlaceholder="Search by MRID, patient name, mobile or ABHA number"
         onSearch={setSearch}
       />
 

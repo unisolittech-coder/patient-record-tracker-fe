@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useParams } from "react-router-dom";
@@ -12,9 +12,7 @@ import Loader from "../../../components/common/Loader";
 
 import {
     TextInput,
-    SelectInput,
     DateInput,
-    FileInput,
     TextAreaInput
 } from "../../../components/common/FormFields";
 
@@ -52,7 +50,7 @@ export default function PatientDataUpdate() {
                 resetPatientDetails();
             }
         };
-    }, [id]);
+    }, [fetchPatientDetails, id, resetPatientDetails]);
 
     const formik = useFormik({
         initialValues: {
@@ -319,7 +317,7 @@ export default function PatientDataUpdate() {
         if (!file) return null;
         try {
             return URL.createObjectURL(file);
-        } catch (error) {
+        } catch {
             return null;
         }
     };
@@ -371,7 +369,7 @@ export default function PatientDataUpdate() {
                 month: 'long',
                 day: 'numeric'
             });
-        } catch (error) {
+        } catch {
             return 'N/A';
         }
     };
@@ -588,7 +586,7 @@ export default function PatientDataUpdate() {
                                     <div className="flex flex-wrap gap-2 mt-1">
                                         {item.reports.map((report, idx) => {
                                             const reportEntries = Object.entries(report).filter(
-                                                ([key, value]) => value && typeof value === 'string' && value.startsWith('http')
+                                                ([, value]) => value && typeof value === 'string' && value.startsWith('http')
                                             );
                                             return reportEntries.map(([reportType, url]) => {
                                                 const labels = {

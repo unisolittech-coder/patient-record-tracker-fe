@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import usePatientMgmt from '../../../hooks/patientMgmt/usePatientMgmt';
 import { useParams } from 'react-router-dom';
 import BreadCrumb from '../../../components/common/BreadCrumb';
@@ -27,20 +27,7 @@ const PatientDataView = () => {
                 resetPatientDetails();
             }
         };
-    }, [id]);
-
-    // Format date
-    const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
+    }, [fetchPatientDetails, id, resetPatientDetails]);
 
     // Format date only (without time)
     const formatDateOnly = (dateString) => {
@@ -152,8 +139,8 @@ const PatientDataView = () => {
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="bg-gray-50 p-4 rounded-lg">
-                            <label className="text-xs text-gray-500 uppercase font-semibold">Patient ID</label>
-                            <p className="text-lg font-medium text-gray-800">{patientDetails.patientId || 'N/A'}</p>
+                            <label className="text-xs text-gray-500 uppercase font-semibold">{patientDetails.patientId ? 'Patient ID' : 'MRID'}</label>
+                            <p className="text-lg font-medium text-gray-800">{patientDetails.patientId || patientDetails.uhid || 'N/A'}</p>
                         </div>
                         <div className="bg-gray-50 p-4 rounded-lg">
                             <label className="text-xs text-gray-500 uppercase font-semibold">Patient Name</label>
@@ -439,7 +426,7 @@ const PatientDataView = () => {
                                                         {medical.reports.map((report, idx) => {
                                                             // Get all report entries with URLs
                                                             const reportEntries = Object.entries(report).filter(
-                                                                ([key, value]) => value && typeof value === 'string' && value.startsWith('http')
+                                                                ([, value]) => value && typeof value === 'string' && value.startsWith('http')
                                                             );
 
                                                             return reportEntries.map(([reportType, url]) => (
@@ -449,6 +436,42 @@ const PatientDataView = () => {
                                                                             <span className="text-2xl">{getFileIcon(url)}</span>
                                                                             <div>
                                                                                 <p className="text-sm font-medium text-gray-700">
+
+                                                                        {Array.isArray(patientDetails.tests) && patientDetails.tests.length > 0 && (
+                                                                            <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                                                                                <h2 className="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100">
+                                                                                    Registered Tests
+                                                                                </h2>
+                                                                                <div className="space-y-4">
+                                                                                    {patientDetails.tests.map((group, groupIndex) => (
+                                                                                        <div key={`${group.date || 'date'}-${groupIndex}`}>
+                                                                                            <h3 className="mb-2 text-sm font-semibold text-gray-700">
+                                                                                                {group.date
+                                                                                                    ? new Date(`${group.date}T00:00:00`).toLocaleDateString()
+                                                                                                    : 'Date not recorded'}
+                                                                                            </h3>
+                                                                                            <div className="flex flex-wrap gap-2">
+                                                                                                {(Array.isArray(group.testNames) ? group.testNames : []).map((test, testIndex) => {
+                                                                                                    const testName = typeof test === 'string' ? test : test?.testName;
+                                                                                                    if (!testName) return null;
+                                                                                                    const status = String(typeof test === 'string' ? 'pending' : test.status || 'pending').toLowerCase();
+                                                                                                    const isReceived = status === 'test_done';
+
+                                                                                                    return (
+                                                                                                        <div key={`${testName}-${testIndex}`} className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2">
+                                                                                                            <span className="text-sm font-medium text-gray-800">{testName}</span>
+                                                                                                            <span className={`rounded-full px-2 py-1 text-xs font-medium ${isReceived ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
+                                                                                                                {isReceived ? 'Received' : status.replaceAll('_', ' ')}
+                                                                                                            </span>
+                                                                                                        </div>
+                                                                                                    );
+                                                                                                })}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            </section>
+                                                                        )}
                                                                                     {getReportLabel(reportType)}
                                                                                 </p>
                                                                                 <p className="text-xs text-gray-500 truncate max-w-[150px]">

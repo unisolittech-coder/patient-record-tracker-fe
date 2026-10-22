@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useRecoilState } from "recoil";
 import conf from "../../config/index";
 import useFetch from "../useFetch";
@@ -58,7 +58,7 @@ const usePatientMgmt = () => {
         }
     };
 
-    const fetchPatients = async (page, limit, debouncedSearch) => {
+    const fetchPatients = useCallback(async (page, limit, debouncedSearch) => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
@@ -80,9 +80,9 @@ const usePatientMgmt = () => {
             toast.error(error.response?.data?.message);
             return false;
         }
-    };
+    }, [fetchData, setLoading, setPatientRes]);
 
-    const fetchPatientDetails = async (id) => {
+    const fetchPatientDetails = useCallback(async (id) => {
         setLoading(true);
         try {   
             const res = await fetchData({
@@ -100,11 +100,11 @@ const usePatientMgmt = () => {
             toast.error(error.response?.data?.message);
             return false;
         }
-    };
+    }, [fetchData, setLoading, setPatientDetails]);
 
-    const resetPatientDetails = () => {
+    const resetPatientDetails = useCallback(() => {
         setPatientDetails(null);
-    }
+    }, [setPatientDetails]);
 
     const updatePatient = async (id, data) => {
         setLoading(true);
