@@ -44,6 +44,10 @@ export default function LabOperatorAllReports() {
             srNo: (page - 1) * limit + index + 1,
         }));
 
+    const openPatientReports = rowData => {
+        navigate(`/doctor/lab-operator/all-report/view?uhid=${encodeURIComponent(rowData.uhid)}&date=${encodeURIComponent(rowData.date || "")}`);
+    };
+
     const testNamesBodyTemplate = (rowData) => {
         const testNames = Array.isArray(rowData?.testNames) ? rowData.testNames : [];
 
@@ -119,7 +123,10 @@ export default function LabOperatorAllReports() {
             body: rowData => (
                 <button
                     type="button"
-                    onClick={() => navigate(`/doctor/lab-operator/all-report/view?uhid=${encodeURIComponent(rowData.uhid)}&date=${encodeURIComponent(rowData.date || "")}`)}
+                    onClick={event => {
+                        event.stopPropagation();
+                        openPatientReports(rowData);
+                    }}
                     className="h-8 w-9 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors flex items-center justify-center"
                     title="View patient reports"
                     aria-label={`View reports for ${rowData.patientName}`}
@@ -168,6 +175,8 @@ export default function LabOperatorAllReports() {
                 columns={columns}
                 loading={loading}
                 emptyMessage="No patient test names found for available test dates."
+                onRowClick={event => openPatientReports(event.data)}
+                rowClassName={() => "cursor-pointer"}
             />
 
             <Pagination

@@ -5,6 +5,7 @@ import Button from "../../../components/common/Button";
 import ImageModal from "../../../components/common/ImageModal";
 import PagePath from "../../../components/common/PagePath";
 import useLabOperatorManagment from "../../../hooks/lab/labOperatorManagment/useLabOperatorManagment";
+import isResultOutOfRange from "../../../utils/isResultOutOfRange";
 
 export default function LabOperatorAllReportView() {
     const navigate = useNavigate();
@@ -187,12 +188,18 @@ export default function LabOperatorAllReportView() {
                                 {observations.map((observation, index) => {
                                     const result = observation.result ?? observation.value ?? "-";
                                     const isImage = typeof result === "string" && /^https?:\/\//.test(result);
+                                    const resultIsOutOfRange = !isImage && isResultOutOfRange(
+                                        result,
+                                        observation.referenceRange || observation.range,
+                                        observation.isAbnormal,
+                                        observation.abnormalFlag
+                                    );
                                     return (
                                         <tr key={observation._id || index}>
                                             <td className="px-4 py-3 text-sm font-medium text-gray-800">
                                                 {observation.testName || observation.parameter || observation.observationIdentifier || "-"}
                                             </td>
-                                            <td className="px-4 py-3 text-sm text-gray-700">
+                                            <td className={`px-4 py-3 text-sm text-gray-700 ${resultIsOutOfRange ? "underline decoration-2 underline-offset-2" : ""}`}>
                                                 {isImage ? (
                                                     <button type="button" onClick={() => setPreviewImage(result)} className="text-blue-600 underline">
                                                         View report image

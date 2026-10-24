@@ -10,7 +10,10 @@ const ActionButtons = ({ rowData, onView }) => {
   return (
     <div className="flex items-center gap-2">
       <button
-        onClick={() => onView(rowData)}
+        onClick={event => {
+          event.stopPropagation();
+          onView(rowData);
+        }}
         className="h-6 w-8 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200 flex items-center justify-center"
         title="View patient reports"
       >
@@ -41,13 +44,15 @@ export default function LabHeadManagment() {
     setPage(1);
   };
 
+  const openPatientReports = (patient) => {
+    navigate(`/doctor/lab-head/view/${patient.uhid}?date=${encodeURIComponent(patient.date)}`);
+  };
+
   const actionBodyTemplate = (rowData) => {
     return (
       <ActionButtons
         rowData={rowData}
-        onView={(data) => navigate(
-          `/doctor/lab-head/view/${data.uhid}?date=${encodeURIComponent(data.date)}`
-        )}
+        onView={openPatientReports}
       />
     );
   };
@@ -136,6 +141,8 @@ export default function LabHeadManagment() {
         columns={columns}
         loading={loading}
         emptyMessage="No registered patient tests found."
+        onRowClick={event => openPatientReports(event.data)}
+        rowClassName={() => "cursor-pointer"}
       />
 
       <Pagination

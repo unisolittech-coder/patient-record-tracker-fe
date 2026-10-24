@@ -18,7 +18,7 @@ function formatDateTime(dateStr) {
   const hours = pad(date.getHours());
   const minutes = pad(date.getMinutes());
   return `${day}/${month}/${year}${
-    dateStr.includes("T") ? ` ${hours}:${minutes}` : ""
+    String(dateStr).includes("T") ? ` ${hours}:${minutes}` : ""
   }`;
 }
 
@@ -147,6 +147,7 @@ export default function LabHeadReportPrintForm({ report, images }) {
   const data = report.data || {};
   const observations = data.observations || [];
   const isManualType = report.reportType === "Manual Type";
+  const approvalDate = data.statusUpdatedAt || data.approvalDate;
 
   return (
     <div className={`lab-print-form ${styles.container}`}>
@@ -327,29 +328,29 @@ export default function LabHeadReportPrintForm({ report, images }) {
                 <div className={styles.endMarker}>— End of Report —</div>
 
                 {/* ---------- Signature (only at the end of the report) ---------- */}
-                <div className={styles.signatureSection}>
-                  <div className={styles.signatureBlock}>
-                    {signedInUser.signature ? (
-                      <img
-                        src={signedInUser.signature}
-                        alt="Signature"
-                        className={styles.signatureImg}
-                      />
-                    ) : (
-                      <div className={styles.signatureImgPlaceholder} />
-                    )}
-                    <div className={styles.signatureLine} />
-                    <p className={styles.signatureName}>
-                      {signedInUser.name || "Lab Technician / Pathologist"}
-                    </p>
-                    <p className={styles.signatureRole}>IGGMC Approved</p>
-                    {(data.statusUpdatedAt || data.approvalDate) && (
-                      <p className={styles.signatureRole}>
-                        Approval Date: {formatDateTime(data.statusUpdatedAt || data.approvalDate)}
+                {approvalDate && (
+                  <div className={styles.signatureSection}>
+                    <div className={styles.signatureBlock}>
+                      {signedInUser.signature ? (
+                        <img
+                          src={signedInUser.signature}
+                          alt="Signature"
+                          className={styles.signatureImg}
+                        />
+                      ) : (
+                        <div className={styles.signatureImgPlaceholder} />
+                      )}
+                      <div className={styles.signatureLine} />
+                      <p className={styles.signatureName}>
+                        {signedInUser.name || "Lab Technician / Pathologist"}
                       </p>
-                    )}
+                      <p className={styles.signatureRole}>IGGMC Approved</p>
+                      <p className={styles.signatureRole}>
+                        Approval Date: {formatDateTime(approvalDate)}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </td>
           </tr>

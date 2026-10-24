@@ -31,6 +31,7 @@ const LabHeadReportView = () => {
   });
   const [updatingTestKeys, setUpdatingTestKeys] = useState({});
   const [reportApprovalStatus, setReportApprovalStatus] = useState({});
+  const [expandedReportIndex, setExpandedReportIndex] = useState(null);
   const [showPrintForm, setShowPrintForm] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -42,7 +43,7 @@ const LabHeadReportView = () => {
 
   useEffect(() => {
     const loadReport = async () => {
-      const res = await fetchLabHeadReport(uniqueId);
+      const res = await fetchLabHeadReport(uniqueId, selectedDate);
       if (res) {
         setReportData(res);
       }
@@ -51,7 +52,7 @@ const LabHeadReportView = () => {
     if (uniqueId) {
       loadReport();
     }
-  }, [uniqueId, fetchLabHeadReport]);
+  }, [uniqueId, selectedDate, fetchLabHeadReport]);
 
   useEffect(() => {
     let isActive = true;
@@ -420,13 +421,23 @@ const LabHeadReportView = () => {
       ) : reportData?.reports && reportData.reports.length > 0 ? (
         <div className="space-y-6">
           {reportData.reports.map((report, index) => {
+            const isExpanded = expandedReportIndex === index;
             return (
               <div
                 key={index}
                 className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
               >
                 <div className="px-6 py-4 bg-gradient-to-r from-blue-600/90 to-purple-600/90 text-white">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedReportIndex(isExpanded ? null : index)}
+                      aria-expanded={isExpanded}
+                      aria-label={`${isExpanded ? "Hide" : "Open"} ${report.reportType || `Report ${index + 1}`}`}
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"
+                    >
+                      <i className={`pi ${isExpanded ? "pi-chevron-down" : "pi-chevron-right"}`} />
+                    </button>
                     <div>
                       <h3 className="text-lg font-semibold">
                         {report.reportType || `Report ${index + 1}`}
@@ -441,60 +452,61 @@ const LabHeadReportView = () => {
                           : "-"}
                       </p>
                     </div>
-                    {/* <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 text-white">
-                      Unique ID: {report.data?.uniqueId}
-                    </span> */}
                   </div>
                 </div>
-                <div className="p-6">
-                  {renderObservationsTable(
-                    report.data?.observations,
-                    report.reportType
-                  )}
-                  {report.data?.cancellationRemark && (
-                    <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4">
-                      <p className="text-sm font-semibold text-amber-900">Cancellation remark</p>
-                      <p className="mt-1 whitespace-pre-wrap text-sm text-amber-800">
-                        {report.data.cancellationRemark}
-                      </p>
+                {isExpanded && (
+                  <>
+                    <div className="p-6">
+                      {renderObservationsTable(
+                        report.data?.observations,
+                        report.reportType
+                      )}
+                      {report.data?.cancellationRemark && (
+                        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                          <p className="text-sm font-semibold text-amber-900">Cancellation remark</p>
+                          <p className="mt-1 whitespace-pre-wrap text-sm text-amber-800">
+                            {report.data.cancellationRemark}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-700">
-                      Report Status:
-                    </span>
-                    {getReportStatusBadge(index)}
-                  </div>
-                  {(reportApprovalStatus[index] || report.data?.status) ===
-                    "for_approval" && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handlePrint(report)}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                      >
-                        View
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleReportApproveReject(index, "approved")
-                        }
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleReportApproveReject(index, "rejected")
-                        }
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                      >
-                        Reject
-                      </button>
+                    <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-gray-700">
+                          Report Status:
+                        </span>
+                        {getReportStatusBadge(index)}
+                      </div>
+                      {(reportApprovalStatus[index] || report.data?.status) ===
+                        "for_approval" && (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handlePrint(report)}
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                          >
+                            View
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleReportApproveReject(index, "approved")
+                            }
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleReportApproveReject(index, "rejected")
+                            }
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </>
+                )}
               </div>
             );
           })}

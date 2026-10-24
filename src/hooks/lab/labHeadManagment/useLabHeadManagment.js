@@ -143,14 +143,16 @@ const useLabHeadManagment = () => {
         }
     }, [fetchData, setLoading, setError]);
 
-    const fetchLabHeadReport = useCallback(async (uniqueId) => {
+    const fetchLabHeadReport = useCallback(async (uniqueId, date) => {
         setLoading(true);
         setError(null);
 
         try {
+            const params = new URLSearchParams();
+            if (date) params.append("date", date);
             const res = await fetchData({
                 method: "GET",
-                url: `${conf.apiBaseUrl}lab-head/report/${uniqueId}`,
+                url: `${conf.apiBaseUrl}lab-head/report/${encodeURIComponent(uniqueId)}?${params.toString()}`,
             });
 
             if (res) {
