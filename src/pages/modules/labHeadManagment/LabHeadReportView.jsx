@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import html2canvas from "html2canvas";
 import LabHeadReportPrintForm from "../../../helper/print/LabHeadReportPrintForm";
 import { confirmAlert, confirmRejectAlert } from "../../../utils/alertToast";
+import isResultOutOfRange from "../../../utils/isResultOutOfRange";
 import ImageModal from "../../../components/common/ImageModal";
 
 const LabHeadReportView = () => {
@@ -209,7 +210,13 @@ const LabHeadReportView = () => {
           .map((obs) => obs._id)
           .filter(Boolean);
       } else {
-        const imageFile = await captureReportAsImage(report);
+        const imageFile = await captureReportAsImage({
+          ...report,
+          data: {
+            ...report.data,
+            statusUpdatedAt: new Date().toISOString(),
+          },
+        });
         if (imageFile) {
           formData.append("images", imageFile);
         }
@@ -309,12 +316,18 @@ const LabHeadReportView = () => {
                 isManualType &&
                 typeof obs.result === "string" &&
                 /^https?:\/\//.test(obs.result);
+              const resultIsOutOfRange = !isImageUrl && isResultOutOfRange(
+                obs.result,
+                obs.range,
+                obs.isAbnormal,
+                obs.abnormalFlag
+              );
               return (
                 <tr key={obsIndex} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {obs.parameter}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  <td className={`px-6 py-4 whitespace-nowrap text-sm text-gray-700 ${resultIsOutOfRange ? "underline decoration-2 underline-offset-2" : ""}`}>
                     {isImageUrl ? (
                       <div
                         className="relative inline-block cursor-pointer group"
@@ -510,7 +523,7 @@ const LabHeadReportView = () => {
         @media print {
           @page {
             size: A4 portrait;
-            margin: 10mm 10mm 12mm 10mm;
+            margin: 0;
           }
 
           html, body {

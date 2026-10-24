@@ -1,5 +1,6 @@
 import { useMemo, useEffect, useState } from "react";
 import logo from "../../assets/logo/Iggmc-Logo-PNG-400-X-400.webp";
+import isResultOutOfRange from "../../utils/isResultOutOfRange";
 import styles from "./LabHeadReportPrintForm.module.css";
 
 /* ------------------------------------------------------------------ */
@@ -199,12 +200,6 @@ export default function LabHeadReportPrintForm({ report, images }) {
                     <span className={styles.idValue}>{data.UHID || "—"}</span>
                   </div>
                   <div className={styles.idItem}>
-                    <span className={styles.idLabel}>Report ID</span>
-                    <span className={styles.idValue}>
-                      {data.uniqueId || data.UHID || "—"}
-                    </span>
-                  </div>
-                  <div className={styles.idItem}>
                     <span className={styles.idLabel}>Report Date</span>
                     <span className={styles.idValue}>
                       {formatDateTime(data.date)}
@@ -236,14 +231,6 @@ export default function LabHeadReportPrintForm({ report, images }) {
                       value={data.age ?? data.patientAge ?? ""}
                     />
                     <Detail label="Gender" value={data.gender} />
-                    <Detail
-                      label="Department"
-                      value={data.department || data.referToDepartment}
-                    />
-                    <Detail
-                      label="Referring Doctor"
-                      value={data.doctorName || data.refDoctor}
-                    />
                   </div>
                 </section>
 
@@ -271,6 +258,12 @@ export default function LabHeadReportPrintForm({ report, images }) {
                               isManualType &&
                               typeof obs.result === "string" &&
                               /^https?:\/\//.test(obs.result);
+                            const resultIsOutOfRange = !isImageUrl && isResultOutOfRange(
+                              obs.result,
+                              obs.range,
+                              obs.isAbnormal,
+                              obs.abnormalFlag
+                            );
                             return (
                               <tr key={idx}>
                                 <td className={styles.tdIndex}>{idx + 1}</td>
@@ -285,7 +278,9 @@ export default function LabHeadReportPrintForm({ report, images }) {
                                       className={styles.obsImage}
                                     />
                                   ) : (
-                                    obs.result || "—"
+                                    <span style={{ textDecoration: resultIsOutOfRange ? "underline" : undefined }}>
+                                      {obs.result || "—"}
+                                    </span>
                                   )}
                                 </td>
                                 <td className={styles.tdUnit}>
@@ -347,12 +342,12 @@ export default function LabHeadReportPrintForm({ report, images }) {
                     <p className={styles.signatureName}>
                       {signedInUser.name || "Lab Technician / Pathologist"}
                     </p>
-                    {signedInUser.role ? (
-                      <p className={styles.signatureRole}>
-                        {signedInUser.role}
-                      </p>
-                    ) : null}
                     <p className={styles.signatureRole}>IGGMC Approved</p>
+                    {(data.statusUpdatedAt || data.approvalDate) && (
+                      <p className={styles.signatureRole}>
+                        Approval Date: {formatDateTime(data.statusUpdatedAt || data.approvalDate)}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
