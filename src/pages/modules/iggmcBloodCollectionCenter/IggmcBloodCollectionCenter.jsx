@@ -81,10 +81,12 @@ export default function IggmcBloodCollectionCenter() {
       .min(0, 'Age cannot be less than 0')
       .max(150, 'Age cannot be greater than 150')
       .required('Age is required'),
-    abhaNumber: Yup.string()
-      .nullable()
-      .notRequired(),
-    testNames: Yup.array().of(Yup.string())
+    // abhaNumber: Yup.string()
+    //   .nullable(),
+      // .notRequired(),
+    testNames: Yup.array()
+      .min(1, 'Please select at least one test')
+      .required('Test is required')
   });
 
   const formik = useFormik({
@@ -106,9 +108,9 @@ export default function IggmcBloodCollectionCenter() {
         gender: values.gender,
         age: Number(values.age)
       };
-      const abhaNumber = values.abhaNumber.trim();
+      const abhaNumber = values.abhaNumber ? String(values.abhaNumber).trim() : '';
       if (abhaNumber) data.abhaNumber = abhaNumber;
-      if (values.testNames.length > 0) data.testNames = values.testNames;
+      if (Array.isArray(values.testNames) && values.testNames.length > 0) data.testNames = values.testNames;
 
       const success = await createPatient(data);
       if (success) {
@@ -300,6 +302,7 @@ export default function IggmcBloodCollectionCenter() {
             <SelectInput
               name="testNames"
               label="Test Names"
+              required
               options={testNameOptions}
               value={testNameOptions.filter(option => formik.values.testNames.includes(option.value))}
               onChange={options => formik.setFieldValue('testNames', options ? options.map(option => option.value) : [])}
@@ -309,6 +312,7 @@ export default function IggmcBloodCollectionCenter() {
               backspaceRemovesValue={false}
               isClearable
               isDisabled={testNameOptions.length === 0}
+              error={formik.touched.testNames && formik.errors.testNames}
             />
           </div>
 
