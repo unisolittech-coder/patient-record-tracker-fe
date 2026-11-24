@@ -26,8 +26,6 @@ export default function LabOperatorReports() {
         submitLabReports,
         resetForm,
         fetchLabPatientSearch,
-        fetchPatientsWithTestNames,
-        fetchLabOperatorTestNames,
     } = useLabOperatorManagment();
     const { fetchLabOperatorDepartments } = useDropdowns();
     const [searchParams] = useSearchParams();
@@ -36,7 +34,6 @@ export default function LabOperatorReports() {
     const [patients, setPatients] = useState(() => [
         createPatientEntry(0, searchParams.get("uhid") || ""),
     ]);
-    const [availableTestNames, setAvailableTestNames] = useState([]);
     const [departments, setDepartments] = useState([]);
 
     useEffect(() => {
@@ -46,10 +43,6 @@ export default function LabOperatorReports() {
         };
         loadDepartments();
     }, [fetchLabOperatorDepartments]);
-
-    useEffect(() => {
-        fetchLabOperatorTestNames().then(setAvailableTestNames);
-    }, [fetchLabOperatorTestNames]);
 
     const updatePatient = (id, update) => {
         setPatients(current => current.map(patient =>
@@ -82,19 +75,21 @@ export default function LabOperatorReports() {
             const patientDetails = await fetchLabPatientSearch(uhid);
             if (!patientDetails) return;
 
-            const patientsWithTestNames = await fetchPatientsWithTestNames({
-                page: 1,
-                limit: 100,
-                search: uhid,
-            });
-            const selectedPatient = Array.isArray(patientsWithTestNames)
-                ? patientsWithTestNames.find(patient => patient.uhid === uhid)
-                : null;
+            const pendingTestNames = [...new Set(
+                (Array.isArray(patientDetails.tests) ? patientDetails.tests : []).flatMap(testGroup =>
+                    (Array.isArray(testGroup.testNames) ? testGroup.testNames : [])
+                        .filter(test =>
+                            typeof test === "string" || (test?.status || "pending") === "pending"
+                        )
+                        .map(test => String(typeof test === "string" ? test : test?.testName || "").trim())
+                        .filter(Boolean)
+                )
+            )];
             updatePatient(id, patient => ({
                 ...patient,
                 searched: true,
                 patientName: patientDetails.patientName || "",
-                patientTestNames: selectedPatient?.testNames || patientDetails.testNames || [],
+                patientTestNames: pendingTestNames,
             }));
         } finally {
             updatePatient(id, patient => ({ ...patient, searching: false }));
@@ -311,7 +306,7 @@ export default function LabOperatorReports() {
                                     <div className="mt-4">
                                         <LabOperatorTestsReports
                                             tests={patient.tests}
-                                            testNames={[...new Set([...availableTestNames, ...patient.patientTestNames])]}
+                                            testNames={patient.patientTestNames}
                                             fileNames={patient.fileNames}
                                             departments={departments}
                                             loading={loading}

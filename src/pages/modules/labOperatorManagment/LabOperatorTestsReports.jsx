@@ -45,8 +45,8 @@ export default function LabOperatorTestsReports({
                                             ? { value: test.testName, label: test.testName }
                                             : null}
                                         onChange={value => onTestNameChange(index, value?.value || "")}
-                                        placeholder="Select test name"
-                                        isDisabled={loading}
+                                        placeholder={testNames.length ? "Select test name" : "No pending tests for this patient"}
+                                        isDisabled={loading || testNames.length === 0}
                                     />
                                     <SelectInput
                                         id={`department-${index}`}

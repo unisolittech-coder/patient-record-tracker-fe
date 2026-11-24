@@ -7,6 +7,7 @@ import BreadCrumb from "../../../components/common/BreadCrumb";
 import PagePath from "../../../components/common/PagePath";
 import { useIggmcPatient } from '../../../hooks/iggmcPatient/useIggmcPatient';
 import { toast } from "react-toastify";
+import BloodCollectionPrintForm from '../../../helper/print/BloodCollectionPrintForm';
 
 export default function IggmcBloodCollectionCenter() {
   const { loading, patient, createPatient, fetchPatientByUhid, fetchTestNames } = useIggmcPatient();
@@ -14,12 +15,18 @@ export default function IggmcBloodCollectionCenter() {
   const [searched, setSearched] = useState(false);
   const [isPatientFound, setIsPatientFound] = useState(false);
   const [testNameOptions, setTestNameOptions] = useState([]);
+useEffect(() => {
+    const handleAfterPrint = () => setPrintData(null);
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => window.removeEventListener('afterprint', handleAfterPrint);
+  }, []);
 
+const [printData, setPrintData] = useState(null);
   useEffect(() => {
     let isMounted = true;
     fetchTestNames().then((names) => {
       if (isMounted) {
-        setTestNameOptions(names.map(name => ({ value: name, label: name })));
+        setTestNameOptions(names.map(item => ({ value: item.testName, label: item.testName, srNo: item.srNo })));
       }
     });
     return () => {
@@ -121,6 +128,32 @@ export default function IggmcBloodCollectionCenter() {
       }
     }
   });
+
+      const handlePrint = (patient, test, srNo = null) => {
+        const now = new Date();
+
+        const pad = (n) => String(n).padStart(2, '0');
+
+        const day = pad(now.getDate());
+        const month = pad(now.getMonth() + 1);
+        const year = String(now.getFullYear()).slice(-2);
+        const hours = pad(now.getHours());
+        const minutes = pad(now.getMinutes());
+
+        const dateTime = `${day}/${month}/${year}`;
+
+        const printData = {
+            uniqueId: patient.uhid || '-',
+            // patientName: patient.patientName || '-',
+            testName: srNo != null ? String(srNo) : (test.testName || '-'),
+            dateTime,
+        };
+        setPrintData(printData);
+
+        setTimeout(() => {
+            window.print();
+        }, 100);
+    };
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -317,6 +350,36 @@ export default function IggmcBloodCollectionCenter() {
           </div>
 
           <div className="border-t border-gray-100 pt-6 flex justify-end gap-3">
+             <Button
+              type="button"
+              label={loading ? 'loading...' : 'Print Tube Sticker'}
+              icon="pi pi-print"
+              variant="primary"
+              loading={loading}
+              disabled={loading}
+              className="px-6"
+              onClick={() => {
+                if (!formik.values.uhid) {
+                  toast.error('Please enter or search a patient first');
+                  return;
+                }
+                if (!Array.isArray(formik.values.testNames) || formik.values.testNames.length === 0) {
+                  toast.error('Please select at least one test');
+                  return;
+                }
+                const selectedPatient = patient || {
+                  uniqueId: formik.values.uhid,
+                  patientName: formik.values.patientName,
+                  gender: formik.values.gender,
+                  age: formik.values.age
+                };
+                const srNos = formik.values.testNames
+                    .map(name => testNameOptions.find(o => o.value === name)?.srNo)
+                    .filter(Boolean)
+                    .join(', ');
+                  handlePrint(selectedPatient, { testName: srNos }, null);
+              }}
+            />
             <Button
               type="submit"
               label={loading ? 'Registering...' : 'Register Patient'}
@@ -329,6 +392,15 @@ export default function IggmcBloodCollectionCenter() {
           </div>
         </form>
       )}
+      {printData && <BloodCollectionPrintForm printData={printData} />}
+      <style>{`
+        @media print {
+          @page { margin: 0; size: auto; }
+          body * { visibility: hidden; }
+          .blood-print-form, .blood-print-form * { visibility: visible; }
+          .blood-print-form { position: absolute; left: 0; top: 0; width: 100%; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        }
+      `}</style>
     </div>
   );
 }

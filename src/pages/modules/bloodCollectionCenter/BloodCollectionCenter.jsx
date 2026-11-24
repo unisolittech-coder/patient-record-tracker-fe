@@ -21,7 +21,7 @@ export default function BloodCollectionCenter() {
         fetchBloodTest(debouncedSearch);
     }, [debouncedSearch]);
 
-    const handlePrint = (patient, test) => {
+    const handlePrint = (patient, test, srNo = null) => {
         const now = new Date();
 
         const pad = (n) => String(n).padStart(2, '0');
@@ -32,12 +32,12 @@ export default function BloodCollectionCenter() {
         const hours = pad(now.getHours());
         const minutes = pad(now.getMinutes());
 
-        const dateTime = `${day}/${month}/${year}, ${hours}:${minutes}`;
+        const dateTime = `${day}/${month}/${year}`;
 
         const printData = {
             uniqueId: patient.uniqueId || '-',
             // patientName: patient.patientName || '-',
-            testName: test.testName || '-',
+            testName: srNo != null ? String(srNo) : (test.testName || '-'),
             dateTime,
         };
 
@@ -150,7 +150,7 @@ export default function BloodCollectionCenter() {
                                             Tests
                                         </h4>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                            {patient.tests?.map((test) => (
+                                            {patient.tests?.map((test, index) => (
                                                 <div
                                                     key={test._id}
                                                     className={`flex items-center justify-between p-3 rounded-lg border ${test.paymentStatus === 'paid'
@@ -168,7 +168,7 @@ export default function BloodCollectionCenter() {
                                                         </span>
                                                         {test.paymentStatus === 'paid' && (
                                                             <button
-                                                                onClick={() => handlePrint(patient, test)}
+                                                                onClick={() => handlePrint(patient, test, index + 1)}
                                                                 title="Print"
                                                                 className="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded-lg hover:bg-blue-50"
                                                             >

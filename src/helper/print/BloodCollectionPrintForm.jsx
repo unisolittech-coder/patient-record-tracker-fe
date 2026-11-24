@@ -13,46 +13,22 @@ function formatDateTime(date) {
 export default function BloodCollectionPrintForm({ printData }) {
   if (!printData) return null;
 
-  const rows = [
-    {
-      label: 'Unique ID: ',
-      value: printData.uniqueId || '-',
-    },
-    // {
-    //   label: 'Patient Name: ',
-    //   value: printData.patientName || '-',
-    // },
-    {
-      label: 'Test Name: ',
-      value: printData.testName || '-',
-    },
-    {
-      label: '',
-      value: printData.dateTime || '-',
-    },
-  ];
-
   return (
     <div className="container blood-print-form">
       <div className="sticker">
         <div className="sticker-row">
-          {rows.map((row, idx) => (
-            <div className="sticker-item" key={idx}>
-              <div className="sticker-line">
-                <span className="sticker-label">
-                  {row.label}
-                </span>
-
-                <span className="sticker-value">
-                  {row.value}
-                </span>
-              </div>
-
-              {idx < rows.length - 1 && (
-                <div className="sticker-divider" />
-              )}
+          <div className="sticker-item">
+            <div className="sticker-line" style={{ justifyContent: 'space-between', gap: '20px' }}>
+              <span className="sticker-value" style={{ marginRight: '40px' }}>{printData.uniqueId || '-'}</span>
+              <span className="sticker-value" style={{ textAlign: 'right' }}>{printData.dateTime || '-'}</span>
             </div>
-          ))}
+            <div className="sticker-divider" />
+          </div>
+          <div className="sticker-item">
+            <div className="sticker-line">
+              <span className="sticker-value">{printData.testName || '-'}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
