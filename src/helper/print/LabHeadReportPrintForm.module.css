@@ -392,6 +392,8 @@
 /* ================================================================== */
 
 .pageFooter {
+  box-sizing: border-box;
+  min-height: 32px;
   padding: 8px 20px 10px;
   border-top: 1px solid #cbd5e1;
   background: #f8fafc;
@@ -415,17 +417,38 @@
   gap: 8px;
 }
 .footerBrand {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 22px;
   background: #1e3a8a;
   color: #ffffff;
-  padding: 2px 7px;
+  padding: 3px 7px;
   border-radius: 3px;
   font-weight: 800;
   letter-spacing: 0.6px;
   font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.footerLogo {
+  display: block;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  object-fit: contain;
+  border-radius: 50%;
 }
 .footerTag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
   font-weight: 600;
   color: #475569;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 /* ================================================================== */
@@ -495,6 +518,7 @@
   }
 
   .pageFooter {
+    min-height: 24px !important;
     padding: 6px 0 0 0 !important;
     background: transparent !important;
     border-top: 1px solid #94a3b8 !important;

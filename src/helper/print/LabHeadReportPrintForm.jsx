@@ -405,7 +405,10 @@ export default function LabHeadReportPrintForm({ report, images }) {
                   </p>
                 </div>
                 <div className={styles.footerRight}>
-                  <span className={styles.footerBrand}>IGGMC</span>
+                  <span className={styles.footerBrand}>
+                    <img src={logo} alt="" className={styles.footerLogo} />
+                    <span>IGGMC</span>
+                  </span>
                   <span className={styles.footerTag}>
                     Approved Laboratory Report
                   </span>
