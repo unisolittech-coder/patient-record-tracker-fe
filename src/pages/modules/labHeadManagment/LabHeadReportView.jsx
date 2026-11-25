@@ -152,6 +152,15 @@ const LabHeadReportView = () => {
       requestAnimationFrame(() => requestAnimationFrame(resolve))
     );
 
+    const reportImages = Array.from(container.querySelectorAll("img"));
+    await Promise.all(reportImages.map(image => {
+      if (image.complete) return Promise.resolve();
+      return new Promise(resolve => {
+        image.addEventListener("load", resolve, { once: true });
+        image.addEventListener("error", resolve, { once: true });
+      });
+    }));
+
     const printElement = container.querySelector(".lab-print-form");
     let file = null;
     if (printElement) {
@@ -210,6 +219,20 @@ const LabHeadReportView = () => {
         updatePayload.observationId = (report.data?.observations || [])
           .map((obs) => obs._id)
           .filter(Boolean);
+
+        if (status === "approved") {
+          const imageFile = await captureReportAsImage({
+            ...report,
+            data: {
+              ...report.data,
+              statusUpdatedAt: new Date().toISOString(),
+            },
+          });
+          if (!imageFile) {
+            throw new Error("Could not generate the signed report image.");
+          }
+          formData.append("images", imageFile);
+        }
       } else {
         const imageFile = await captureReportAsImage({
           ...report,
@@ -232,6 +255,10 @@ const LabHeadReportView = () => {
           ...prev,
           [key]: status,
         }));
+        const refreshedReport = await fetchLabHeadReport(uniqueId, selectedDate);
+        if (refreshedReport) {
+          setReportData(refreshedReport);
+        }
         // toast.success(result.message || `Report ${status} successfully`);
       }
     } catch (error) {
@@ -313,12 +340,15 @@ const LabHeadReportView = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {observations.map((obs, obsIndex) => {
+              const result = obs.status === "approved" && obs.signedReport
+                ? obs.signedReport
+                : obs.result;
               const isImageUrl =
                 isManualType &&
-                typeof obs.result === "string" &&
-                /^https?:\/\//.test(obs.result);
+                typeof result === "string" &&
+                /^https?:\/\//.test(result);
               const resultIsOutOfRange = !isImageUrl && isResultOutOfRange(
-                obs.result,
+                result,
                 obs.range,
                 obs.isAbnormal,
                 obs.abnormalFlag
@@ -332,10 +362,10 @@ const LabHeadReportView = () => {
                     {isImageUrl ? (
                       <div
                         className="relative inline-block cursor-pointer group"
-                        onClick={() => setPreviewImage(obs.result)}
+                        onClick={() => setPreviewImage(result)}
                       >
                         <img
-                          src={obs.result}
+                          src={result}
                           alt={obs.parameter}
                           className="max-w-[200px] max-h-[200px] object-contain border border-gray-200 rounded-lg shadow-sm transition-transform duration-200 group-hover:scale-105"
                         />
@@ -344,7 +374,7 @@ const LabHeadReportView = () => {
                         </div>
                       </div>
                     ) : (
-                      obs.result
+                      result
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
@@ -422,6 +452,8 @@ const LabHeadReportView = () => {
         <div className="space-y-6">
           {reportData.reports.map((report, index) => {
             const isExpanded = expandedReportIndex === index;
+            const reportStatus =
+              reportApprovalStatus[index] || report.data?.status;
             return (
               <div
                 key={index}
@@ -477,31 +509,38 @@ const LabHeadReportView = () => {
                         </span>
                         {getReportStatusBadge(index)}
                       </div>
-                      {(reportApprovalStatus[index] || report.data?.status) ===
-                        "for_approval" && (
+                      {(reportStatus === "for_approval" ||
+                        (reportStatus === "approved" &&
+                          report.model === "LabReport")) && (
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handlePrint(report)}
                             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                           >
-                            View
+                            {reportStatus === "approved"
+                              ? "View Signed Report"
+                              : "View"}
                           </button>
-                          <button
-                            onClick={() =>
-                              handleReportApproveReject(index, "approved")
-                            }
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleReportApproveReject(index, "rejected")
-                            }
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                          >
-                            Reject
-                          </button>
+                          {reportStatus === "for_approval" && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  handleReportApproveReject(index, "approved")
+                                }
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+                              >
+                                Approve
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleReportApproveReject(index, "rejected")
+                                }
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
                         </div>
                       )}
                     </div>
