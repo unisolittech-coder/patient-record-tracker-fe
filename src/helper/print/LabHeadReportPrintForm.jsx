@@ -147,7 +147,11 @@ export default function LabHeadReportPrintForm({ report, images }) {
   const data = report.data || {};
   const observations = data.observations || [];
   const isManualType = report.reportType === "Manual Type";
-  const approvalDate = data.statusUpdatedAt || data.approvalDate;
+  const approvalDate =
+    data.statusUpdatedAt ||
+    data.approvalDate ||
+    observations.find((observation) => observation.statusUpdatedAt)
+      ?.statusUpdatedAt;
 
   return (
     <div className={`lab-print-form ${styles.container}`}>
