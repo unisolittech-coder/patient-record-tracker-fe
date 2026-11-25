@@ -308,7 +308,7 @@ const LabHeadReportView = () => {
     );
   };
 
-  const renderObservationsTable = (observations, reportType) => {
+  const renderObservationsTable = (observations, reportType, report) => {
     if (!observations || observations.length === 0) {
       return (
         <p className="text-gray-500 text-sm py-4">
@@ -362,7 +362,18 @@ const LabHeadReportView = () => {
                     {isImageUrl ? (
                       <div
                         className="relative inline-block cursor-pointer group"
-                        onClick={() => setPreviewImage(result)}
+                        title={
+                          isManualType && report?.data?.status === "approved"
+                            ? "Open signed report"
+                            : "Preview report image"
+                        }
+                        onClick={() => {
+                          if (isManualType && report?.data?.status === "approved") {
+                            handlePrint(report);
+                          } else {
+                            setPreviewImage(result);
+                          }
+                        }}
                       >
                         <img
                           src={result}
@@ -370,7 +381,7 @@ const LabHeadReportView = () => {
                           className="max-w-[200px] max-h-[200px] object-contain border border-gray-200 rounded-lg shadow-sm transition-transform duration-200 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg">
-                          <i className="pi pi-search-plus text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md"></i>
+                          <i className={`pi ${isManualType && report?.data?.status === "approved" ? "pi-print" : "pi-search-plus"} text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md`}></i>
                         </div>
                       </div>
                     ) : (
@@ -491,7 +502,8 @@ const LabHeadReportView = () => {
                     <div className="p-6">
                       {renderObservationsTable(
                         report.data?.observations,
-                        report.reportType
+                        report.reportType,
+                        report
                       )}
                       {report.data?.cancellationRemark && (
                         <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4">
@@ -509,38 +521,30 @@ const LabHeadReportView = () => {
                         </span>
                         {getReportStatusBadge(index)}
                       </div>
-                      {(reportStatus === "for_approval" ||
-                        (reportStatus === "approved" &&
-                          report.model === "LabReport")) && (
+                      {reportStatus === "for_approval" && (
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handlePrint(report)}
                             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                           >
-                            {reportStatus === "approved"
-                              ? "View Signed Report"
-                              : "View"}
+                            View
                           </button>
-                          {reportStatus === "for_approval" && (
-                            <>
-                              <button
-                                onClick={() =>
-                                  handleReportApproveReject(index, "approved")
-                                }
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                              >
-                                Approve
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleReportApproveReject(index, "rejected")
-                                }
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                              >
-                                Reject
-                              </button>
-                            </>
-                          )}
+                          <button
+                            onClick={() =>
+                              handleReportApproveReject(index, "approved")
+                            }
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleReportApproveReject(index, "rejected")
+                            }
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                          >
+                            Reject
+                          </button>
                         </div>
                       )}
                     </div>
