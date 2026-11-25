@@ -254,6 +254,47 @@
   display: block;
 }
 
+.manualReportList {
+  border: 1px solid #cbd5e1;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+}
+
+.manualReportItem {
+  padding: 14px;
+  background: #ffffff;
+}
+
+.manualReportItem + .manualReportItem {
+  border-top: 1px solid #e2e8f0;
+}
+
+.manualReportParameter {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.manualReportImage {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  object-fit: contain;
+  object-position: top center;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.manualReportText {
+  margin: 0;
+  font-size: 12px;
+  color: #334155;
+  white-space: pre-wrap;
+}
+
 .noData {
   margin: 0;
   padding: 12px 14px;
@@ -469,6 +510,8 @@
   .idItem,
   .reportImage,
   .obsImage,
+  .manualReportItem,
+  .manualReportImage,
   .signatureSection {
     page-break-inside: avoid !important;
     break-inside: avoid !important;

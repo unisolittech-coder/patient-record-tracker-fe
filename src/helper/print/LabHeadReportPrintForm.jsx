@@ -246,6 +246,36 @@ export default function LabHeadReportPrintForm({ report, images }) {
                   </div>
 
                   {observations.length > 0 ? (
+                    isManualType ? (
+                      <div className={styles.manualReportList}>
+                        {observations.map((obs, idx) => {
+                          const isImageUrl =
+                            typeof obs.result === "string" &&
+                            /^https?:\/\//.test(obs.result);
+                          return (
+                            <div
+                              className={styles.manualReportItem}
+                              key={obs._id || idx}
+                            >
+                              <h3 className={styles.manualReportParameter}>
+                                {obs.parameter || `Report ${idx + 1}`}
+                              </h3>
+                              {isImageUrl ? (
+                                <img
+                                  src={obs.result}
+                                  alt={obs.parameter || "Uploaded report"}
+                                  className={styles.manualReportImage}
+                                />
+                              ) : (
+                                <p className={styles.manualReportText}>
+                                  {obs.result || "—"}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
                     <div className={styles.tableWrap}>
                       <table className={styles.resultsTable}>
                         <thead>
@@ -300,6 +330,7 @@ export default function LabHeadReportPrintForm({ report, images }) {
                         </tbody>
                       </table>
                     </div>
+                    )
                   ) : (
                     <p className={styles.noData}>
                       No observations available for this report.
