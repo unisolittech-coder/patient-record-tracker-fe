@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default function ImageModal({ src, alt, onClose }) {
+export default function ImageModal({ src, alt, onClose, opaque = false }) {
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
@@ -15,7 +15,9 @@ export default function ImageModal({ src, alt, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+      className={`fixed inset-0 z-50 flex items-center justify-center ${
+        opaque ? "bg-black" : "bg-black/80"
+      } p-4`}
       onClick={onClose}
     >
       <div

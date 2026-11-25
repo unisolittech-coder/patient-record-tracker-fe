@@ -36,6 +36,11 @@ const LabHeadReportView = () => {
   const [selectedReport, setSelectedReport] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
 
+  useEffect(() => {
+    if (!previewImage?.startsWith("blob:")) return undefined;
+    return () => URL.revokeObjectURL(previewImage);
+  }, [previewImage]);
+
   const breadcrumbPaths = [
     { label: "Patient Reports Management", url: "/doctor/lab-head" },
     { label: "Lab Report View" },
@@ -185,6 +190,29 @@ const LabHeadReportView = () => {
     document.body.removeChild(container);
 
     return file;
+  };
+
+  const handleObservationImageClick = async (result, observation, report, isManualType) => {
+    if (isManualType && report?.data?.status === "approved") {
+      if (observation.signedReport) {
+        setPreviewImage(observation.signedReport);
+        return;
+      }
+
+      try {
+        const signedReport = await captureReportAsImage(report);
+        if (!signedReport) {
+          throw new Error("Could not generate the signed report image.");
+        }
+        setPreviewImage(URL.createObjectURL(signedReport));
+      } catch (error) {
+        console.error("Error generating signed report preview:", error);
+        toast.error(error.message || "Could not open the signed report");
+      }
+      return;
+    }
+
+    setPreviewImage(result);
   };
 
   /* -------------------- Approve / Reject -------------------- */
@@ -368,11 +396,12 @@ const LabHeadReportView = () => {
                             : "Preview report image"
                         }
                         onClick={() => {
-                          if (isManualType && report?.data?.status === "approved") {
-                            handlePrint(report);
-                          } else {
-                            setPreviewImage(result);
-                          }
+                          handleObservationImageClick(
+                            result,
+                            obs,
+                            report,
+                            isManualType
+                          );
                         }}
                       >
                         <img
@@ -381,7 +410,7 @@ const LabHeadReportView = () => {
                           className="max-w-[200px] max-h-[200px] object-contain border border-gray-200 rounded-lg shadow-sm transition-transform duration-200 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg">
-                          <i className={`pi ${isManualType && report?.data?.status === "approved" ? "pi-print" : "pi-search-plus"} text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md`}></i>
+                          <i className={`pi ${isManualType && report?.data?.status === "approved" ? "pi-eye" : "pi-search-plus"} text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md`}></i>
                         </div>
                       </div>
                     ) : (
@@ -570,6 +599,7 @@ const LabHeadReportView = () => {
           src={previewImage}
           alt="Report Image Preview"
           onClose={() => setPreviewImage(null)}
+          opaque
         />
       )}
 
