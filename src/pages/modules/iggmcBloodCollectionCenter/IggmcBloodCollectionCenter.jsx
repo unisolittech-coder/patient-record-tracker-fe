@@ -312,7 +312,6 @@ const [printData, setPrintData] = useState(null);
                 onBlur={formik.handleBlur}
                 placeholder="Enter Mobile Number"
                 error={formik.touched.mobileNumber && formik.errors.mobileNumber}
-                disabled={isPatientFound}
               />
 
               <TextInput
